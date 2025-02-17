@@ -27,8 +27,19 @@ void MaterialComponent::LoadNormal(const String& string)
     Normal = AssetManager::Get(string, AssetType::Texture);
 }
 
+void MaterialComponent::LoadPBR(const String& string)
+{
+    if (!File::Exists(string)) {
+        return;
+    }
+
+    if (PBR) AssetManager::GiveBack(PBR->Path);
+    PBR = AssetManager::Get(string, AssetType::Texture);
+}
+
 void MaterialComponent::Free()
 {
     if (Albedo) AssetManager::GiveBack(Albedo->Path);
     if (Normal) AssetManager::GiveBack(Normal->Path);
+    if (PBR) AssetManager::GiveBack(PBR->Path);
 }

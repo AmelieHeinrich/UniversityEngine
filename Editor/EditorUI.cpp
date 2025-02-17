@@ -735,6 +735,43 @@ void Editor::EntityEditor()
                     ImGui::EndDragDropTarget();
                 }
                 ImGui::Text("Normal Texture");
+
+                // PBR
+                if (material.PBR) {
+                    char temp[512];
+                    sprintf(temp, "%s %s", ICON_FA_FILE, material.PBR->Path.c_str());
+                    if (ImGui::Button(temp, ImVec2(70, 0))) {
+                        String path = Dialog::Open({ ".png", ".jpg", ".jpeg" });
+                        if (!path.empty()) {
+                            material.LoadPBR(path);
+                        }
+                    }
+                    ImGui::SameLine();
+                } else {
+                    if (ImGui::Button(ICON_FA_FILE " Open...", ImVec2(70, 0))) {
+                        String path = Dialog::Open({ ".png", ".jpg", ".jpeg" });
+                        if (!path.empty()) {
+                            // Load script
+                            material.LoadPBR(path);
+                        }
+                    }
+                    ImGui::SameLine();
+                }
+                if (ImGui::BeginDragDropTarget()) {
+                    if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
+                        const wchar_t* path = (const wchar_t*)payload->Data;
+				        std::filesystem::path scriptPath(path);
+                        String string = scriptPath.string();
+                        if (string.find(".png") != String::npos || string.find(".jpg") != String::npos || string.find(".jpeg") != String::npos) {
+                            for (int i = 0; i < string.size(); i++) {
+                                string[i] = string[i] == '\\' ? '/' : string[i];
+                            }
+                            material.LoadPBR(string);
+                        }
+                    }
+                    ImGui::EndDragDropTarget();
+                }
+                ImGui::Text("PBR Texture");
             
                 ImGui::TreePop();
             

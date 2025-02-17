@@ -186,6 +186,8 @@ struct MaterialComponent
     Asset::Handle Albedo;
     /// @brief The normal texture map
     Asset::Handle Normal;
+    /// @brief The PBR texture map
+    Asset::Handle PBR;
 
     /// @brief Loads the albedo map
     /// @param string The path of the albedo texture map
@@ -193,6 +195,9 @@ struct MaterialComponent
     /// @brief Loads the normal map
     /// @param string The path of the normal texture map
     void LoadNormal(const String& string);
+    /// @brief Loads the PBR map
+    /// @param string The path of the PBR texture map
+    void LoadPBR(const String& string);
     /// @brief Manually free the texture assets
     void Free();
 };
