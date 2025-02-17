@@ -515,8 +515,8 @@ void Editor::EntityEditor()
         }
 
         // Transform
+        TransformComponent& transform = mSelectedEntity.GetComponent<TransformComponent>();
         if (ImGui::TreeNodeEx(ICON_FA_HOME " Transform", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) {
-            TransformComponent& transform = mSelectedEntity.GetComponent<TransformComponent>();
             DrawVec3Control("Position", transform.Position, 0.0f);
             DrawVec3Control("Scale", transform.Scale, 1.0f);
             
@@ -905,6 +905,48 @@ void Editor::EntityEditor()
                     audio.Free();
                     mSelectedEntity.RemoveComponent<AudioSourceComponent>();
                 }
+            }
+        }
+
+        // Directional Light
+        if (mSelectedEntity.HasComponent<DirectionalLightComponent>()) {
+            auto& dir = mSelectedEntity.GetComponent<DirectionalLightComponent>();
+            if (!mScenePlaying)
+                Debug::DrawArrow(transform.Position, transform.Position + glm::normalize(Math::QuatToForward(transform.Rotation)), dir.Color);
+
+            if (ImGui::TreeNodeEx(ICON_FA_SUN_O " Directional Light", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) {
+                ImGui::Checkbox("Cast Shadows", &dir.CastShadows);
+                ImGui::ColorEdit3("Color", glm::value_ptr(dir.Color));
+                ImGui::SliderFloat("Strength", &dir.Strength, 0.0f, 100.0f, "%.1f");
+                ImGui::TreePop();
+            }
+        }
+
+        // Point light
+        if (mSelectedEntity.HasComponent<PointLightComponent>()) {
+            auto& p = mSelectedEntity.GetComponent<PointLightComponent>();
+            if (!mScenePlaying)
+                Debug::DrawSphere(transform.Position, p.Radius, p.Color, 2);
+
+            if (ImGui::TreeNodeEx(ICON_FA_LIGHTBULB_O " Point Light", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) {
+                ImGui::SliderFloat("Radius", &p.Radius, 0.1f, 100.0f, "%.1f");
+                ImGui::ColorEdit3("Color", glm::value_ptr(p.Color));
+                ImGui::TreePop();
+            }
+        }
+
+        // Spot light
+        if (mSelectedEntity.HasComponent<SpotLightComponent>()) {
+            auto& s = mSelectedEntity.GetComponent<SpotLightComponent>();
+            if (!mScenePlaying)
+                Debug::DrawArrow(transform.Position, transform.Position + glm::normalize(Math::QuatToForward(transform.Rotation)), s.Color);
+
+            if (ImGui::TreeNodeEx(ICON_FA_THERMOMETER_FULL " Spot Light", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) {
+                ImGui::Checkbox("Cast Shadows", &s.CastShadows);
+                ImGui::SliderFloat("Radius", &s.Radius, 0.1f, 100.0f, "%.1f");
+                ImGui::SliderFloat("Outer Radius", &s.OuterRadius, s.Radius, 180.0f, "%.1f");
+                ImGui::ColorEdit3("Color", glm::value_ptr(s.Color));
+                ImGui::TreePop();
             }
         }
 

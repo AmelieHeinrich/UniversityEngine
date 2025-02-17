@@ -79,3 +79,12 @@ glm::vec3 Math::QuatToEuler(glm::quat quat)
 	glm::vec3 euler = glm::eulerAngles(quat);
 	return glm::degrees(euler);
 }
+
+glm::vec3 Math::QuatToForward(glm::quat q)
+{
+	return glm::vec3(
+        2.0f * (q.x * q.z + q.w * q.y),
+        2.0f * (q.y * q.z - q.w * q.x),
+        1.0f - 2.0f * (q.x * q.x + q.y * q.y)
+    );
+}

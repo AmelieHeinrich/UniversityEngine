@@ -53,4 +53,6 @@ public:
     /// @param quat The quaternion to convert.
     /// @return The corresponding Euler angles in degrees.
     static glm::vec3 QuatToEuler(glm::quat quat);
+
+    static glm::vec3 QuatToForward(glm::quat quat);
 };

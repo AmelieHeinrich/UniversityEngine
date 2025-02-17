@@ -43,7 +43,7 @@ void LightManager::Update(const Frame& frame, Ref<Scene> scene)
     {
         auto view = registry->view<TransformComponent, DirectionalLightComponent>();
         for (auto [id, t, dir] : view.each()) {
-            dir.Direction = Math::QuatToEuler(t.Rotation);
+            dir.Direction = Math::QuatToForward(t.Rotation);
             sData.DirLights[sData.Data.DirLightCount] = dir;
             sData.Data.DirLightCount++;
         }
@@ -61,7 +61,7 @@ void LightManager::Update(const Frame& frame, Ref<Scene> scene)
     {
         auto view = registry->view<TransformComponent, SpotLightComponent>();
         for (auto [id, t, dir] : view.each()) {
-            dir.Direction = Math::QuatToEuler(t.Rotation);
+            dir.Direction = Math::QuatToForward(t.Rotation);
             sData.SpotLights[sData.Data.SpotLightCount] = dir;
             sData.Data.SpotLightCount++;
         }

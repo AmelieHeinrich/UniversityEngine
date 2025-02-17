@@ -1,7 +1,7 @@
 {
     "colorGrading": {
         "balance": 1.0,
-        "brightness": 2.0999999046325684,
+        "brightness": 1.6699999570846558,
         "colorFilter": [
             0.5,
             0.5,
@@ -9,7 +9,7 @@
             0.5
         ],
         "contrast": 1.1699999570846558,
-        "enable": true,
+        "enable": false,
         "exposure": 1.809999942779541,
         "highlights": [
             0.5,
@@ -34,7 +34,7 @@
         "focusRange": 8.894000053405762
     },
     "gammaCorrect": {
-        "factor": 2.4539999961853027
+        "factor": 2.427000045776367
     },
     "geometry": {
         "visualizeMeshlets": false
