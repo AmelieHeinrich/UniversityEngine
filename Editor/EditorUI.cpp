@@ -530,7 +530,7 @@ void Editor::EntityEditor()
         
         // CAMERA
         if (mSelectedEntity.HasComponent<CameraComponent>()) {
-            if (ImGui::TreeNodeEx(ICON_FA_CAMERA " Camera Component", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) {
+            if (ImGui::TreeNodeEx(ICON_FA_CAMERA " Camera", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) {
                 CameraComponent& camera = mSelectedEntity.GetComponent<CameraComponent>();
 
                 bool shouldDelete = false;
@@ -591,7 +591,7 @@ void Editor::EntityEditor()
 
         // MESH
         if (mSelectedEntity.HasComponent<MeshComponent>()) {
-            if (ImGui::TreeNodeEx(ICON_FA_CUBE " Mesh Component", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) {
+            if (ImGui::TreeNodeEx(ICON_FA_CUBE " Mesh", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) {
                 auto& mesh = mSelectedEntity.GetComponent<MeshComponent>();
 
                 bool shouldDelete = false;
@@ -647,7 +647,7 @@ void Editor::EntityEditor()
 
         // MATERIAL
         if (mSelectedEntity.HasComponent<MaterialComponent>()) {
-            if (ImGui::TreeNodeEx(ICON_FA_TREE " Material Component", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) {
+            if (ImGui::TreeNodeEx(ICON_FA_TREE " Material", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) {
                 auto& material = mSelectedEntity.GetComponent<MaterialComponent>();
 
                 bool shouldDelete = false;
@@ -787,7 +787,7 @@ void Editor::EntityEditor()
         for (int i = 0; i < scripts.Instances.size(); i++) {
             Ref<ScriptComponent::EntityScript> script = scripts.Instances[i];
             ImGui::PushID((UInt64)script->ID);
-            if (ImGui::TreeNodeEx(ICON_FA_CODE " Script Component", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) {
+            if (ImGui::TreeNodeEx(ICON_FA_CODE " Script", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) {
                 bool shouldDelete = false;
                 ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(7.0f, 0.6f, 0.6f));
                 ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::HSV(7.0f, 0.7f, 0.7f));
@@ -846,7 +846,7 @@ void Editor::EntityEditor()
 
         // Audio
         if (mSelectedEntity.HasComponent<AudioSourceComponent>()) {
-            if (ImGui::TreeNodeEx(ICON_FA_MUSIC " Audio Source Component", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) {
+            if (ImGui::TreeNodeEx(ICON_FA_MUSIC " Audio Source", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) {
                 auto& audio = mSelectedEntity.GetComponent<AudioSourceComponent>();
 
                 bool shouldDelete = false;
@@ -917,26 +917,41 @@ void Editor::EntityEditor()
         }
         if (ImGui::BeginPopup("AddComponent")) {
             if (!mSelectedEntity.HasComponent<MeshComponent>()) {
-                if (ImGui::MenuItem(ICON_FA_CUBE " Mesh Component")) {
+                if (ImGui::MenuItem(ICON_FA_CUBE " Mesh")) {
                     mSelectedEntity.AddComponent<MeshComponent>();
                 }
             }
             if (!mSelectedEntity.HasComponent<CameraComponent>()) {
-                if (ImGui::MenuItem(ICON_FA_VIDEO_CAMERA " Camera Component")) {
+                if (ImGui::MenuItem(ICON_FA_VIDEO_CAMERA " Camera")) {
                     mSelectedEntity.AddComponent<CameraComponent>(true);
                 }
             }
             if (!mSelectedEntity.HasComponent<AudioSourceComponent>()) {
-                if (ImGui::MenuItem(ICON_FA_MUSIC " Audio Source Component")) {
+                if (ImGui::MenuItem(ICON_FA_MUSIC " Audio Source")) {
                     mSelectedEntity.AddComponent<AudioSourceComponent>();
                 }
             }
             if (!mSelectedEntity.HasComponent<MaterialComponent>()) {
-                if (ImGui::MenuItem(ICON_FA_TREE " Material Component")) {
+                if (ImGui::MenuItem(ICON_FA_TREE " Material")) {
                     mSelectedEntity.AddComponent<MaterialComponent>();
                 }
             }
-            if (ImGui::MenuItem(ICON_FA_CODE " Script Component")) {
+            if (!mSelectedEntity.HasComponent<DirectionalLightComponent>()) {
+                if (ImGui::MenuItem(ICON_FA_SUN_O " Directional Light")) {
+                    mSelectedEntity.AddComponent<DirectionalLightComponent>();
+                }
+            }
+            if (!mSelectedEntity.HasComponent<PointLightComponent>()) {
+                if (ImGui::MenuItem(ICON_FA_LIGHTBULB_O " Point Light")) {
+                    mSelectedEntity.AddComponent<PointLightComponent>();
+                }
+            }
+            if (!mSelectedEntity.HasComponent<SpotLightComponent>()) {
+                if (ImGui::MenuItem(ICON_FA_THERMOMETER_FULL " Spot Light")) {
+                    mSelectedEntity.AddComponent<SpotLightComponent>();
+                }
+            }
+            if (ImGui::MenuItem(ICON_FA_CODE " Script")) {
                 mSelectedEntity.GetComponent<ScriptComponent>().AddEmptyScript();
             }
             ImGui::EndPopup();

@@ -129,6 +129,36 @@ nlohmann::json SceneSerializer::SerializeEntity(Entity entity)
             { "path", source.Handle ? source.Handle->Path : nullptr }
         };
     }
+    
+    // Directional Light component
+    if (entity.HasComponent<DirectionalLightComponent>()) {
+        DirectionalLightComponent dir = entity.GetComponent<DirectionalLightComponent>();
+        entityJson["directionalLight"] = {
+            { "strength", dir.Strength },
+            { "color", { dir.Color.x, dir.Color.y, dir.Color.z } },
+            { "castShadows", dir.CastShadows }
+        };
+    }
+
+    // Point Light component
+    if (entity.HasComponent<DirectionalLightComponent>()) {
+        PointLightComponent dir = entity.GetComponent<PointLightComponent>();
+        entityJson["pointLight"] = {
+            { "radius", dir.Radius },
+            { "color", { dir.Color.x, dir.Color.y, dir.Color.z } },
+        };
+    }
+
+    // Spot Light component
+    if (entity.HasComponent<DirectionalLightComponent>()) {
+        SpotLightComponent dir = entity.GetComponent<SpotLightComponent>();
+        entityJson["spotLight"] = {
+            { "radius", dir.Radius },
+            { "outerRadius", dir.OuterRadius },
+            { "castShadows", dir.CastShadows },
+            { "color", { dir.Color.x, dir.Color.y, dir.Color.z } }
+        };
+    }
 
     return entityJson;
 }
@@ -181,6 +211,27 @@ Entity SceneSerializer::DeserializeEntity(Ref<Scene> scene, const nlohmann::json
     for (auto& script : entityJson["scripts"]) {
         auto& sc = entity.GetComponent<ScriptComponent>();
         sc.PushScript(script);
+    }
+    if (entityJson.contains("directionalLight")) {
+        auto& dir = entity.GetComponent<DirectionalLightComponent>();
+        auto d = entityJson["directionalLight"];
+        dir.Strength = d["strength"];
+        dir.CastShadows = d["castShadows"];
+        dir.Color = glm::vec3(d["color"][0], d["color"][1], d["color"][2]);
+    }
+    if (entityJson.contains("pointLight")) {
+        auto& dir = entity.GetComponent<PointLightComponent>();
+        auto d = entityJson["pointLight"];
+        dir.Radius = d["radius"];
+        dir.Color = glm::vec3(d["color"][0], d["color"][1], d["color"][2]);
+    }
+    if (entityJson.contains("spotLight")) {
+        auto& dir = entity.GetComponent<SpotLightComponent>();
+        auto d = entityJson["spotLight"];
+        dir.Radius = d["radius"];
+        dir.OuterRadius = d["outerRadius"];
+        dir.CastShadows = d["castShadows"];
+        dir.Color = glm::vec3(d["color"][0], d["color"][1], d["color"][2]);
     }
 
     return entity;

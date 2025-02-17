@@ -338,3 +338,32 @@ struct AudioSourceComponent
     /// during the game loop, such as whether the sound has finished playing.
     void Update();
 };
+
+struct DirectionalLightComponent
+{
+    float Strength;
+    glm::vec3 Pad;
+
+    glm::vec3 Color;
+    bool CastShadows;
+};
+
+struct PointLightComponent
+{
+    glm::vec3 Color;
+    float Radius;
+};
+
+struct SpotLightComponent
+{
+    float Radius;
+    float OuterRadius;
+    bool CastShadows;
+    int ShadowMap;
+
+    glm::vec3 Color;
+    int Pad;
+
+    glm::mat4 LightView;
+    glm::mat4 LightProj;
+};

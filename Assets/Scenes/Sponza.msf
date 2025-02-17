@@ -2,142 +2,33 @@
     "entities": [
         {
             "id": 6,
-            "name": "Meshes",
-            "parent": null,
+            "mesh": {
+                "path": "Assets/Models/SciFiHelmet/SciFiHelmet.gltf"
+            },
+            "name": "SciFiHelmet",
+            "parent": 0,
             "scripts": [],
             "transform": {
                 "position": [
-                    0.0,
-                    0.0,
-                    0.0
+                    -0.06822112947702408,
+                    0.6391251087188721,
+                    0.9838723540306091
                 ],
                 "rotation": [
-                    0.0,
-                    0.0,
-                    0.0,
-                    1.0
+                    -1.4500377801596187e-05,
+                    -0.7069846987724304,
+                    -1.4495371942757629e-05,
+                    0.7072288393974304
                 ],
                 "scale": [
-                    1.0,
-                    1.0,
-                    1.0
+                    0.4999999403953552,
+                    0.5,
+                    0.4999999403953552
                 ]
             }
         },
         {
             "id": 5,
-            "mesh": {
-                "path": "Assets/Models/DamagedHelmet/DamagedHelmet.gltf"
-            },
-            "name": "DamagedHelmet",
-            "parent": 6,
-            "scripts": [],
-            "transform": {
-                "position": [
-                    -6.0585662140510976e-05,
-                    0.5337206125259399,
-                    -0.17546385526657104
-                ],
-                "rotation": [
-                    0.0,
-                    -0.7069340944290161,
-                    0.0,
-                    0.7072794437408447
-                ],
-                "scale": [
-                    0.6079997420310974,
-                    0.6079999804496765,
-                    0.6079997420310974
-                ]
-            }
-        },
-        {
-            "id": 4,
-            "mesh": {
-                "path": "Assets/Models/Suzanne/Suzanne.gltf"
-            },
-            "name": "Suzanne",
-            "parent": 6,
-            "scripts": [],
-            "transform": {
-                "position": [
-                    0.18182358145713806,
-                    0.5912699103355408,
-                    -1.5999987125396729
-                ],
-                "rotation": [
-                    -1.4547247246810002e-06,
-                    -0.7069340944290161,
-                    -1.454014636692591e-06,
-                    0.7072794437408447
-                ],
-                "scale": [
-                    0.5999999642372131,
-                    0.6000000238418579,
-                    0.5999999642372131
-                ]
-            }
-        },
-        {
-            "id": 3,
-            "mesh": {
-                "path": "Assets/Models/Sponza/Sponza.gltf"
-            },
-            "name": "Sponza",
-            "parent": null,
-            "scripts": [],
-            "transform": {
-                "position": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "rotation": [
-                    0.0,
-                    0.0,
-                    0.0,
-                    1.0
-                ],
-                "scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "camera": {
-                "far": 200.0,
-                "fov": 90.0,
-                "near": 0.10000000149011612,
-                "primary": true,
-                "volumePath": "Assets/Volumes/TestVolume.mfx"
-            },
-            "id": 2,
-            "name": "Camera",
-            "parent": null,
-            "scripts": [],
-            "transform": {
-                "position": [
-                    -2.1336183547973633,
-                    1.038514494895935,
-                    -0.05829986184835434
-                ],
-                "rotation": [
-                    -7.789484698150773e-06,
-                    0.7069846987724304,
-                    7.786790774844121e-06,
-                    0.7072288393974304
-                ],
-                "scale": [
-                    0.9999998807907104,
-                    1.0,
-                    0.9999998807907104
-                ]
-            }
-        },
-        {
-            "id": 1,
             "mesh": {
                 "path": "Assets/Models/Balls/MetalRoughSpheres.gltf"
             },
@@ -164,32 +55,141 @@
             }
         },
         {
-            "id": 0,
-            "mesh": {
-                "path": "Assets/Models/SciFiHelmet/SciFiHelmet.gltf"
+            "camera": {
+                "far": 200.0,
+                "fov": 90.0,
+                "near": 0.10000000149011612,
+                "primary": true,
+                "volumePath": "Assets/Volumes/TestVolume.mfx"
             },
-            "name": "SciFiHelmet",
-            "parent": 6,
+            "id": 4,
+            "name": "Camera",
+            "parent": null,
             "scripts": [],
             "transform": {
                 "position": [
-                    -0.06822112947702408,
-                    0.6391251087188721,
-                    1.0249440670013428
+                    -2.5363001823425293,
+                    1.0385078191757202,
+                    -0.12845230102539063
                 ],
                 "rotation": [
-                    -1.4500377801596187e-05,
-                    -0.7069846987724304,
-                    -1.4495371942757629e-05,
+                    -7.776444363116752e-06,
+                    0.7069846987724304,
+                    7.773755896778312e-06,
                     0.7072288393974304
                 ],
                 "scale": [
-                    0.4999999403953552,
-                    0.5,
-                    0.4999999403953552
+                    0.9999998807907104,
+                    1.0,
+                    0.9999998807907104
+                ]
+            }
+        },
+        {
+            "id": 3,
+            "mesh": {
+                "path": "Assets/Models/Sponza/Sponza.gltf"
+            },
+            "name": "Sponza",
+            "parent": null,
+            "scripts": [],
+            "transform": {
+                "position": [
+                    0.0,
+                    -0.10328865051269531,
+                    0.0
+                ],
+                "rotation": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0
+                ],
+                "scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "id": 2,
+            "mesh": {
+                "path": "Assets/Models/Suzanne/Suzanne.gltf"
+            },
+            "name": "Suzanne",
+            "parent": 0,
+            "scripts": [],
+            "transform": {
+                "position": [
+                    0.18187198042869568,
+                    0.5912699103355408,
+                    -1.5530076026916504
+                ],
+                "rotation": [
+                    -1.4547249520546757e-06,
+                    -0.7069340944290161,
+                    -1.454014636692591e-06,
+                    0.7072794437408447
+                ],
+                "scale": [
+                    0.5999999642372131,
+                    0.6000000238418579,
+                    0.5999999642372131
+                ]
+            }
+        },
+        {
+            "id": 1,
+            "mesh": {
+                "path": "Assets/Models/DamagedHelmet/DamagedHelmet.gltf"
+            },
+            "name": "DamagedHelmet",
+            "parent": 0,
+            "scripts": [],
+            "transform": {
+                "position": [
+                    -6.0585662140510976e-05,
+                    0.5337206125259399,
+                    -0.2165355682373047
+                ],
+                "rotation": [
+                    0.0,
+                    -0.7069340944290161,
+                    0.0,
+                    0.7072794437408447
+                ],
+                "scale": [
+                    0.6079997420310974,
+                    0.6079999804496765,
+                    0.6079997420310974
+                ]
+            }
+        },
+        {
+            "id": 0,
+            "name": "Meshes",
+            "parent": null,
+            "scripts": [],
+            "transform": {
+                "position": [
+                    0.0,
+                    0.0,
+                    -0.04107171297073364
+                ],
+                "rotation": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0
+                ],
+                "scale": [
+                    1.0,
+                    1.0,
+                    1.0
                 ]
             }
         }
     ],
-    "skybox": "Assets/Skyboxes/limpopo_golf_course_4k.hdr"
+    "skybox": "Assets/Skyboxes/Default.hdr"
 }
