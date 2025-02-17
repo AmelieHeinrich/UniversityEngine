@@ -6,8 +6,8 @@
 struct MeshInput
 {
     float4 Position : SV_POSITION;
-    float2 UV : TEXCOORD;
     float3 Normal : NORMAL;
+    float2 UV : TEXCOORD;
     uint MeshletIndex : COLOR0;
 };
 
@@ -28,14 +28,14 @@ struct PushConstants
     int VertexBuffer;
     int IndexBuffer;
     int MeshletBuffer;
+
     int MeshletVertices;
     int MeshletTriangleBuffer;
-    
     int AlbedoTexture;
     int NormalTexture;
+
     int PBRTexture;
     int LinearSampler;
-    
     int ShowMeshlets;
     int Padding;
 
@@ -47,7 +47,7 @@ ConstantBuffer<PushConstants> Constants : register(b0);
 
 struct GBufferOutput
 {
-    float3 Normal : SV_Target0;
+    float4 Normal : SV_Target0;
     float4 Albedo : SV_Target1;
     float2 PBR : SV_Target2;
 };
@@ -65,9 +65,9 @@ float3 GetNormalFromMap(MeshInput Input)
     float2 ST1 = ddx(Input.UV.xy);
     float2 ST2 = ddy(Input.UV.xy);
 
-    float3 T = Q1 * ST2.y - Q2 * ST1.y + 0.0001;
-    float3 B = cross(normal, T) + 0.0001;
-    float3 N = normal + 0.0001;
+    float3 T = Q1 * ST2.y - Q2 * ST1.y + 0.001;
+    float3 B = cross(normal, T) + 0.001;
+    float3 N = normal;
     float3x3 TBN = float3x3(normalize(T), normalize(B), N);
 
     return normalize(mul(tangentNormal, TBN));
@@ -96,7 +96,7 @@ GBufferOutput PSMain(MeshInput input)
 
     GBufferOutput output;
     output.Albedo = Constants.ShowMeshlets ? float4(meshletColor, 1.0) : textureColor;
-    output.Normal = normal;
+    output.Normal = float4(normal, 1.0);
     output.PBR = float2(pbr.b, pbr.r);
     return output;
 }

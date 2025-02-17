@@ -31,6 +31,8 @@ void CameraComponent::Update(glm::vec3 Position, glm::quat Rotation)
     int width, height;
     Application::Get()->GetWindow()->PollSize(width, height);
 
+    this->Position = Position;
+
     // Convert rotation angles from degrees to radians
     const float pitch = glm::radians(Rotation.y); // X-axis (Pitch)
     const float yaw = glm::radians(Rotation.x);   // Y-axis (Yaw)

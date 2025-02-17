@@ -26,19 +26,13 @@ struct CameraMatrices
     column_major float4x4 Projection;
 };
 
-struct ModelMatrices
-{
-    column_major float4x4 Transform;
-};
-
 struct VertexOut
 {
     float4 Position : SV_POSITION;
-    float2 UV : TEXCOORD;
     float3 Normals : NORMAL;
+    float2 UV : TEXCOORD;
     uint MeshletIndex : COLOR0;
 };
-
 
 struct PushConstants
 {
@@ -46,14 +40,14 @@ struct PushConstants
     int VertexBuffer;
     int IndexBuffer;
     int MeshletBuffer;
+
     int MeshletVertices;
     int MeshletTriangleBuffer;
-    
     int AlbedoTexture;
     int NormalTexture;
+
     int PBRTexture;
     int LinearSampler;
-    
     int ShowMeshlets;
     int Padding;
 

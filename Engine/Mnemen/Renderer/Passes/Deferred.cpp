@@ -15,6 +15,8 @@ Deferred::Deferred(RHI::Ref rhi)
 {
     int width, height;
     Application::Get()->GetWindow()->PollSize(width, height);
+    
+    RendererTools::CreateSharedSampler("CubemapSampler", SamplerFilter::Linear, SamplerAddress::Clamp, true);
 
     // BRDF
     {
@@ -59,7 +61,7 @@ Deferred::Deferred(RHI::Ref rhi)
     // Accumulation Pipeline
     {
         Asset::Handle lightShader = AssetManager::Get("Assets/Shaders/Deferred/LightAccumulationCompute.hlsl", AssetType::Shader);
-        auto signature = mRHI->CreateRootSignature({ RootType::PushConstant }, sizeof(int) * 8);
+        auto signature = mRHI->CreateRootSignature({ RootType::PushConstant }, sizeof(int) * 16 + sizeof(glm::mat4));
         mLightPipeline = mRHI->CreateComputePipeline(lightShader->Shader, signature);
     }
 
@@ -88,6 +90,8 @@ void Deferred::Render(const Frame& frame, ::Ref<Scene> scene)
 {
     PROFILE_FUNCTION();
 
+    CameraComponent* mainCamera = scene->GetMainCamera();
+
     auto cameraBuffer = RendererTools::Get("CameraRingBuffer");
     auto sampler = RendererTools::Get("MaterialSampler");
 
@@ -97,6 +101,7 @@ void Deferred::Render(const Frame& frame, ::Ref<Scene> scene)
     auto pbrBuffer = RendererTools::Get("GBufferPBR");
     auto colorBuffer = RendererTools::Get("HDRColorBuffer");
     auto brdf = RendererTools::Get("BRDF");
+    auto cubeSampler = RendererTools::Get("CubemapSampler");
 
     struct PushConstants {
         int Depth;
@@ -108,6 +113,14 @@ void Deferred::Render(const Frame& frame, ::Ref<Scene> scene)
         int Irradiance;
         int Prefilter;
         int BRDF;
+
+        glm::vec3 cameraPosition;
+        int sampler;
+
+        int regularSampler;
+        glm::vec3 Pad;
+
+        glm::mat4 InvViewProj;
     } data = {
         depthBuffer->Descriptor(ViewType::ShaderResource),
         albedoBuffer->Descriptor(ViewType::ShaderResource),
@@ -117,7 +130,15 @@ void Deferred::Render(const Frame& frame, ::Ref<Scene> scene)
         pbrBuffer->Descriptor(ViewType::ShaderResource),
         scene->GetSkybox()->IrradianceMapSRV->GetDescriptor().Index,
         scene->GetSkybox()->PrefilterMapSRV->GetDescriptor().Index,
-        brdf->Descriptor(ViewType::ShaderResource)
+        brdf->Descriptor(ViewType::ShaderResource),
+
+        mainCamera->Position,
+        cubeSampler->Descriptor(),
+
+        sampler->Descriptor(),
+        glm::vec3(0.0),
+
+        glm::inverse(mainCamera->Projection * mainCamera->View)
     };
 
     frame.CommandBuffer->BeginMarker("Light Accumulation");

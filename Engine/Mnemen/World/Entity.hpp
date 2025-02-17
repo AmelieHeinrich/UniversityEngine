@@ -216,6 +216,8 @@ struct CameraComponent
     /// @brief The post process volume of the camera
     Asset::Handle Volume;
 
+    /// @brief The position of the camera
+    glm::vec3 Position = glm::vec3(0.0f);
     /// @brief The view matrix of the camera
     glm::mat4 View = glm::mat4(1.0f);
     /// @brief The projection matrix of the camera

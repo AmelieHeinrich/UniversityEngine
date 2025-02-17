@@ -44,7 +44,7 @@ GBuffer::GBuffer(RHI::Ref rhi)
         desc.Depth = 1;
         desc.Name = "GBuffer - Normals";
         desc.Usage = TextureUsage::RenderTarget | TextureUsage::Storage | TextureUsage::ShaderResource;
-        desc.Format = TextureFormat::RGB11Float;
+        desc.Format = TextureFormat::RGBA16Float;
        
         auto renderTarget = RendererTools::CreateSharedTexture("GBufferNormal", desc);
         renderTarget->AddView(ViewType::RenderTarget);
@@ -91,8 +91,9 @@ GBuffer::GBuffer(RHI::Ref rhi)
         GraphicsPipelineSpecs specs = {};
         specs.Bytecodes[ShaderType::Mesh] = gbufferShaderIn->Shader;
         specs.Bytecodes[ShaderType::Fragment] = gbufferShaderOut->Shader;
-        specs.Formats.push_back(TextureFormat::RGB11Float);
+        specs.Formats.push_back(TextureFormat::RGBA16Float);
         specs.Formats.push_back(TextureFormat::RGBA8);
+        specs.Formats.push_back(TextureFormat::RG8);
         specs.Cull = CullMode::None;
         specs.Fill = FillMode::Solid;
         specs.Depth = DepthOperation::Less;
@@ -120,6 +121,7 @@ void GBuffer::Render(const Frame& frame, ::Ref<Scene> scene)
     auto albedoBuffer = RendererTools::Get("GBufferAlbedo");
     auto pbrBuffer = RendererTools::Get("GBufferPBR");
     auto whiteTexture = RendererTools::Get("WhiteTexture");
+    auto blackTexture = RendererTools::Get("BlackTexture");
 
     CameraComponent* camera = {};
     if (scene) {
@@ -138,8 +140,8 @@ void GBuffer::Render(const Frame& frame, ::Ref<Scene> scene)
     frame.CommandBuffer->Barrier(depthBuffer->Texture, ResourceLayout::DepthWrite);
     frame.CommandBuffer->SetViewport(0, 0, frame.Width, frame.Height);
     frame.CommandBuffer->SetRenderTargets({ normalBuffer->GetView(ViewType::RenderTarget), albedoBuffer->GetView(ViewType::RenderTarget), pbrBuffer->GetView(ViewType::RenderTarget) }, depthBuffer->GetView(ViewType::DepthTarget));
-    frame.CommandBuffer->ClearRenderTarget(albedoBuffer->GetView(ViewType::RenderTarget), 0.0f, 0.0f, 0.0f);
     frame.CommandBuffer->ClearRenderTarget(normalBuffer->GetView(ViewType::RenderTarget), 0.0f, 0.0f, 0.0f);
+    frame.CommandBuffer->ClearRenderTarget(albedoBuffer->GetView(ViewType::RenderTarget), 0.0f, 0.0f, 0.0f);
     frame.CommandBuffer->ClearRenderTarget(pbrBuffer->GetView(ViewType::RenderTarget), 0.0f, 0.0f, 0.0f);
     frame.CommandBuffer->ClearDepth(depthBuffer->GetView(ViewType::DepthTarget));
     frame.CommandBuffer->SetMeshPipeline(mPipeline);
@@ -149,7 +151,7 @@ void GBuffer::Render(const Frame& frame, ::Ref<Scene> scene)
         if (!node) {
             return;
         }
-        glm::mat4 globalTransform = transform * node->Transform;
+        glm::mat4 globalTransform = node->Transform * transform;
         for (MeshPrimitive primitive : node->Primitives) {
             Statistics::Get().InstanceCount++;
             MeshMaterial meshMaterial = model->Materials[primitive.MaterialIndex];
@@ -162,16 +164,16 @@ void GBuffer::Render(const Frame& frame, ::Ref<Scene> scene)
                 if (material->InheritFromModel) {
                     albedoIndex = meshMaterial.Albedo ? meshMaterial.AlbedoView->GetDescriptor().Index : whiteTexture->Descriptor(ViewType::ShaderResource);
                     normalIndex = meshMaterial.Normal ? meshMaterial.NormalView->GetDescriptor().Index : -1;
-                    pbrIndex = meshMaterial.PBR ? meshMaterial.PBRView->GetDescriptor().Index : whiteTexture->Descriptor(ViewType::ShaderResource);
+                    pbrIndex = meshMaterial.PBR ? meshMaterial.PBRView->GetDescriptor().Index : blackTexture->Descriptor(ViewType::ShaderResource);
                 } else {
                     albedoIndex = material->Albedo ? material->Albedo->ShaderView->GetDescriptor().Index : whiteTexture->Descriptor(ViewType::ShaderResource);
                     normalIndex = material->Normal ? material->Normal->ShaderView->GetDescriptor().Index : -1;
-                    pbrIndex = material->PBR ? material->PBR->ShaderView->GetDescriptor().Index : whiteTexture->Descriptor(ViewType::ShaderResource);
+                    pbrIndex = material->PBR ? material->PBR->ShaderView->GetDescriptor().Index : blackTexture->Descriptor(ViewType::ShaderResource);
                 }
             } else {
                 albedoIndex = meshMaterial.Albedo ? meshMaterial.AlbedoView->GetDescriptor().Index : whiteTexture->Descriptor(ViewType::ShaderResource);
                 normalIndex = meshMaterial.Normal ? meshMaterial.NormalView->GetDescriptor().Index : -1;
-                pbrIndex = meshMaterial.PBR ? meshMaterial.PBRView->GetDescriptor().Index : whiteTexture->Descriptor(ViewType::ShaderResource);
+                pbrIndex = meshMaterial.PBR ? meshMaterial.PBRView->GetDescriptor().Index : blackTexture->Descriptor(ViewType::ShaderResource);
             }
 
             struct PushConstants {
@@ -205,8 +207,8 @@ void GBuffer::Render(const Frame& frame, ::Ref<Scene> scene)
                 camera->Volume->Volume.VisualizeMeshlets,
                 0,
                 
-                transform,
-                glm::inverse(transform)
+                globalTransform,
+                glm::inverse(globalTransform)
             };
             frame.CommandBuffer->GraphicsPushConstants(&data, sizeof(data), 0);
             frame.CommandBuffer->DispatchMesh(primitive.MeshletCount, primitive.IndexCount / 3);

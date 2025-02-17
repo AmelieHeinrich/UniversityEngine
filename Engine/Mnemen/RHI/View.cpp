@@ -58,6 +58,7 @@ View::View(Device::Ref device, DescriptorHeaps heaps, ::Ref<Resource> resource, 
             desc.Format = format == TextureFormat::Unknown ? DXGI_FORMAT(texture.Format) : DXGI_FORMAT(format);
             desc.Texture2DArray.ArraySize = 6;
             desc.Texture2DArray.FirstArraySlice = 0;
+            desc.Texture2DArray.MipSlice = mip == VIEW_ALL_MIPS ? 0 : mip;
         } else {
             desc.Buffer.FirstElement = 0;
             desc.Buffer.NumElements = resource->GetSize();

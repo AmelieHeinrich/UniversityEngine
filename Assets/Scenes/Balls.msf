@@ -1,0 +1,32 @@
+{
+    "entities": [
+        {
+            "id": 0,
+            "mesh": {
+                "path": "Assets/Models/Balls/MetalRoughSpheres.gltf"
+            },
+            "name": "Balls",
+            "parent": null,
+            "scripts": [],
+            "transform": {
+                "position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "rotation": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0
+                ],
+                "scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        }
+    ],
+    "skybox": "Assets/Skyboxes/limpopo_golf_course_4k.hdr"
+}
