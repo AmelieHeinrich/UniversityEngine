@@ -83,6 +83,29 @@ Asset::Handle AssetManager::Get(const String& path, AssetType type)
             asset->Mesh.Load(sData.mRHI, path);
             break;
         }
+        case AssetType::EnvironmentMap: {
+            if (!AssetCacher::IsCached(path)) {
+                AssetCacher::CacheAsset(path);
+            }
+
+            AssetFile file = AssetCacher::ReadAsset(path);
+                
+            TextureDesc desc;
+            desc.Width = file.Header.TextureHeader.Width;
+            desc.Height = file.Header.TextureHeader.Height;
+            desc.Levels = file.Header.TextureHeader.Levels;
+            desc.Depth = 1;
+            desc.Name = path;
+            desc.Format = TextureFormat::BC6H;
+            desc.Usage = TextureUsage::ShaderResource;
+
+            asset->Texture = sData.mRHI->CreateTexture(desc);
+            asset->Texture->Tag(ResourceTag::RenderPassResource);
+            asset->ShaderView = sData.mRHI->CreateView(asset->Texture, ViewType::ShaderResource);
+            
+            Uploader::EnqueueTextureUpload(file.Bytes, asset->Texture);
+            break;
+        }
         case AssetType::Texture: {
             LOG_DEBUG("Loading texture {0}", path);
         

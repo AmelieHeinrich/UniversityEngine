@@ -17,7 +17,7 @@ struct Image
     int Width;        ///< The width of the image in pixels.
     int Height;       ///< The height of the image in pixels.
     int Levels;       ///< Number of mip levels in the image.
-    bool Compressed = false; ///< Indicates whether the image is compressed.
+    bool HDR = false;
     Vector<UInt8> Pixels; ///< The raw pixel data of the image.
 
     /// @brief Loads an image from a file.

@@ -43,26 +43,8 @@ void SkyboxCooker::GenerateSkybox(Ref<Skybox> skybox)
 {
     Timer timer;
 
-    Image image;
-    image.LoadHDR(skybox->Path);
-
-    Texture::Ref hdri = nullptr;
-
-    // Create HDRI
-    {
-        TextureDesc desc;
-        desc.Width = image.Width;
-        desc.Height = image.Height;
-        desc.Depth = 1;
-        desc.Levels = 1;
-        desc.Format = TextureFormat::RGBA16Unorm;
-        desc.Name = skybox->Path + " HDRI";
-        desc.Usage = TextureUsage::ShaderResource | TextureUsage::Storage;
-
-        hdri = sData.RHI->CreateTexture(desc);
-        Uploader::EnqueueTextureUpload(image, hdri);
-        Uploader::Flush();
-    }
+    Asset::Handle hdrImage = AssetManager::Get(skybox->Path, AssetType::EnvironmentMap);
+    Uploader::Flush();
 
     // Create env map
     {
@@ -117,7 +99,6 @@ void SkyboxCooker::GenerateSkybox(Ref<Skybox> skybox)
     skybox->IrradianceMapSRV = sData.RHI->CreateView(skybox->IrradianceMap, ViewType::ShaderResource, ViewDimension::TextureCube);
     skybox->PrefilterMapSRV = sData.RHI->CreateView(skybox->PrefilterMap, ViewType::ShaderResource, ViewDimension::TextureCube);
 
-    View::Ref hdrSRV = sData.RHI->CreateView(hdri, ViewType::ShaderResource);
     View::Ref envUAV = sData.RHI->CreateView(skybox->EnvironmentMap, ViewType::Storage, ViewDimension::TextureCube); 
     View::Ref irrUAV = sData.RHI->CreateView(skybox->IrradianceMap, ViewType::Storage, ViewDimension::TextureCube);
     Vector<View::Ref> prefilterUAVs;
@@ -133,7 +114,7 @@ void SkyboxCooker::GenerateSkybox(Ref<Skybox> skybox)
             int sampler;
             int pad;
         } data = {
-            hdrSRV->GetDescriptor().Index,
+            hdrImage->ShaderView->GetDescriptor().Index,
             envUAV->GetDescriptor().Index,
             sData.Sampler->BindlesssSampler(),
             0
@@ -193,6 +174,8 @@ void SkyboxCooker::GenerateSkybox(Ref<Skybox> skybox)
     cmdBuffer->End();
     sData.RHI->Submit({ cmdBuffer });
     sData.RHI->Wait();
+
+    AssetManager::GiveBack(hdrImage->Path);
 
     LOG_INFO("Skybox took {0} seconds to cook!", TO_SECONDS(timer.GetElapsed()));
 }

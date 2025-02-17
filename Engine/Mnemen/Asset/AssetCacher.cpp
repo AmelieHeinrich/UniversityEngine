@@ -230,7 +230,7 @@ AssetType AssetCacher::GetAssetTypeFromPath(const String& normalPath)
 {
     String extension = File::GetFileExtension(normalPath);
 
-    if (extension == ".png" || extension == ".jpg" || extension == ".jpeg")
+    if (extension == ".png" || extension == ".jpg" || extension == ".jpeg" || extension == ".hdr")
         return AssetType::Texture;
     if (extension == ".hlsl")
         return AssetType::Shader;
@@ -240,6 +240,7 @@ AssetType AssetCacher::GetAssetTypeFromPath(const String& normalPath)
 
 void AssetCacher::CacheAsset(const String& normalPath)
 {
+    String extension = File::GetFileExtension(normalPath);
     CompressionFormat format = Application::Get()->GetProject()->Settings.Format;
 
     AssetType type = GetAssetTypeFromPath(normalPath);
@@ -270,16 +271,19 @@ void AssetCacher::CacheAsset(const String& normalPath)
 
             int imageWidth = image.width();
             int imageHeight = image.height();
-            if (imageWidth != imageHeight) {
+            if (imageWidth != imageHeight && extension != ".hdr") {
                 LOG_WARN("Image {0} cannot be compressed due to dimensions that are not squares of 2.", normalPath);
                 return;
             }
             int mipCount = image.countMipmaps();
             int finalMipCount = glm::max(1, mipCount - 2); // (Remove mip 2x2 and 1x1)
+            if (extension == ".hdr")
+                finalMipCount = 1;
 
             file.Header.TextureHeader.Width = imageWidth;
             file.Header.TextureHeader.Height = imageHeight;
             file.Header.TextureHeader.Levels = finalMipCount;
+
             LOG_INFO("Caching texture {0} ({1}, {2}, {3})", normalPath, imageWidth, imageHeight, finalMipCount);
 
             TextureWriter writer(&file.Bytes);
@@ -291,6 +295,8 @@ void AssetCacher::CacheAsset(const String& normalPath)
 
             nvtt::CompressionOptions compressionOptions;
             compressionOptions.setFormat(format == CompressionFormat::BC7 ? nvtt::Format::Format_BC7 : nvtt::Format::Format_BC3);
+            if (extension == ".hdr")
+                compressionOptions.setFormat(nvtt::Format::Format_BC6U);
 
             for (int i = 0; i < finalMipCount; i++) {
                 if (!sData.mContext.compress(image, 0, i, compressionOptions, outputOptions)) {

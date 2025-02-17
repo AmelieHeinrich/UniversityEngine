@@ -25,6 +25,8 @@ void Image::Load(const String& path)
 
 void Image::LoadHDR(const String& path)
 {
+    HDR = true;
+
     int channels = 0;
     stbi_us* buffer = stbi_load_16(path.c_str(), &Width, &Height, &channels, STBI_rgb_alpha);
     if (!buffer) {

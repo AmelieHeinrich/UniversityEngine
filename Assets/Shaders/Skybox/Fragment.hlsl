@@ -1,7 +1,7 @@
-/**
- * @Author: Amélie Heinrich
- * @Create Time: 2024-04-01 00:40:47
- */
+//
+// > Notice: Amélie Heinrich @ 2025
+// > Create Time: 2025-02-17 18:00:17
+//
 
 struct FragmentIn
 {
@@ -25,7 +25,6 @@ float4 PSMain(FragmentIn input) : SV_Target
 
     float3 env_vector = normalize(input.LocalPosition);
     float4 color = EnvironmentMap.SampleLevel(CubeSampler, env_vector, 0);
-    color.rgb = pow(color.rgb, 2.2);
 
     return color;
 }
