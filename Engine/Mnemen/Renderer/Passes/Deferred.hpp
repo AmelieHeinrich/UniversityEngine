@@ -39,6 +39,7 @@ public:
     void Render(const Frame& frame, ::Ref<Scene> scene) override;
 
 private:
+    ComputePipeline::Ref mBRDFPipeline; ///< A reference to the BRDF generation pipeline.
     ComputePipeline::Ref mLightPipeline; ///< A reference to the light pipeline used for calculating screen space lighting.
 };
 

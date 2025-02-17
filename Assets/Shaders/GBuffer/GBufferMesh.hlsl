@@ -48,13 +48,14 @@ struct PushConstants
     int MeshletBuffer;
     int MeshletVertices;
     int MeshletTriangleBuffer;
-
+    
     int AlbedoTexture;
     int NormalTexture;
+    int PBRTexture;
     int LinearSampler;
     
     int ShowMeshlets;
-    int2 Padding;
+    int Padding;
 
     column_major float4x4 Transform;
     column_major float4x4 InvTransform;

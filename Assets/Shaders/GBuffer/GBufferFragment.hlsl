@@ -33,10 +33,11 @@ struct PushConstants
     
     int AlbedoTexture;
     int NormalTexture;
+    int PBRTexture;
     int LinearSampler;
     
     int ShowMeshlets;
-    int2 Padding;
+    int Padding;
 
     column_major float4x4 Transform;
     column_major float4x4 InvTransform;
@@ -48,6 +49,7 @@ struct GBufferOutput
 {
     float3 Normal : SV_Target0;
     float4 Albedo : SV_Target1;
+    float2 PBR : SV_Target2;
 };
 
 float3 GetNormalFromMap(MeshInput Input)
@@ -74,6 +76,7 @@ float3 GetNormalFromMap(MeshInput Input)
 GBufferOutput PSMain(MeshInput input)
 {
     Texture2D<float4> albedoTexture = ResourceDescriptorHeap[Constants.AlbedoTexture];
+    Texture2D<float4> pbrTexture = ResourceDescriptorHeap[Constants.PBRTexture];
     SamplerState linearSampler = SamplerDescriptorHeap[Constants.LinearSampler];
 
     uint meshletHash = hash(input.MeshletIndex);
@@ -89,8 +92,11 @@ GBufferOutput PSMain(MeshInput input)
         normal = GetNormalFromMap(input);
     }
 
+    float3 pbr = pbrTexture.Sample(linearSampler, input.UV).rgb;
+
     GBufferOutput output;
     output.Albedo = Constants.ShowMeshlets ? float4(meshletColor, 1.0) : textureColor;
     output.Normal = normal;
+    output.PBR = float2(pbr.b, pbr.r);
     return output;
 }

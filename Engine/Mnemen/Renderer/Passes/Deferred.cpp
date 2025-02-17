@@ -16,7 +16,21 @@ Deferred::Deferred(RHI::Ref rhi)
     int width, height;
     Application::Get()->GetWindow()->PollSize(width, height);
 
-    Asset::Handle lightShader = AssetManager::Get("Assets/Shaders/Deferred/LightAccumulationCompute.hlsl", AssetType::Shader);
+    // BRDF
+    {
+        TextureDesc desc = {};
+        desc.Width = 512;
+        desc.Height = 512;
+        desc.Levels = 1;
+        desc.Depth = 1;
+        desc.Name = "BRDF Texture";
+        desc.Usage = TextureUsage::ShaderResource | TextureUsage::Storage;
+        desc.Format = TextureFormat::RG16Float;
+
+        auto brdf = RendererTools::CreateSharedTexture("BRDF", desc);
+        brdf->AddView(ViewType::ShaderResource);
+        brdf->AddView(ViewType::Storage);
+    }
 
     // Color buffer
     {
@@ -35,10 +49,38 @@ Deferred::Deferred(RHI::Ref rhi)
         renderTarget->AddView(ViewType::Storage);
     }
 
+    // BRDF pipeline
+    {
+        Asset::Handle brdfShader = AssetManager::Get("Assets/Shaders/BRDF/Compute.hlsl", AssetType::Shader);
+        auto signature = mRHI->CreateRootSignature({ RootType::PushConstant }, sizeof(int) * 4);
+        mBRDFPipeline = mRHI->CreateComputePipeline(brdfShader->Shader, signature);
+    }
+
     // Accumulation Pipeline
     {
+        Asset::Handle lightShader = AssetManager::Get("Assets/Shaders/Deferred/LightAccumulationCompute.hlsl", AssetType::Shader);
         auto signature = mRHI->CreateRootSignature({ RootType::PushConstant }, sizeof(int) * 4);
         mLightPipeline = mRHI->CreateComputePipeline(lightShader->Shader, signature);
+    }
+
+    // Compute BRDF and stuff!!
+    {
+        struct Data {
+            int lut;
+            glm::vec3 pad;
+        } data = {
+            RendererTools::Get("BRDF")->Descriptor(ViewType::Storage),
+            glm::vec3(0)
+        };
+
+        auto cmdBuffer = mRHI->CreateCommandBuffer(true);
+        cmdBuffer->Begin();
+        cmdBuffer->SetComputePipeline(mBRDFPipeline);
+        cmdBuffer->ComputePushConstants(&data, sizeof(data), 0);
+        cmdBuffer->Dispatch(512 / 32, 512 / 32, 1);
+        cmdBuffer->End();
+        mRHI->Submit({ cmdBuffer });
+        mRHI->Wait();
     }
 }
 
