@@ -43,6 +43,9 @@ struct MeshMaterial
     Ref<Asset> Normal; ///< Pointer to the normal texture asset.
     View::Ref NormalView; ///< View pointer to the normal texture.
 
+    Ref<Asset> PBR; ///< Pointer to the PBR texture asset.
+    View::Ref PBRView; ///< View pointer to the PBR texture.
+
     bool AlphaTested; ///< Indicates if the material uses alpha testing.
     float AlphaCutoff; ///< Cutoff threshold for alpha testing.
 

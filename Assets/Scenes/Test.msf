@@ -3,63 +3,32 @@
         {
             "id": 3,
             "mesh": {
-                "path": "Assets/Models/Primitives/Plane.gltf"
+                "path": "Assets/Models/SciFiHelmet/SciFiHelmet.gltf"
             },
-            "name": "Plane",
+            "name": "SciFiHelmet",
             "parent": null,
             "scripts": [],
             "transform": {
                 "position": [
                     0.0,
-                    -0.5999812483787537,
-                    0.0
+                    0.800000011920929,
+                    -3.7724406719207764
                 ],
                 "rotation": [
-                    0.0,
-                    0.0,
-                    0.0,
+                    6.174309419293422e-08,
+                    -0.7069846987724304,
+                    6.172177791086142e-08,
+                    0.7072288393974304
+                ],
+                "scale": [
+                    1.0,
+                    1.0,
                     1.0
-                ],
-                "scale": [
-                    9.790108680725098,
-                    9.790108680725098,
-                    9.790108680725098
                 ]
             }
         },
         {
-            "camera": {
-                "far": 200.0,
-                "fov": 90.0,
-                "near": 0.10000000149011612,
-                "primary": true,
-                "volumePath": "Assets/Volumes/DefaultVolume.mfx"
-            },
             "id": 2,
-            "name": "Camera",
-            "parent": null,
-            "scripts": [],
-            "transform": {
-                "position": [
-                    -6.063776969909668,
-                    1.9612423181533813,
-                    -2.33939528465271
-                ],
-                "rotation": [
-                    6.740017877149285e-09,
-                    0.6750994920730591,
-                    -7.365147158822083e-09,
-                    0.7377266883850098
-                ],
-                "scale": [
-                    0.9999999403953552,
-                    1.0000001192092896,
-                    1.0000219345092773
-                ]
-            }
-        },
-        {
-            "id": 1,
             "material": {
                 "albedo": "Assets/Models/DamagedHelmet/Default_albedo.jpg",
                 "inherit": true,
@@ -91,32 +60,63 @@
             }
         },
         {
+            "camera": {
+                "far": 200.0,
+                "fov": 90.0,
+                "near": 0.10000000149011612,
+                "primary": true,
+                "volumePath": "Assets/Volumes/DefaultVolume.mfx"
+            },
+            "id": 1,
+            "name": "Camera",
+            "parent": null,
+            "scripts": [],
+            "transform": {
+                "position": [
+                    -6.063776969909668,
+                    1.9612423181533813,
+                    -2.33939528465271
+                ],
+                "rotation": [
+                    6.740017877149285e-09,
+                    0.6750994920730591,
+                    -7.365147158822083e-09,
+                    0.7377266883850098
+                ],
+                "scale": [
+                    0.9999999403953552,
+                    1.0000001192092896,
+                    1.0000219345092773
+                ]
+            }
+        },
+        {
             "id": 0,
             "mesh": {
-                "path": "Assets/Models/SciFiHelmet/SciFiHelmet.gltf"
+                "path": "Assets/Models/Primitives/Plane.gltf"
             },
-            "name": "SciFiHelmet",
+            "name": "Plane",
             "parent": null,
             "scripts": [],
             "transform": {
                 "position": [
                     0.0,
-                    0.800000011920929,
-                    -3.7724406719207764
+                    -0.5999812483787537,
+                    0.0
                 ],
                 "rotation": [
-                    6.174309419293422e-08,
-                    -0.7069846987724304,
-                    6.172177791086142e-08,
-                    0.7072288393974304
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0
                 ],
                 "scale": [
-                    1.0,
-                    1.0,
-                    1.0
+                    9.790108680725098,
+                    9.790108680725098,
+                    9.790108680725098
                 ]
             }
         }
     ],
-    "skybox": "Assets/Skyboxes/limpopo_golf_course_4k.hdr"
+    "skybox": "Assets/Skyboxes/Default.hdr"
 }

@@ -220,6 +220,17 @@ void Mesh::ProcessPrimitive(aiMesh *mesh, MeshNode* node, const aiScene *scene, 
             meshMaterial.NormalView = mRHI->CreateView(meshMaterial.Normal->Texture, ViewType::ShaderResource);
         }
     }
+    // PBR
+    {
+        aiString str;
+        material->GetTexture(aiTextureType_UNKNOWN, 0, &str);
+        if (str.length) {
+            String texturePath = Directory + '/' + str.C_Str();
+
+            meshMaterial.PBR = AssetManager::Get(texturePath, AssetType::Texture);
+            meshMaterial.PBRView = mRHI->CreateView(meshMaterial.PBR->Texture, ViewType::ShaderResource);
+        }
+    }
 
     Uploader::EnqueueBufferUpload(vertices.data(), out.VertexBuffer->GetSize(), out.VertexBuffer);
     Uploader::EnqueueBufferUpload(indices.data(), out.IndexBuffer->GetSize(), out.IndexBuffer);
