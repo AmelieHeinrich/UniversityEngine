@@ -102,6 +102,7 @@ void Deferred::Render(const Frame& frame, ::Ref<Scene> scene)
     auto colorBuffer = RendererTools::Get("HDRColorBuffer");
     auto brdf = RendererTools::Get("BRDF");
     auto cubeSampler = RendererTools::Get("CubemapSampler");
+    auto lightBuffer = RendererTools::Get("LightBuffer");
 
     struct PushConstants {
         int Depth;
@@ -118,7 +119,8 @@ void Deferred::Render(const Frame& frame, ::Ref<Scene> scene)
         int sampler;
 
         int regularSampler;
-        glm::vec3 Pad;
+        int lightBuffer;
+        glm::vec2 Pad;
 
         glm::mat4 InvViewProj;
     } data = {
@@ -136,7 +138,8 @@ void Deferred::Render(const Frame& frame, ::Ref<Scene> scene)
         cubeSampler->Descriptor(),
 
         sampler->Descriptor(),
-        glm::vec3(0.0),
+        lightBuffer->Descriptor(ViewType::None, frame.FrameIndex),
+        glm::vec2(0.0),
 
         glm::inverse(mainCamera->Projection * mainCamera->View)
     };

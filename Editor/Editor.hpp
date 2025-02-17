@@ -58,6 +58,7 @@ private:
     bool mMarkForDeletion = false;
     bool mMarkForClose = false;
     bool mMarkForStop = false;
+    bool mMarkForMeshDeletion = false;
     String mModelChange = "";
     String mSkyboxChange = "";
     UnorderedMap<entt::entity, String> mEntityNameBuffer;

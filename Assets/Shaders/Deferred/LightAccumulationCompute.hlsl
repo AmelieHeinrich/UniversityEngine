@@ -45,6 +45,32 @@ float4 GetPositionFromDepth(float2 uv, float depth)
     return viewSpacePosition;
 }
 
+float3 CalcPointLight(float3 world, PointLight light, float3 V, float3 N, float3 F0, float roughness, float metallic, float3 albedo)
+{
+    float3 lightPos = light.Position;
+    float3 lightColor = light.Color;
+
+    float distance = length(lightPos - world) + Epsilon;
+    float attenuation = 1.0 / (distance * distance);
+    if (attenuation <= 0.0)
+        return 0.0;
+
+    float3 L = normalize(lightPos - world);
+    float3 H = normalize(V + L);
+    float3 radiance = lightColor * attenuation;
+    float NDF = DistributionGGX(N, H, roughness);
+    float G = GeometrySmith(N, V, L, roughness);
+    float3 F = FresnelSchlick(max(dot(H, V), Epsilon), F0);
+    float3 numerator = F * G * NDF;
+    float denominator = 4 * max(dot(N, V), Epsilon) * max(dot(N, L), Epsilon) + Epsilon;
+    float3 specular = numerator / denominator;
+    float3 kS = F;
+    float3 kD = float3(1.0, 1.0, 1.0) - kS;
+    kD *= 1.0 - metallic;
+    float NdotL = max(dot(N, L), Epsilon);
+    return (kD * albedo / PI + specular) * radiance * NdotL * (light.Radius * light.Radius);
+}
+
 [numthreads(8, 8, 1)]
 void CSMain(uint3 ThreadID : SV_DispatchThreadID)
 {
@@ -92,7 +118,11 @@ void CSMain(uint3 ThreadID : SV_DispatchThreadID)
 
     // Direct lighting calculation
     float3 directLighting = 0.0;
-    {}
+    {
+        for (int i = 0; i < lightData.PointLightCount; i++) {
+            directLighting += CalcPointLight(position.xyz, pointLights[i], V, N, F0, roughness, metallic, color.rgb);
+        }
+    }
 
     // Indirect lighting calculation
     float3 indirectLighting = 0.0;
@@ -114,6 +144,6 @@ void CSMain(uint3 ThreadID : SV_DispatchThreadID)
     }
 
     //
-    float3 final = directLighting + (indirectLighting * 0.1);
+    float3 final = directLighting + (indirectLighting * 0.4);
     output[ThreadID.xy] = float4(final, 1.0);
 }

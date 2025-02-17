@@ -121,7 +121,6 @@ void Application::Run()
             PROFILE_SCOPE("Systems Update");
             
             mWindow->Update();
-            AssetManager::Update();
             if (mScenePlaying && mScene) {
                 AISystem::Update(mScene);
                 AudioSystem::Update(mScene);
@@ -142,7 +141,13 @@ void Application::Run()
             PROFILE_SCOPE("CPU Render");
             OnPrivateRender();
         }
-        Input::PostUpdate();
+
+        // Post Update
+        {
+            PostPresent();
+            AssetManager::Update();
+            Input::PostUpdate();
+        }
     }
     mRHI->Wait();
     AssetManager::Clean();
@@ -185,5 +190,4 @@ void Application::OnPrivateRender()
     // Profiler::ReadbackGPUResults();
 
     mRHI->Present(false);
-    PostPresent();
 }

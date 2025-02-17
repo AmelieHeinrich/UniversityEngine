@@ -639,8 +639,7 @@ void Editor::EntityEditor()
                 ImGui::TreePop();
 
                 if (shouldDelete) {
-                    mesh.Free();
-                    mSelectedEntity.RemoveComponent<MeshComponent>();
+                    mMarkForMeshDeletion = true;
                 }
             }
         }

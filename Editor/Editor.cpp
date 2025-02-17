@@ -58,6 +58,9 @@ void Editor::OnUpdate(float dt)
 
 void Editor::PostPresent()
 {
+    // This is beautiful shitty spaghetti code
+    bool shouldWait = false;
+
     // Change the model if needed
     if (!mModelChange.empty()) {
         if (mSelectedEntity) {
@@ -65,20 +68,36 @@ void Editor::PostPresent()
             mesh.Init(mModelChange);
         }
         mModelChange = "";
+        shouldWait = true;
     }
+
     // Delete the entity if needed
     if (mMarkForDeletion) {
         mScene->RemoveEntity(mSelectedEntity);
         mSelectedEntity = nullptr;
         mMarkForDeletion = false;
+        shouldWait = true;
     }
+    // Reload the scene if needed
     if (mMarkForStop) {
         mSelectedEntity = {};
         String pathCopy = mCurrentScenePath;
         ReloadScene(pathCopy);
         mMarkForStop = false;
+        shouldWait = true;
     }
-    // Purge unused assets every frame
+    // Delete the mesh component if needed
+    if (mMarkForMeshDeletion) {
+        auto& mesh = mSelectedEntity.GetComponent<MeshComponent>();
+        mesh.Free();
+        mSelectedEntity.RemoveComponent<MeshComponent>();
+        mMarkForMeshDeletion = false;
+        shouldWait = true;
+    }
+
+    if (shouldWait) {
+        mRHI->Wait();
+    }
     AssetManager::Purge();
 
     // New scene if needed
@@ -86,11 +105,11 @@ void Editor::PostPresent()
         NewScene();
         mMarkForClose = false;
     }
+    // Change skybox if needed
     if (!mSkyboxChange.empty()) {
         mScene->CookSkybox(mSkyboxChange);
         mSkyboxChange = "";
     }
-    // Upload after new scene
     Uploader::Flush();
 }
 
