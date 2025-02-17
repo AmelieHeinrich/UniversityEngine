@@ -19,6 +19,8 @@
 #include <Core/Logger.hpp>
 #include <Core/Profiler.hpp>
 
+#include <World/LightManager.hpp>
+
 #include <imgui.h>
 #include <FontAwesome/FontAwesome.hpp>
 
@@ -26,6 +28,7 @@ Renderer::Renderer(RHI::Ref rhi)
 {
     RendererTools::Init(rhi);
     SkyboxCooker::Init(rhi);
+    LightManager::Init(rhi);
 
     mPasses = {
         MakeRef<GBuffer>(rhi),
@@ -49,6 +52,7 @@ Renderer::~Renderer()
 void Renderer::Render(const Frame& frame, ::Ref<Scene> scene)
 {
     PROFILE_FUNCTION();
+    LightManager::Update(frame, scene);
     for (auto& pass : mPasses) {
         pass->Render(frame, scene);
     }

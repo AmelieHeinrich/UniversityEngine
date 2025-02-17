@@ -13,6 +13,7 @@
 #include "Mnemen/Asset/Mesh.hpp"
 #include "Mnemen/Asset/Shader.hpp"
 
+#include "Mnemen/Audio/AudioFile.hpp"
 #include "Mnemen/Audio/AudioSystem.hpp"
 
 #include "Mnemen/Core/Application.hpp"
@@ -21,6 +22,7 @@
 #include "Mnemen/Core/File.hpp"
 #include "Mnemen/Core/Logger.hpp"
 #include "Mnemen/Core/Profiler.hpp"
+#include "Mnemen/Core/Project.hpp"
 #include "Mnemen/Core/Random.hpp"
 #include "Mnemen/Core/Timer.hpp"
 #include "Mnemen/Core/UTF.hpp"
@@ -30,9 +32,12 @@
 
 #include "Mnemen/Physics/PhysicsSystem.hpp"
 
+#include "Mnemen/Renderer/PostProcessVolume.hpp"
 #include "Mnemen/Renderer/Renderer.hpp"
 #include "Mnemen/Renderer/RendererTools.hpp"
 #include "Mnemen/Renderer/RenderPass.hpp"
+#include "Mnemen/Renderer/Skybox.hpp"
+#include "Mnemen/Renderer/SkyboxCooker.hpp"
 
 #include "Mnemen/RHI/AccelerationStructure.hpp"
 #include "Mnemen/RHI/BLAS.hpp"
@@ -58,13 +63,18 @@
 #include "Mnemen/RHI/View.hpp"
 
 #include "Mnemen/Script/Script.hpp"
+#include "Mnemen/Script/ScriptBinding.hpp"
 #include "Mnemen/Script/ScriptInstance.hpp"
 #include "Mnemen/Script/ScriptSystem.hpp"
+#include "Mnemen/Script/ScriptWrapper.hpp"
 
+#include "Mnemen/Utility/Dialog.hpp"
 #include "Mnemen/Utility/Math.hpp"
 #include "Mnemen/Utility/PointCloud.hpp"
+#include "Mnemen/Utility/String.hpp"
 #include "Mnemen/Utility/UUID.hpp"
 
 #include "Mnemen/World/Entity.hpp"
+#include "Mnemen/World/LightManager.hpp"
 #include "Mnemen/World/Scene.hpp"
 #include "Mnemen/World/SceneSerializer.hpp"

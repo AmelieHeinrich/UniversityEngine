@@ -105,7 +105,7 @@ void SkyboxForward::Render(const Frame& frame, ::Ref<Scene> scene)
     frame.CommandBuffer->SetViewport(0, 0, frame.Width, frame.Height);
     frame.CommandBuffer->SetTopology(Topology::TriangleList);
     frame.CommandBuffer->Barrier(colorBuffer->Texture, ResourceLayout::ColorWrite);
-    frame.CommandBuffer->Barrier(depthBuffer->Texture, ResourceLayout::DepthRead);
+    frame.CommandBuffer->Barrier(depthBuffer->Texture, ResourceLayout::DepthWrite);
     frame.CommandBuffer->SetRenderTargets({ colorBuffer->GetView(ViewType::RenderTarget) }, depthBuffer->GetView(ViewType::DepthTarget));
     frame.CommandBuffer->GraphicsPushConstants(&data, sizeof(data), 0);
     frame.CommandBuffer->SetGraphicsPipeline(mPipeline);

@@ -116,8 +116,9 @@ public:
     /// 
     /// @param name The name of the ring buffer resource.
     /// @param size The size of the ring buffer in bytes.
+    /// @param stride The stride of the ring buffer in bytes.
     /// @return A reference to the created render pass resource.
-    static Ref<RenderPassResource> CreateSharedRingBuffer(const String& name, UInt64 size);
+    static Ref<RenderPassResource> CreateSharedRingBuffer(const String& name, UInt64 size, UInt64 stride = 0);
 
     /// @brief Creates a shared read-write buffer resource for use in a render pass.
     /// 

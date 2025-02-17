@@ -341,8 +341,8 @@ struct AudioSourceComponent
 
 struct DirectionalLightComponent
 {
+    glm::vec3 Direction;
     float Strength;
-    glm::vec3 Pad;
 
     glm::vec3 Color;
     bool CastShadows;
@@ -352,6 +352,8 @@ struct PointLightComponent
 {
     glm::vec3 Color;
     float Radius;
+    glm::vec3 Position;
+    float Pad;
 };
 
 struct SpotLightComponent
@@ -363,6 +365,9 @@ struct SpotLightComponent
 
     glm::vec3 Color;
     int Pad;
+    
+    glm::vec3 Direction;
+    int pad1;
 
     glm::mat4 LightView;
     glm::mat4 LightProj;

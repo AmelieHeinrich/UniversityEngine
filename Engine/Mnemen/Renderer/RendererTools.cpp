@@ -48,7 +48,14 @@ int RenderPassResource::Descriptor(ViewType type, int frameIndex)
             break;
         }
         case RenderPassResourceType::SharedRingBuffer: {
-            return RBuffer[frameIndex]->CBV();
+            switch (type) {
+                case ViewType::ShaderResource: {
+                    return RBuffer[frameIndex]->SRV();
+                }
+                case ViewType::None: {
+                    return RBuffer[frameIndex]->CBV();;
+                }
+            }
         }
     }
     return -1;
@@ -101,14 +108,16 @@ Ref<RenderPassResource> RendererTools::CreateSharedTexture(const String& name, T
     return sData.Resources[name];
 }
 
-Ref<RenderPassResource> RendererTools::CreateSharedRingBuffer(const String& name, UInt64 size)
+Ref<RenderPassResource> RendererTools::CreateSharedRingBuffer(const String& name, UInt64 size, UInt64 stride)
 {
     Ref<RenderPassResource> resource = MakeRef<RenderPassResource>();
     resource->Type = RenderPassResourceType::SharedRingBuffer;
     resource->ParentRHI = sData.RHI;
     for (int i = 0; i < FRAMES_IN_FLIGHT; i++) {
-        resource->RBuffer[i] = sData.RHI->CreateBuffer(size, 0, BufferType::Constant, name + " " + std::to_string(i));
+        resource->RBuffer[i] = sData.RHI->CreateBuffer(size, stride, BufferType::Constant, name + " " + std::to_string(i));
         resource->RBuffer[i]->BuildCBV();
+        if (stride > 0)
+            resource->RBuffer[i]->BuildSRV();
         resource->RBuffer[i]->Tag(ResourceTag::RenderPassIO);
     }
     sData.Resources[name] = resource;

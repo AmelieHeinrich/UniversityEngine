@@ -4,7 +4,8 @@
 //
 
 #include "Assets/Shaders/Common/ShaderUtils.hlsl"
-#include "Assets/Shaders/Common/Math.hlsl"
+#include "Assets/Shaders/Common/PBR.hlsl"
+#include "Assets/Shaders/Common/Light.hlsl"
 
 struct PushConstants
 {
@@ -22,7 +23,8 @@ struct PushConstants
     int CubeSampler;
 
     int RegularSampler;
-    int3 Pad;
+    int LightBuffer;
+    int2 Pad;
 
     column_major float4x4 InverseViewProj;
 };
@@ -43,61 +45,16 @@ float4 GetPositionFromDepth(float2 uv, float depth)
     return viewSpacePosition;
 }
 
-float DistributionGGX(float3 N, float3 H, float roughness)
-{
-	float a = roughness * roughness;
-	float a2 = a * a;
-	float NdotH = max(dot(N, H), 0.0);
-	float NdotH2 = NdotH * NdotH;
-
-	float nom = a2;
-	float denom = (NdotH2 * (a2 - 1.0) + 1.0);
-	denom = PI * denom * denom;
-
-	return nom / max(denom, 0.0000001);
-}
-
-float GeometrySchlickGGX(float NdotV, float roughness)
-{
-	float r = (roughness + 1.0);
-	float k = (r * r) / 8.0;
-
-	float nom = NdotV;
-	float denom = NdotV * (1.0 - k) + k;
-
-	return nom / denom;
-}
-
-float GeometrySmith(float3 N, float3 V, float3 L, float roughness)
-{
-	float NdotV = max(dot(N, V), 0.0);
-	float NdotL = max(dot(N, L), 0.0);
-	float ggx2 = GeometrySchlickGGX(NdotV, roughness);
-	float ggx1 = GeometrySchlickGGX(NdotL, roughness);
-
-	return ggx1 * ggx2;
-}
-
-float3 FresnelSchlick(float cosTheta, float3 F0)
-{
-	return F0 + (1.0 - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
-}
-
-float3 FresnelSchlickRoughness(float cosTheta, float3 F0, float roughness)
-{
-	return F0 + (max(float3(1.0 - roughness, 1.0 - roughness, 1.0 - roughness), F0) - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
-}
-
 [numthreads(8, 8, 1)]
 void CSMain(uint3 ThreadID : SV_DispatchThreadID)
 {
+    // Initial setup
     RWTexture2D<float4> output = ResourceDescriptorHeap[Settings.OutputTexture];
-
     int width, height;
     output.GetDimensions(width, height);
     if (ThreadID.x > width || ThreadID.y > height) return;
 
-    //
+    // Load textures and render targets
     Texture2D<float> depth = ResourceDescriptorHeap[Settings.DepthTexture];
     Texture2D<float4> albedo = ResourceDescriptorHeap[Settings.AlbedoTexture];
     Texture2D<float4> normal = ResourceDescriptorHeap[Settings.NormalTexture];
@@ -105,31 +62,39 @@ void CSMain(uint3 ThreadID : SV_DispatchThreadID)
     TextureCube<half4> Irradiance = ResourceDescriptorHeap[Settings.Irradiance];
     TextureCube<half4> Prefilter = ResourceDescriptorHeap[Settings.Prefilter];
     Texture2D<float2> BRDF = ResourceDescriptorHeap[Settings.BRDF];
+
+    // Load samplers
     SamplerState RegularSampler = SamplerDescriptorHeap[Settings.RegularSampler];
     SamplerState CubeSampler = SamplerDescriptorHeap[Settings.CubeSampler];
 
+    // Load buffers
+    ConstantBuffer<LightData> lightData = ResourceDescriptorHeap[Settings.LightBuffer];
+    StructuredBuffer<DirectionalLight> directionalLights = ResourceDescriptorHeap[lightData.DirLightSRV];
+    StructuredBuffer<PointLight> pointLights = ResourceDescriptorHeap[lightData.PointLightSRV];
+    StructuredBuffer<SpotLight> spotLights = ResourceDescriptorHeap[lightData.SpotLightSRV];
+
+    // Initial variables
     float2 uv = TexelToUV(ThreadID.xy, 1.0 / float2(width, height));
     float ndcDepth = depth.Load(int3(ThreadID.xy, 0));
     float4 position = GetPositionFromDepth(uv, ndcDepth);
     float4 color = albedo.Load(ThreadID);
-
     float metallic = pbr.Load(ThreadID).r;
     float roughness = pbr.Load(ThreadID).g;
     
+    // Initial lighting variables
     float3 N = normalize(normal.Load(ThreadID).xyz);
     float3 V = normalize(Settings.CameraPosition - position.xyz);
     float3 R = reflect(-V, N);
-
     float NdotV = max(0.5, dot(N, V));
     float3 Lr = 2.0 * NdotV * N - V;
     float3 Lo = 0.0;
+    float3 F0 = lerp(0.04, color.xyz, metallic);
 
-    float3 F0 = 0.04;
-    F0 = lerp(F0, color.xyz, metallic);
-
+    // Direct lighting calculation
     float3 directLighting = 0.0;
     {}
 
+    // Indirect lighting calculation
     float3 indirectLighting = 0.0;
     {
         float3 irradiance = Irradiance.Sample(CubeSampler, N).rgb;
@@ -148,6 +113,7 @@ void CSMain(uint3 ThreadID : SV_DispatchThreadID)
         indirectLighting = (diffuseIBL + specularIBL) * irradiance;
     }
 
-    float3 final = directLighting + indirectLighting;
+    //
+    float3 final = directLighting + (indirectLighting * 0.1);
     output[ThreadID.xy] = float4(final, 1.0);
 }
