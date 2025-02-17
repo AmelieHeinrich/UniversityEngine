@@ -9,6 +9,7 @@
 
 #include "Passes/GBuffer.hpp"
 #include "Passes/Deferred.hpp"
+#include "Passes/SkyboxForward.hpp"
 #include "Passes/Composite.hpp"
 #include "Passes/DOF.hpp"
 #include "Passes/SSAO.hpp"
@@ -30,6 +31,7 @@ Renderer::Renderer(RHI::Ref rhi)
         MakeRef<GBuffer>(rhi),
         MakeRef<SSAO>(rhi),
         MakeRef<Deferred>(rhi),
+        MakeRef<SkyboxForward>(rhi),
         MakeRef<DOF>(rhi),
         MakeRef<ColorGrading>(rhi),
         MakeRef<Composite>(rhi),

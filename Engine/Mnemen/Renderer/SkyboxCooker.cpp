@@ -53,7 +53,7 @@ void SkyboxCooker::GenerateSkybox(Ref<Skybox> skybox)
         desc.Height = image.Height;
         desc.Depth = 1;
         desc.Levels = 1;
-        desc.Format = TextureFormat::RGBA16Float;
+        desc.Format = TextureFormat::RGBA16Unorm;
         desc.Name = skybox->Path + " HDRI";
         desc.Usage = TextureUsage::ShaderResource | TextureUsage::Storage;
 
@@ -68,7 +68,7 @@ void SkyboxCooker::GenerateSkybox(Ref<Skybox> skybox)
         desc.Width = 512;
         desc.Height = 512;
         desc.Depth = 6;
-        desc.Format = TextureFormat::RGBA16Float;
+        desc.Format = TextureFormat::RGBA16Unorm;
         desc.Name = skybox->Path + " Skybox";
         desc.Usage = TextureUsage::ShaderResource | TextureUsage::Storage;
         desc.Levels = 1;
@@ -82,7 +82,7 @@ void SkyboxCooker::GenerateSkybox(Ref<Skybox> skybox)
         desc.Width = 32;
         desc.Height = 32;
         desc.Depth = 6;
-        desc.Format = TextureFormat::RGBA16Float;
+        desc.Format = TextureFormat::RGBA16Unorm;
         desc.Name = skybox->Path + " Irradiance";
         desc.Usage = TextureUsage::ShaderResource | TextureUsage::Storage;
         desc.Levels = 1;
@@ -96,12 +96,12 @@ void SkyboxCooker::GenerateSkybox(Ref<Skybox> skybox)
         desc.Width = 512;
         desc.Height = 512;
         desc.Depth = 6;
-        desc.Format = TextureFormat::RGBA16Float;
+        desc.Format = TextureFormat::RGBA16Unorm;
         desc.Name = skybox->Path + " Irradiance";
         desc.Usage = TextureUsage::ShaderResource | TextureUsage::Storage;
         desc.Levels = 5;
 
-        skybox->IrradianceMap = sData.RHI->CreateTexture(desc);
+        skybox->PrefilterMap = sData.RHI->CreateTexture(desc);
     }
 
     // Create command buffer
@@ -191,4 +191,6 @@ void SkyboxCooker::GenerateSkybox(Ref<Skybox> skybox)
     cmdBuffer->End();
     sData.RHI->Submit({ cmdBuffer });
     sData.RHI->Wait();
+
+    LOG_INFO("Skybox took {0} seconds to cook!", TO_SECONDS(timer.GetElapsed()));
 }

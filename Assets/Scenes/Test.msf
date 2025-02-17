@@ -3,59 +3,27 @@
         {
             "id": 3,
             "mesh": {
-                "path": "Assets/Models/SciFiHelmet/SciFiHelmet.gltf"
+                "path": "Assets/Models/Primitives/Plane.gltf"
             },
-            "name": "SciFiHelmet",
+            "name": "Plane",
             "parent": null,
             "scripts": [],
             "transform": {
                 "position": [
                     0.0,
-                    0.800000011920929,
-                    -3.7724406719207764
+                    -0.5999812483787537,
+                    0.0
                 ],
                 "rotation": [
-                    6.179403300166086e-08,
-                    -0.7069846987724304,
-                    6.177269540330599e-08,
-                    0.7072288393974304
-                ],
-                "scale": [
-                    1.0,
-                    1.0,
+                    0.0,
+                    0.0,
+                    0.0,
                     1.0
-                ]
-            }
-        },
-        {
-            "id": 2,
-            "material": {
-                "albedo": "Assets/Models/DamagedHelmet/Default_albedo.jpg",
-                "inherit": true,
-                "normal": "Assets/Models/DamagedHelmet/Default_normal.jpg"
-            },
-            "mesh": {
-                "path": "Assets/Models/DamagedHelmet/DamagedHelmet.gltf"
-            },
-            "name": "DamagedHelmet",
-            "parent": null,
-            "scripts": [],
-            "transform": {
-                "position": [
-                    1.1095287845819257e-05,
-                    0.6119828224182129,
-                    -1.464164142817026e-06
-                ],
-                "rotation": [
-                    -7.2155708039645106e-06,
-                    -0.702043890953064,
-                    -5.616286216536537e-06,
-                    0.7121337056159973
                 ],
                 "scale": [
-                    1.1699997186660767,
-                    1.1699999570846558,
-                    1.1699997186660767
+                    9.790108680725098,
+                    9.790108680725098,
+                    9.790108680725098
                 ]
             }
         },
@@ -67,7 +35,7 @@
                 "primary": true,
                 "volumePath": "Assets/Volumes/DefaultVolume.mfx"
             },
-            "id": 1,
+            "id": 2,
             "name": "Camera",
             "parent": null,
             "scripts": [],
@@ -91,29 +59,61 @@
             }
         },
         {
+            "id": 1,
+            "material": {
+                "albedo": "Assets/Models/DamagedHelmet/Default_albedo.jpg",
+                "inherit": true,
+                "normal": "Assets/Models/DamagedHelmet/Default_normal.jpg"
+            },
+            "mesh": {
+                "path": "Assets/Models/DamagedHelmet/DamagedHelmet.gltf"
+            },
+            "name": "DamagedHelmet",
+            "parent": null,
+            "scripts": [],
+            "transform": {
+                "position": [
+                    1.1095287845819257e-05,
+                    0.6119828224182129,
+                    -1.464164142817026e-06
+                ],
+                "rotation": [
+                    -7.215592631837353e-06,
+                    -0.702043890953064,
+                    -5.616304406430572e-06,
+                    0.7121337056159973
+                ],
+                "scale": [
+                    1.1699997186660767,
+                    1.1699999570846558,
+                    1.1699997186660767
+                ]
+            }
+        },
+        {
             "id": 0,
             "mesh": {
-                "path": "Assets/Models/Primitives/Plane.gltf"
+                "path": "Assets/Models/SciFiHelmet/SciFiHelmet.gltf"
             },
-            "name": "Plane",
+            "name": "SciFiHelmet",
             "parent": null,
             "scripts": [],
             "transform": {
                 "position": [
                     0.0,
-                    -0.5999812483787537,
-                    0.0
+                    0.800000011920929,
+                    -3.7724406719207764
                 ],
                 "rotation": [
-                    0.0,
-                    0.0,
-                    0.0,
-                    1.0
+                    6.178674993861932e-08,
+                    -0.7069846987724304,
+                    6.17654194456918e-08,
+                    0.7072288393974304
                 ],
                 "scale": [
-                    9.790108680725098,
-                    9.790108680725098,
-                    9.790108680725098
+                    1.0,
+                    1.0,
+                    1.0
                 ]
             }
         }

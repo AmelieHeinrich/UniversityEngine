@@ -30,11 +30,11 @@
     },
     "depthOfField": {
         "enable": false,
-        "focusPoint": 100.0,
-        "focusRange": 20.0
+        "focusPoint": 17.989999771118164,
+        "focusRange": 14.020000457763672
     },
     "gammaCorrect": {
-        "factor": 2.24399995803833
+        "factor": 1.9900000095367432
     },
     "geometry": {
         "visualizeMeshlets": false
