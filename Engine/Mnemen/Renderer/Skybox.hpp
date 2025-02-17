@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include "Renderer.hpp"
+#include <RHI/RHI.hpp>
 
 struct Skybox
 {

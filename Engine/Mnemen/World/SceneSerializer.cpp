@@ -5,6 +5,7 @@
 
 #include "SceneSerializer.hpp"
 
+#include <Renderer/SkyboxCooker.hpp>
 #include <Core/File.hpp>
 #include <Core/Logger.hpp>
 
@@ -16,6 +17,7 @@ void SceneSerializer::SerializeScene(Ref<Scene> scene, const String& path)
 
     nlohmann::json root;
     root["entities"] = nlohmann::json::array();
+    root["skybox"] = scene->GetSkybox()->Path;
     
     registry->view<entt::entity>().each([&](entt::entity id) {
         Entity entity(registry);
@@ -38,6 +40,8 @@ Ref<Scene> SceneSerializer::DeserializeScene(const String& path)
 
     nlohmann::json root = File::LoadJSON(path);
     UnorderedMap<UInt32, Entity> entityMap;
+
+    scene->GetSkybox()->Path = root["skybox"];
 
     for (const auto& entityJson : root["entities"]) {
         DeserializeEntity(scene, entityJson, entityMap);

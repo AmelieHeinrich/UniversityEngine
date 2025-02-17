@@ -16,7 +16,6 @@ public:
 
     void Render(const Frame& frame, ::Ref<Scene> scene) override;
 private:
-    ::Ref<Skybox> mTestSkybox;
     Buffer::Ref mCubeBuffer;
     GraphicsPipeline::Ref mPipeline;
 };

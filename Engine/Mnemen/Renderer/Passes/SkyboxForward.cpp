@@ -7,6 +7,7 @@
 
 #include <RHI/Uploader.hpp>
 #include <Renderer/SkyboxCooker.hpp>
+#include <Core/Profiler.hpp>
 
 const float CubeVertices[] = {
     -1.0f,  1.0f, -1.0f,
@@ -55,10 +56,6 @@ const float CubeVertices[] = {
 SkyboxForward::SkyboxForward(RHI::Ref rhi)
     : RenderPass(rhi)
 {
-    mTestSkybox = MakeRef<Skybox>();
-    mTestSkybox->Path = "Assets/Skyboxes/Default.hdr";
-    SkyboxCooker::GenerateSkybox(mTestSkybox);
-
     Asset::Handle vertexShader = AssetManager::Get("Assets/Shaders/Skybox/Vertex.hlsl", AssetType::Shader);
     Asset::Handle fragmentShader = AssetManager::Get("Assets/Shaders/Skybox/Fragment.hlsl", AssetType::Shader);
 
@@ -81,8 +78,11 @@ SkyboxForward::SkyboxForward(RHI::Ref rhi)
 
 void SkyboxForward::Render(const Frame& frame, ::Ref<Scene> scene)
 {
+    PROFILE_FUNCTION();
+
     CameraComponent* mainCamera = scene->GetMainCamera();
     glm::mat4 mvp = mainCamera->Projection * glm::mat4(glm::mat3(mainCamera->View)) * glm::scale(glm::mat4(1.0f), glm::vec3(1000.0f));
+    ::Ref<Skybox> skybox = scene->GetSkybox();
 
     auto sampler = RendererTools::Get("MaterialSampler");
     auto depthBuffer = RendererTools::Get("GBufferDepth");
@@ -95,7 +95,7 @@ void SkyboxForward::Render(const Frame& frame, ::Ref<Scene> scene)
 
         glm::mat4 mvp;
     } data = {
-        mTestSkybox->EnvironmentMapSRV->GetDescriptor().Index,
+        skybox->EnvironmentMapSRV->GetDescriptor().Index,
         sampler->Sampler->BindlesssSampler(),
         glm::vec2(0.0),
         mvp

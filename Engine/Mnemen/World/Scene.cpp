@@ -5,9 +5,12 @@
 
 #include "Scene.hpp"
 
+#include <Renderer/SkyboxCooker.hpp>
+
 Scene::Scene()
 {
-    
+    mSkybox = MakeRef<Skybox>();
+    mSkybox->Path = "Assets/Skyboxes/Default.hdr";
 }
 
 Scene::~Scene()
@@ -172,4 +175,10 @@ Entity Scene::AddDefaultCylinder(const String& name)
     m.Init("Assets/Models/Primitives/Cylinder.gltf");
 
     return result;
+}
+
+void Scene::CookSkybox(const String& path)
+{
+    mSkybox->Path = path;
+    SkyboxCooker::GenerateSkybox(mSkybox);
 }

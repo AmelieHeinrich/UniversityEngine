@@ -21,6 +21,7 @@
 #include <Audio/AudioSystem.hpp>
 #include <AI/AISystem.hpp>
 #include <Script/ScriptSystem.hpp>
+#include <Renderer/SkyboxCooker.hpp>
 
 #include <imgui.h>
 
@@ -50,10 +51,13 @@ Application::Application(ApplicationSpecs specs)
     AssetCacher::Init("Assets");
 
     mRenderer = MakeRef<Renderer>(mRHI);
-    if (!mProject->StartScenePathRelative.empty())
+    if (!mProject->StartScenePathRelative.empty()) {
         mScene = SceneSerializer::DeserializeScene(mProject->StartScenePathRelative);
-    else
+        SkyboxCooker::GenerateSkybox(mScene->GetSkybox());
+    } else {
         mScene = MakeRef<Scene>();
+        SkyboxCooker::GenerateSkybox(mScene->GetSkybox());
+    }
        
     LOG_INFO("Initialized Mnemen! Ready to rock 8)");
 }

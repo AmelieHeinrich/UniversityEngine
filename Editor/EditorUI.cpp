@@ -21,6 +21,41 @@ void Editor::ProjectEditor()
     ImGui::End();
 }
 
+void Editor::SceneEditor()
+{
+    ImGui::Begin(ICON_FA_MAP " Scene Settings");
+
+    // Skybox
+    ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0.5f, 0.5f));
+    char temp[512];
+    sprintf(temp, "%s %s", ICON_FA_FILE, mScene->GetSkybox()->Path.c_str());
+    if (ImGui::Button(temp, ImVec2(ImGui::GetContentRegionAvail().x - ImGui::CalcTextSize("Environment Map").x - 5, 0))) {
+        String path = Dialog::Open({ ".hdr" });
+        if (!path.empty()) {
+            mSkyboxChange = path;
+        }
+    }
+    ImGui::PopStyleVar();
+    if (ImGui::BeginDragDropTarget()) {
+        if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
+            const wchar_t* path = (const wchar_t*)payload->Data;
+            std::filesystem::path fxPath(path);
+            String fxString = fxPath.string();
+            if (fxString.find(".hdr") != String::npos) {
+                for (int i = 0; i < fxString.size(); i++) {
+                    fxString[i] = fxString[i] == '\\' ? '/' : fxString[i];
+                }
+                mSkyboxChange = fxString;
+            }
+        }
+        ImGui::EndDragDropTarget();
+    }
+    ImGui::SameLine();
+    ImGui::Text("Environment Map");
+
+    ImGui::End();
+}
+
 void Editor::Viewport(const Frame& frame)
 {
     if (!mScene)

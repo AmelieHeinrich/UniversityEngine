@@ -1,3 +1,4 @@
 {
+    "skybox": "Assets/Skyboxes/Default.hdr",
     "entities": []
 }

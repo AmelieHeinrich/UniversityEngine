@@ -86,6 +86,10 @@ void Editor::PostPresent()
         NewScene();
         mMarkForClose = false;
     }
+    if (!mSkyboxChange.empty()) {
+        mScene->CookSkybox(mSkyboxChange);
+        mSkyboxChange = "";
+    }
     // Upload after new scene
     Uploader::Flush();
 }
@@ -104,6 +108,7 @@ void Editor::OnImGui(const Frame& frame)
 
     BeginDockSpace();
     ProjectEditor();
+    SceneEditor();
     Profiler::OnUI();
     FXVolumeEditor();
     Viewport(frame);

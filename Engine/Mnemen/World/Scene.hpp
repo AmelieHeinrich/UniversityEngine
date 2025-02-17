@@ -7,14 +7,7 @@
 
 #include "Entity.hpp"
 
-/// @brief Simple structure that holds all the camera matrices needed for rendering
-struct SceneCamera
-{
-    /// @brief The view matrix of the camera
-    glm::mat4 View = glm::mat4(1.0f);
-    /// @brief The projection matrix of the camera
-    glm::mat4 Projection = glm::mat4(1.0f);
-};
+#include <Renderer/Skybox.hpp>
 
 /// @class Scene
 /// @brief A representation of a scene.
@@ -56,6 +49,17 @@ public:
     /// @param e A pointer to the entity to be removed.
     void RemoveEntity(Entity e);
 
+    /// @brief Sets the current skybox
+    /// @param skybox The skybox to set
+    void SetSkybox(Ref<Skybox> skybox) { mSkybox = skybox; }
+
+    /// @brief Get the current loaded skybox
+    /// @return A reference to the scene skybox
+    Ref<Skybox> GetSkybox() { return mSkybox; }
+
+    /// @brief Recooks the scene skybox from the given environment map path.
+    void CookSkybox(const String& path);
+
     /// Default entities
 
     Entity AddDefaultCamera(const String& name = "Camera");
@@ -75,4 +79,5 @@ private:
     friend class ScriptSystem; ///< Allows ScriptSystem to access private members of Scene.
 
     entt::registry mRegistry; ///< The registry that manages entities and components.
+    Ref<Skybox> mSkybox;
 };

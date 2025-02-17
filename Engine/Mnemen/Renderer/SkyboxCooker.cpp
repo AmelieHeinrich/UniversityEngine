@@ -7,6 +7,8 @@
 
 #include <RHI/Uploader.hpp>
 #include <Core/Timer.hpp>
+#include <Core/Logger.hpp>
+#include <Asset/AssetManager.hpp>
 
 SkyboxCooker::Data SkyboxCooker::sData;
 

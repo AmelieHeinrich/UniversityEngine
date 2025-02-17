@@ -8,6 +8,7 @@
 #include <FontAwesome/FontAwesome.hpp>
 #include <RHI/Uploader.hpp>
 #include <Utility/Dialog.hpp>
+#include <Renderer/SkyboxCooker.hpp>
 
 #include <imgui.h>
 #include <imgui_internal.h>
@@ -60,6 +61,7 @@ void Editor::OpenScene(const String& path)
 
     mCurrentScenePath = path;
     mScene = SceneSerializer::DeserializeScene(path);
+    SkyboxCooker::GenerateSkybox(mScene->GetSkybox());
     
     mCameraEntity = mScene->AddEntity("Editor Camera");
     mCameraEntity.AddComponent<PrivateComponent>();
@@ -104,6 +106,7 @@ void Editor::NewScene()
     if (mScene != nullptr)
         CloseScene();
     mScene = MakeRef<Scene>();
+    SkyboxCooker::GenerateSkybox(mScene->GetSkybox());
 
     mCameraEntity = mScene->AddEntity("Editor Camera");
     mCameraEntity.AddComponent<PrivateComponent>();
@@ -113,11 +116,14 @@ void Editor::NewScene()
 
 void Editor::ReloadScene(const String& path)
 {
+    auto skybox = mScene->GetSkybox();
+
     mCurrentScenePath = {};
     mScene.reset();
 
     mCurrentScenePath = path;
     mScene = SceneSerializer::DeserializeScene(path);
+    mScene->SetSkybox(skybox);
 
     mCameraEntity = mScene->AddEntity("Editor Camera");
     mCameraEntity.AddComponent<PrivateComponent>();

@@ -34,6 +34,7 @@ private:
 
     // UI
     void ProjectEditor();
+    void SceneEditor();
     void Viewport(const Frame& frame);
     void BeginDockSpace();
     void EndDockSpace();
@@ -58,6 +59,7 @@ private:
     bool mMarkForClose = false;
     bool mMarkForStop = false;
     String mModelChange = "";
+    String mSkyboxChange = "";
     UnorderedMap<entt::entity, String> mEntityNameBuffer;
 
     // Viewport shenanigans
