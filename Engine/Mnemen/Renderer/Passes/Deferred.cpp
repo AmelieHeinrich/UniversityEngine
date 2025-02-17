@@ -59,7 +59,7 @@ Deferred::Deferred(RHI::Ref rhi)
     // Accumulation Pipeline
     {
         Asset::Handle lightShader = AssetManager::Get("Assets/Shaders/Deferred/LightAccumulationCompute.hlsl", AssetType::Shader);
-        auto signature = mRHI->CreateRootSignature({ RootType::PushConstant }, sizeof(int) * 4);
+        auto signature = mRHI->CreateRootSignature({ RootType::PushConstant }, sizeof(int) * 8);
         mLightPipeline = mRHI->CreateComputePipeline(lightShader->Shader, signature);
     }
 
@@ -94,18 +94,30 @@ void Deferred::Render(const Frame& frame, ::Ref<Scene> scene)
     auto depthBuffer = RendererTools::Get("GBufferDepth");
     auto normalBuffer = RendererTools::Get("GBufferNormal");
     auto albedoBuffer = RendererTools::Get("GBufferAlbedo");
+    auto pbrBuffer = RendererTools::Get("GBufferPBR");
     auto colorBuffer = RendererTools::Get("HDRColorBuffer");
+    auto brdf = RendererTools::Get("BRDF");
 
     struct PushConstants {
         int Depth;
         int Albedo;
         int Normal;
         int Output;
+
+        int PBR;
+        int Irradiance;
+        int Prefilter;
+        int BRDF;
     } data = {
         depthBuffer->Descriptor(ViewType::ShaderResource),
         albedoBuffer->Descriptor(ViewType::ShaderResource),
         normalBuffer->Descriptor(ViewType::ShaderResource),
-        colorBuffer->Descriptor(ViewType::Storage)
+        colorBuffer->Descriptor(ViewType::Storage),
+
+        pbrBuffer->Descriptor(ViewType::ShaderResource),
+        scene->GetSkybox()->IrradianceMapSRV->GetDescriptor().Index,
+        scene->GetSkybox()->PrefilterMapSRV->GetDescriptor().Index,
+        brdf->Descriptor(ViewType::ShaderResource)
     };
 
     frame.CommandBuffer->BeginMarker("Light Accumulation");

@@ -9,6 +9,11 @@ struct PushConstants
     uint AlbedoTexture;
     uint NormalTexture;
     uint OutputTexture;
+
+    int PBR;
+    int Irradiance;
+    int Prefilter;
+    int BRDF;
 };
 
 ConstantBuffer<PushConstants> Settings : register(b0);
