@@ -75,8 +75,6 @@ float3 CalcDirectionalLight(DirectionalLight light, float3 V, float3 N, float3 F
 {
     float3 L = normalize(-light.Direction);
     float attenuation = clamp(dot(N, -L), 0.0, 1.0);
-    if (attenuation > 0.0f)
-        return 0.0;
 
     float3 lightColor = light.Color;   
     float3 H = normalize(V + L);
@@ -216,5 +214,5 @@ void CSMain(uint3 ThreadID : SV_DispatchThreadID)
 
     //
     float3 final = directLighting + (indirectLighting * 1.0);
-    output[ThreadID.xy] = float4(final, 1.0);
+    output[ThreadID.xy] = float4(final.rgb, 1.0);
 }

@@ -88,10 +88,6 @@ GBufferOutput PSMain(MeshInput input)
     textureColor.rgb = pow(textureColor.rgb, 2.2);
 
     float3 normal = normalize(input.Normal);
-    if (Constants.NormalTexture != -1) {
-        normal = GetNormalFromMap(input);
-    }
-
     float3 pbr = pbrTexture.Sample(linearSampler, input.UV).rgb;
 
     GBufferOutput output;

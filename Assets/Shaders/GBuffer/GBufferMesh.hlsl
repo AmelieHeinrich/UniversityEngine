@@ -66,10 +66,13 @@ VertexOut GetVertexAttributes(uint meshletIndex, uint vertexIndex)
     Vertex v = Vertices[vertexIndex];
     float4 pos = float4(v.Position, 1.0);
 
+    float3x3 normalMatrix = (float3x3)transpose(Constants.InvTransform);
+    float3 N = normalize(mul(normalMatrix, v.Normals));
+
     VertexOut Output = (VertexOut)0;
     Output.Position = mul(Matrices.Projection, mul(Matrices.View, mul(Constants.Transform, pos)));
     Output.UV = v.TexCoords;
-    Output.Normals = normalize(float4(mul(float4(v.Normals, 1.0), Constants.InvTransform)).xyz);
+    Output.Normals = N;
     Output.MeshletIndex = meshletIndex;
 
     return Output;
