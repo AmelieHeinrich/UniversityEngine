@@ -23,6 +23,7 @@ struct Cascade
 
 struct SpotLightShadow
 {
+    int ParentID;
     SpotLightComponent* Parent;
     Texture::Ref ShadowMap;
     
@@ -37,13 +38,15 @@ public:
     ~Shadows() = default;
 
     void Render(const Frame& frame, ::Ref<Scene> scene) override;
+    void RenderCascades(const Frame& frame, ::Ref<Scene> scene);
+    void RenderSpot(const Frame& frame, ::Ref<Scene> scene);
 private:
-    void UpdateCascades(const Frame& frame, ::Ref<Scene> scene);
+    void UpdateCascades(const Frame& frame, ::Ref<Scene> scene, DirectionalLightComponent caster);
 
     float mShadowSplitLambda = 0.95f;
-    bool mFreezeCascades = false;
 
     MeshPipeline::Ref mCascadePipeline = nullptr;
     Array<Cascade, SHADOW_CASCADE_COUNT> mCascades;
     Vector<SpotLightShadow> mSpotLightShadows;
+    int once = 0;
 };

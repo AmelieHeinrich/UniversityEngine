@@ -6,6 +6,7 @@
 #include "Shadows.hpp"
 
 #include <Utility/Math.hpp>
+#include "Debug.hpp"
 
 Shadows::Shadows(RHI::Ref rhi)
     : RenderPass(rhi)
@@ -21,30 +22,153 @@ Shadows::Shadows(RHI::Ref rhi)
     specs.DepthClampEnable = true;
     specs.Depth = DepthOperation::Less;
     specs.DepthFormat = TextureFormat::Depth32;
-    specs.Signature = rhi->CreateRootSignature({ RootType::PushConstant }, sizeof(glm::mat4) * 3 + sizeof(int) * 8);
+    specs.Signature = rhi->CreateRootSignature({ RootType::PushConstant }, sizeof(int) * 8 + sizeof(glm::mat4) * 3);
 
     mCascadePipeline = rhi->CreateMeshPipeline(specs);
+
+    // Create cascade data
+    RendererTools::CreateSharedRingBuffer("CascadeBuffer", 1024);
+
+    TextureDesc cascadeDesc = {};
+    cascadeDesc.Width = DIR_LIGHT_SHADOW_DIMENSION;
+    cascadeDesc.Height = DIR_LIGHT_SHADOW_DIMENSION;
+    cascadeDesc.Levels = 1;
+    cascadeDesc.Depth = 1;
+    cascadeDesc.Format = TextureFormat::Depth32;
+    cascadeDesc.Usage = TextureUsage::DepthTarget | TextureUsage::ShaderResource;
+    
+    cascadeDesc.Name = "Shadow Cascade 0";
+    auto cascade0 = RendererTools::CreateSharedTexture("ShadowCascade0", cascadeDesc);
+    cascade0->AddView(ViewType::DepthTarget);
+    cascade0->AddView(ViewType::ShaderResource, ViewDimension::Texture, TextureFormat::R32Float);
+
+    cascadeDesc.Name = "Shadow Cascade 1";
+    auto cascade1 = RendererTools::CreateSharedTexture("ShadowCascade1", cascadeDesc);
+    cascade1->AddView(ViewType::DepthTarget);
+    cascade1->AddView(ViewType::ShaderResource, ViewDimension::Texture, TextureFormat::R32Float);
+    
+    cascadeDesc.Name = "Shadow Cascade 2";
+    auto cascade2 = RendererTools::CreateSharedTexture("ShadowCascade2", cascadeDesc);
+    cascade2->AddView(ViewType::DepthTarget);
+    cascade2->AddView(ViewType::ShaderResource, ViewDimension::Texture, TextureFormat::R32Float);
+    
+    cascadeDesc.Name = "Shadow Cascade 3";
+    auto cascade3 = RendererTools::CreateSharedTexture("ShadowCascade3", cascadeDesc);
+    cascade3->AddView(ViewType::DepthTarget);
+    cascade3->AddView(ViewType::ShaderResource, ViewDimension::Texture, TextureFormat::R32Float);
 }
 
 void Shadows::Render(const Frame& frame, ::Ref<Scene> scene)
 {
-    
+    frame.CommandBuffer->BeginMarker("Shadows");
+    RenderCascades(frame, scene);
+    frame.CommandBuffer->EndMarker();
 }
 
-void Shadows::UpdateCascades(const Frame& frame, ::Ref<Scene> scene)
+void Shadows::RenderCascades(const Frame& frame, ::Ref<Scene> scene)
 {
-    CameraComponent* camera = scene->GetMainCamera();
-    
-    DirectionalLightComponent light = {};
-    for (auto [id, dir] : scene->GetRegistry()->view<DirectionalLightComponent>().each()) {
+    // Select first dir light that cast shadows
+    DirectionalLightComponent caster;
+
+    auto registry = scene->GetRegistry();
+    auto view = registry->view<DirectionalLightComponent>();
+    for (auto [id, dir] : view.each()) {
         if (dir.CastShadows) {
-            light = dir;
+            caster = dir;
             break;
         }
     }
-    if (!light.CastShadows) {
+    if (!caster.CastShadows)
         return;
+
+    // Update
+    UpdateCascades(frame, scene, caster);
+
+    // Render
+    Vector<::Ref<RenderPassResource>> cascades = {
+        RendererTools::Get("ShadowCascade0"),
+        RendererTools::Get("ShadowCascade1"),
+        RendererTools::Get("ShadowCascade2"),
+        RendererTools::Get("ShadowCascade3")
+    };
+
+    // Update frustum buffer
+    {
+        auto ringBuffer = RendererTools::Get("CascadeBuffer");
+        for (int i = 0; i < SHADOW_CASCADE_COUNT; i++) {
+            mCascades[i].SRVIndex = cascades[i]->Descriptor(ViewType::ShaderResource);
+        }
+
+        ringBuffer->RBuffer[frame.FrameIndex]->CopyMapped(mCascades.data(), sizeof(Cascade) * SHADOW_CASCADE_COUNT);
     }
+
+    frame.CommandBuffer->BeginMarker("Cascaded Shadow Maps");
+    frame.CommandBuffer->SetMeshPipeline(mCascadePipeline);
+    for (int i = 0; i < SHADOW_CASCADE_COUNT; i++) {
+        frame.CommandBuffer->BeginMarker("Cascade " + std::to_string(i));
+        frame.CommandBuffer->Barrier(cascades[i]->Texture, ResourceLayout::DepthWrite);
+        frame.CommandBuffer->SetRenderTargets({}, cascades[i]->GetView(ViewType::DepthTarget));
+        frame.CommandBuffer->ClearDepth(cascades[i]->GetView(ViewType::DepthTarget));
+        frame.CommandBuffer->SetViewport(0, 0, DIR_LIGHT_SHADOW_DIMENSION, DIR_LIGHT_SHADOW_DIMENSION);
+        frame.CommandBuffer->SetTopology(Topology::TriangleList);
+        std::function<void(Frame frame, MeshNode*, Mesh* model, glm::mat4 transform)> drawNode = [&](Frame frame, MeshNode* node, Mesh* model, glm::mat4 transform) {
+            if (!node) {
+                return;
+            }
+
+            for (MeshPrimitive primitive : node->Primitives) {
+                struct PushConstants {
+                    int VertexBuffer;
+                    int IndexBuffer;
+                    int MeshletBuffer;
+                    int MeshletVertices;
+                    int MeshletTriangleBuffer;
+                    glm::ivec3 Pad;
+
+                    glm::mat4 Transform;
+                    glm::mat4 View;
+                    glm::mat4 Proj;
+                } data = {
+                    primitive.VertexBuffer->SRV(),
+                    primitive.IndexBuffer->SRV(),
+                    primitive.MeshletBuffer->SRV(),
+                    primitive.MeshletVertices->SRV(),
+                    primitive.MeshletTriangles->SRV(),
+                    glm::ivec3(0),
+                    
+                    transform,
+                    mCascades[i].View,
+                    mCascades[i].Proj
+                };
+                frame.CommandBuffer->GraphicsPushConstants(&data, sizeof(data), 0);
+                frame.CommandBuffer->DispatchMesh(primitive.MeshletCount, primitive.IndexCount / 3);
+            }
+            if (!node->Children.empty()) {
+                for (MeshNode* child : node->Children) {
+                    drawNode(frame, child, model, transform);
+                }
+            }
+        };
+        if (scene) {
+            auto registry = scene->GetRegistry();
+            auto view = registry->view<TransformComponent, MeshComponent>();
+            for (auto [id, transform, mesh] : view.each()) {
+                Entity entity(registry);
+                entity.ID = id;
+                if (mesh.Loaded) {
+                    drawNode(frame, mesh.MeshAsset->Mesh.Root, &mesh.MeshAsset->Mesh, entity.GetWorldTransform());
+                }
+            }
+        }
+        frame.CommandBuffer->Barrier(cascades[i]->Texture, ResourceLayout::Shader);
+        frame.CommandBuffer->EndMarker();
+    }
+    frame.CommandBuffer->EndMarker();
+}
+
+void Shadows::UpdateCascades(const Frame& frame, ::Ref<Scene> scene, DirectionalLightComponent caster)
+{
+    CameraComponent* camera = scene->GetMainCamera();
 
     UInt32 cascadeSize = DIR_LIGHT_SHADOW_DIMENSION;
     Vector<float> splits(SHADOW_CASCADE_COUNT + 1);
@@ -62,7 +186,7 @@ void Shadows::UpdateCascades(const Frame& frame, ::Ref<Scene> scene)
 
     for (int i = 0; i < SHADOW_CASCADE_COUNT; ++i) {
         // Get frustum corners for the cascade in view space
-        Vector<glm::vec4> corners = Math::CascadeCorners(camera->View, camera->FOV, (float)frame.Width / (float)frame.Height, splits[i], splits[i + 1]);
+        Vector<glm::vec4> corners = Math::CascadeCorners(camera->View, glm::radians(camera->FOV), (float)frame.Width / (float)frame.Height, splits[i], splits[i + 1]);
 
         // Calculate center
         glm::vec3 center(0.0f);
@@ -73,7 +197,7 @@ void Shadows::UpdateCascades(const Frame& frame, ::Ref<Scene> scene)
 
         // Adjust light's up vector
         glm::vec3 up(0.0f, 1.0f, 0.0f);
-        if (glm::abs(glm::dot(light.Direction, up)) > 0.999f) {
+        if (glm::abs(glm::dot(caster.Direction, up)) > 0.999f) {
             up = glm::vec3(1.0f, 0.0f, 0.0f);
         }
 
@@ -90,7 +214,7 @@ void Shadows::UpdateCascades(const Frame& frame, ::Ref<Scene> scene)
 
         // Get extents and create view matrix
         glm::vec3 cascadeExtents = maxBounds - minBounds;
-        glm::vec3 shadowCameraPos = center - light.Direction;
+        glm::vec3 shadowCameraPos = center - caster.Direction;
 
         glm::mat4 lightView = glm::lookAt(shadowCameraPos, center, up);
         glm::mat4 lightProjection = glm::ortho(

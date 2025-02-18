@@ -52,6 +52,9 @@ void Editor::OnUpdate(float dt)
 
     auto& cam = mCameraEntity.GetComponent<CameraComponent>();
     cam.Primary = !mScenePlaying ? 2 : 0;
+    cam.FOV = 90.0f;
+    cam.Near = CAMERA_NEAR;
+    cam.Far = CAMERA_FAR;
     cam.Projection = mCamera.Projection();
     cam.View = mCamera.View();
     cam.Position = mCamera.Position();

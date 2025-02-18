@@ -27,19 +27,17 @@ struct CameraMatrices
 struct VertexOut
 {
     float4 Clip : SV_Position;
-    float4 World : POSITION;
 };
 
 
 struct PushConstants
 {
-    int Matrices;
     int VertexBuffer;
     int IndexBuffer;
     int MeshletBuffer;
     int MeshletVertices;
     int MeshletTriangleBuffer;
-    int2 Pad;
+    int3 Pad;
 
     column_major float4x4 Transform;
     column_major float4x4 LightView;
@@ -57,9 +55,9 @@ VertexOut GetVertexAttributes(uint meshletIndex, uint vertexIndex)
     float4 pos = float4(v.Position, 1.0);
 
     VertexOut Output = (VertexOut)0;
-    Output.World = mul(Constants.Transform, float4(v.Position, 1.0f));
-    float4 lightViewPosition = mul(Constants.LightView, Output.World);
-    Output.Clip = mul(Constants.LightProj, lightViewPosition);
+    float4 worldPosition = mul(Constants.Transform, float4(v.Position, 1.0f));
+    float4 lightViewPosition = mul(Constants.LightView, worldPosition);
+    Output.Clip = mul(lightViewPosition, Constants.LightProj);
     return Output;
 }
 
