@@ -5,6 +5,8 @@
 
 #pragma once
 
+#include <Core/Common.hpp>
+
 #include <glm/glm.hpp>
 #include <glm/gtx/quaternion.hpp>
 
@@ -55,4 +57,7 @@ public:
     static glm::vec3 QuatToEuler(glm::quat quat);
 
     static glm::vec3 QuatToForward(glm::quat quat);
+
+    static Vector<glm::vec4> FrustumCorners(glm::mat4 view, glm::mat4 proj);
+    static Vector<glm::vec4> CascadeCorners(glm::mat4 view, float fov, float aspectRatio, float nearPlane, float farPlane);
 };

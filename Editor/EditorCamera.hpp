@@ -31,15 +31,6 @@ public:
     glm::mat4 View() const { return mView; }
     glm::mat4 Projection() const { return mProjection; }
     glm::vec3 Position() const { return mPosition; }
-    
-    Vector<glm::vec4> Corners() const;
-    Vector<glm::vec4> CornersForCascade(float near, float far) const;
-    Array<Plane, 6> Planes() const;
-
-    static Array<Plane, 6> FrustumPlanes(glm::mat4 projView);
-    static Vector<glm::vec4> FrustumCorners(glm::mat4 view, glm::mat4 proj);
-
-    void FreezeFrustum(bool freeze);
 private:
     glm::mat4 mView = glm::mat4(1.0f);
     glm::mat4 mProjection = glm::mat4(1.0f);
@@ -53,8 +44,6 @@ private:
     float mYaw = -90.0f;
 
     // Saved frustum
-    bool mFreezeFrustum = false;
-    Array<Plane, 6> mSavedFrustum;
     int mWidth;
     int mHeight;
 };

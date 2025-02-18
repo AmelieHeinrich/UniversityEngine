@@ -37,12 +37,11 @@ float3 GetSamplingVector(uint3 ThreadID)
     IrradianceMap.GetDimensions(outputWidth, outputHeight, outputDepth);
 
     float2 st = ThreadID.xy / float2(outputWidth, outputHeight);
-    float2 uv = 2.0 * float2(st.x, 1.0-st.y) - 1.0;
+    float2 uv = 2.0 * float2(st.x, 1.0 - st.y) - 1.0;
 
     // Select vector based on cubemap face index.
     float3 ret;
-    switch(ThreadID.z)
-    {
+    switch(ThreadID.z) {
         case 0: ret = float3(1.0,  uv.y, -uv.x); break;
         case 1: ret = float3(-1.0, uv.y,  uv.x); break;
         case 2: ret = float3(uv.x, 1.0, -uv.y); break;
@@ -72,7 +71,7 @@ float3 TangentToWorld(const float3 v, const float3 N, const float3 S, const floa
 void CSMain(uint3 ThreadID : SV_DispatchThreadID)
 {
     TextureCube EnvironmentMap = ResourceDescriptorHeap[Settings.EnvironmentMap];
-    RWTexture2DArray<half4> IrradianceMap = ResourceDescriptorHeap[Settings.IrradianceMap];
+    RWTexture2DArray<float4> IrradianceMap = ResourceDescriptorHeap[Settings.IrradianceMap];
     SamplerState CubeSampler = SamplerDescriptorHeap[Settings.CubeSampler];
 
     float3 N = GetSamplingVector(ThreadID);
@@ -90,7 +89,9 @@ void CSMain(uint3 ThreadID : SV_DispatchThreadID)
         float cosTheta = max(0.0, dot(Li, N));
 
         // PIs here cancel out because of division by pdf.
-        irradiance += 2.0 * EnvironmentMap.SampleLevel(CubeSampler, Li, 0).rgb * cosTheta;
+        float3 sampledColor = EnvironmentMap.SampleLevel(CubeSampler, Li, 0).rgb;
+        sampledColor = pow(sampledColor, 1.0 / 2.2);
+        irradiance += 2.0 * sampledColor * cosTheta;
     }
     irradiance /= float(NumSamples);
 

@@ -144,12 +144,13 @@ void CSMain(uint3 ThreadID : SV_DispatchThreadID)
             // Mip level to sample from.
             float mipLevel = max(0.5 * log2(ws / wt) + 1.0, 0.0);
 
-            color  += EnvironmentMap.SampleLevel(CubeSampler, Li, mipLevel).rgb * cosLi;
+            float3 sampledColor = EnvironmentMap.SampleLevel(CubeSampler, Li, mipLevel).rgb;
+            sampledColor = pow(sampledColor, 1.0 / 2.2);
+            color += sampledColor * cosLi;
             weight += cosLi;
         }
     }
     color /= weight;
-    color = pow(color, 2.2);
 
     PrefilterMap[ThreadID] = float4(color, 1.0); 
 }

@@ -7,6 +7,7 @@
 #include "RendererTools.hpp"
 #include "SkyboxCooker.hpp"
 
+#include "Passes/Shadows.hpp"
 #include "Passes/GBuffer.hpp"
 #include "Passes/Deferred.hpp"
 #include "Passes/SkyboxForward.hpp"
@@ -31,6 +32,7 @@ Renderer::Renderer(RHI::Ref rhi)
     LightManager::Init(rhi);
 
     mPasses = {
+        MakeRef<Shadows>(rhi),
         MakeRef<GBuffer>(rhi),
         MakeRef<SSAO>(rhi),
         MakeRef<Deferred>(rhi),

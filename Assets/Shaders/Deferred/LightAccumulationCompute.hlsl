@@ -128,6 +128,15 @@ float3 CalcSpotLight(float3 world, SpotLight light, float3 V, float3 N, float3 F
     return (kD * albedo / PI + specular) * radiance;
 }
 
+uint GetMaxReflectionLOD()
+{
+    TextureCube Prefilter = ResourceDescriptorHeap[Settings.Prefilter];
+
+    int w, h, l;
+    Prefilter.GetDimensions(0, w, h, l);
+    return l;
+}
+
 [numthreads(8, 8, 1)]
 void CSMain(uint3 ThreadID : SV_DispatchThreadID)
 {
@@ -168,6 +177,7 @@ void CSMain(uint3 ThreadID : SV_DispatchThreadID)
     float3 N = normalize(normal.Load(ThreadID).xyz);
     float3 V = normalize(Settings.CameraPosition - position.xyz);
     float3 R = reflect(-V, N);
+
     float NdotV = max(0.5, dot(N, V));
     float3 Lr = 2.0 * NdotV * N - V;
     float3 Lo = 0.0;
@@ -195,11 +205,9 @@ void CSMain(uint3 ThreadID : SV_DispatchThreadID)
         float3 kd = lerp(1.0 - F, 0.0, metallic);
         float3 diffuseIBL = kd * color.rgb;
 
-        uint maxReflectionLOD = 5;
-        float lod = roughness * maxReflectionLOD;
-        lod = clamp(lod, 0, maxReflectionLOD); // Ensure it does not go out of bounds
-        float3 specularIrradiance = Prefilter.SampleLevel(CubeSampler, Lr, lod).rgb;
-
+        uint maxReflectionLOD = GetMaxReflectionLOD();
+        float3 specularIrradiance = Prefilter.SampleLevel(CubeSampler, Lr, roughness * maxReflectionLOD).rgb;
+        
         float2 brdfUV = float2(NdotV, roughness);
         float2 specularBRDF = BRDF.Sample(RegularSampler, brdfUV).rg;
         float3 specularIBL = (F0 * specularBRDF.x + specularBRDF.y) * specularIrradiance;
@@ -207,6 +215,6 @@ void CSMain(uint3 ThreadID : SV_DispatchThreadID)
     }
 
     //
-    float3 final = directLighting + (indirectLighting * 0.4);
+    float3 final = directLighting + (indirectLighting * 1.0);
     output[ThreadID.xy] = float4(final, 1.0);
 }

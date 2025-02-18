@@ -30,8 +30,8 @@ View::View(Device::Ref device, DescriptorHeaps heaps, ::Ref<Resource> resource, 
             desc.Format = format == TextureFormat::Unknown ? DXGI_FORMAT(texture.Format) : DXGI_FORMAT(format);
             desc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURECUBE;
             desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-            desc.TextureCube.MipLevels = 1;
-            desc.TextureCube.MostDetailedMip = 0;
+            desc.TextureCube.MipLevels = mip == VIEW_ALL_MIPS ? texture.Levels : 1;
+            desc.TextureCube.MostDetailedMip = mip == VIEW_ALL_MIPS ? 0 : mip;
         } else {
             desc.Buffer.FirstElement = 0;
             desc.Buffer.NumElements = resource->GetSize() / resource->GetStride();

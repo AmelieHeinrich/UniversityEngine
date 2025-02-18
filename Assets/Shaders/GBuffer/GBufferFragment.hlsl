@@ -97,6 +97,6 @@ GBufferOutput PSMain(MeshInput input)
     GBufferOutput output;
     output.Albedo = Constants.ShowMeshlets ? float4(meshletColor, 1.0) : textureColor;
     output.Normal = float4(normal, 1.0);
-    output.PBR = float2(pbr.b, pbr.r);
+    output.PBR = float2(pbr.b, pbr.g);
     return output;
 }
