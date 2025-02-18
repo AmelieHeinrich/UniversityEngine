@@ -364,10 +364,13 @@ struct SpotLightComponent
     int ShadowMap;
 
     glm::vec3 Color = glm::vec3(1.0f);
-    int Pad;
+    float Strength = 1.0f;
     
     glm::vec3 Direction = glm::vec3(0.0f);
     int pad1;
+    
+    glm::vec3 Position = glm::vec3(0.0f);
+    int pad2;
 
     glm::mat4 LightView;
     glm::mat4 LightProj;

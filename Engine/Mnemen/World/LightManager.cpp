@@ -61,6 +61,7 @@ void LightManager::Update(const Frame& frame, Ref<Scene> scene)
     {
         auto view = registry->view<TransformComponent, SpotLightComponent>();
         for (auto [id, t, dir] : view.each()) {
+            dir.Position = t.Position;
             dir.Direction = Math::QuatToForward(t.Rotation);
             sData.SpotLights[sData.Data.SpotLightCount] = dir;
             sData.Data.SpotLightCount++;

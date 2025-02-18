@@ -914,10 +914,24 @@ void Editor::EntityEditor()
                 Debug::DrawArrow(transform.Position, transform.Position + glm::normalize(Math::QuatToForward(transform.Rotation)), dir.Color);
 
             if (ImGui::TreeNodeEx(ICON_FA_SUN_O " Directional Light", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) {
+                bool shouldDelete = false;
+                ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(7.0f, 0.6f, 0.6f));
+                ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::HSV(7.0f, 0.7f, 0.7f));
+                ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::HSV(7.0f, 0.8f, 0.8f));
+                ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0.5f, 0.5f));
+                if (ImGui::Button(ICON_FA_TRASH " Delete", ImVec2(ImGui::GetContentRegionAvail().x, 0))) {
+                    shouldDelete = true;
+                }
+                ImGui::PopStyleVar();
+                ImGui::PopStyleColor(3);
+
                 ImGui::Checkbox("Cast Shadows", &dir.CastShadows);
                 ImGui::ColorEdit3("Color", glm::value_ptr(dir.Color));
                 ImGui::SliderFloat("Strength", &dir.Strength, 0.0f, 100.0f, "%.1f");
                 ImGui::TreePop();
+
+                if (shouldDelete)
+                    mSelectedEntity.RemoveComponent<DirectionalLightComponent>();
             }
         }
 
@@ -928,9 +942,23 @@ void Editor::EntityEditor()
                 Debug::DrawSphere(transform.Position, p.Radius, p.Color, 2);
 
             if (ImGui::TreeNodeEx(ICON_FA_LIGHTBULB_O " Point Light", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) {
+                bool shouldDelete = false;
+                ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(7.0f, 0.6f, 0.6f));
+                ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::HSV(7.0f, 0.7f, 0.7f));
+                ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::HSV(7.0f, 0.8f, 0.8f));
+                ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0.5f, 0.5f));
+                if (ImGui::Button(ICON_FA_TRASH " Delete", ImVec2(ImGui::GetContentRegionAvail().x, 0))) {
+                    shouldDelete = true;
+                }
+                ImGui::PopStyleVar();
+                ImGui::PopStyleColor(3);
+
                 ImGui::SliderFloat("Radius", &p.Radius, 0.1f, 100.0f, "%.1f");
                 ImGui::ColorEdit3("Color", glm::value_ptr(p.Color));
                 ImGui::TreePop();
+
+                if (shouldDelete)
+                    mSelectedEntity.RemoveComponent<PointLightComponent>();
             }
         }
 
@@ -941,11 +969,26 @@ void Editor::EntityEditor()
                 Debug::DrawArrow(transform.Position, transform.Position + glm::normalize(Math::QuatToForward(transform.Rotation)), s.Color);
 
             if (ImGui::TreeNodeEx(ICON_FA_THERMOMETER_FULL " Spot Light", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) {
+                bool shouldDelete = false;
+                ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(7.0f, 0.6f, 0.6f));
+                ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::HSV(7.0f, 0.7f, 0.7f));
+                ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::HSV(7.0f, 0.8f, 0.8f));
+                ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0.5f, 0.5f));
+                if (ImGui::Button(ICON_FA_TRASH " Delete", ImVec2(ImGui::GetContentRegionAvail().x, 0))) {
+                    shouldDelete = true;
+                }
+                ImGui::PopStyleVar();
+                ImGui::PopStyleColor(3);
+
                 ImGui::Checkbox("Cast Shadows", &s.CastShadows);
                 ImGui::SliderFloat("Radius", &s.Radius, 0.1f, 100.0f, "%.1f");
                 ImGui::SliderFloat("Outer Radius", &s.OuterRadius, s.Radius, 180.0f, "%.1f");
                 ImGui::ColorEdit3("Color", glm::value_ptr(s.Color));
+                ImGui::SliderFloat("Strength", &s.Strength, 0.1f, 100.0f, "%.1f");
                 ImGui::TreePop();
+
+                if (shouldDelete)
+                    mSelectedEntity.RemoveComponent<SpotLightComponent>();
             }
         }
 

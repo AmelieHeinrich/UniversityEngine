@@ -71,6 +71,63 @@ float3 CalcPointLight(float3 world, PointLight light, float3 V, float3 N, float3
     return (kD * albedo / PI + specular) * radiance * NdotL * (light.Radius * light.Radius);
 }
 
+float3 CalcDirectionalLight(DirectionalLight light, float3 V, float3 N, float3 F0, float roughness, float metallic, float3 albedo)
+{
+    float3 L = normalize(-light.Direction);
+    float attenuation = clamp(dot(N, -L), 0.0, 1.0);
+    if (attenuation > 0.0f)
+        return 0.0;
+
+    float3 lightColor = light.Color;   
+    float3 H = normalize(V + L);
+    float NdotL = max(dot(N, L), Epsilon);
+    float3 radiance = lightColor * NdotL;
+    float NDF = DistributionGGX(N, H, roughness);
+    float G = GeometrySmith(N, V, L, roughness);
+    float3 F = FresnelSchlick(max(dot(H, V), Epsilon), F0);
+    float3 numerator = F * G * NDF;
+    float denominator = 4 * max(dot(N, V), Epsilon) * max(dot(N, L), Epsilon) + Epsilon;
+    float3 specular = numerator / denominator;
+    float3 kS = F;
+    float3 kD = 1.0 - F;
+    kD *= 1.0 - metallic;
+    return (kD * albedo.xyz / PI + specular) * radiance * light.Strength;
+}
+
+float3 CalcSpotLight(float3 world, SpotLight light, float3 V, float3 N, float3 F0, float roughness, float metallic, float3 albedo)
+{   
+    float3 L = normalize(light.Position - world);  // Light direction towards the fragment
+    float3 H = normalize(V + L);                   // Halfway vector
+
+    float distance = length(light.Position - world);
+    float theta = dot(L, normalize(-light.Direction)); // Angle between light direction and surface
+    float smoothFactor = smoothstep(cos(radians(light.OuterRadius)), cos(radians(light.Radius)), theta);
+
+    float NdotL = max(dot(N, L), 0.0);
+    if (NdotL <= 0.0) return 0.0; // No lighting contribution if the surface faces away
+
+    // Distance attenuation (optional)
+    float attenuation = 1.0 / (distance * distance);
+    
+    // Lambertian diffuse lighting
+    float3 radiance = light.Color * NdotL * light.Strength * smoothFactor * attenuation;
+
+    // Cook-Torrance BRDF calculations
+    float NDF = DistributionGGX(N, H, roughness);
+    float G = GeometrySmith(N, V, L, roughness);
+    float3 F = FresnelSchlick(max(dot(H, V), Epsilon), F0);
+
+    float3 numerator = F * G * NDF;
+    float denominator = 4.0 * max(dot(N, V), Epsilon) * max(dot(N, L), Epsilon) + Epsilon;
+    float3 specular = numerator / denominator;
+
+    float3 kS = F;
+    float3 kD = 1.0 - kS;
+    kD *= 1.0 - metallic;
+
+    return (kD * albedo / PI + specular) * radiance;
+}
+
 [numthreads(8, 8, 1)]
 void CSMain(uint3 ThreadID : SV_DispatchThreadID)
 {
@@ -121,6 +178,12 @@ void CSMain(uint3 ThreadID : SV_DispatchThreadID)
     {
         for (int i = 0; i < lightData.PointLightCount; i++) {
             directLighting += CalcPointLight(position.xyz, pointLights[i], V, N, F0, roughness, metallic, color.rgb);
+        }
+        for (int i = 0; i < lightData.DirLightCount; i++) {
+            directLighting += CalcDirectionalLight(directionalLights[i], V, N, F0, roughness, metallic, color.rgb);
+        }
+        for (int i = 0; i < lightData.SpotLightCount; i++) {
+            directLighting += CalcSpotLight(position.xyz, spotLights[i], V, N, F0, roughness, metallic, color.rgb);
         }
     }
 

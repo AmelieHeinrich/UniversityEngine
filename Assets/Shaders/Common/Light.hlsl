@@ -38,10 +38,13 @@ struct SpotLight
     int ShadowMap;
 
     float3 Color;
-    int Pad;
+    float Strength;
 
     float3 Direction;
     float Pad1;
+
+    float3 Position;
+    float Pad2;
 
     column_major float4x4 LightView;
     column_major float4x4 LightProj;
