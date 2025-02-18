@@ -26,9 +26,11 @@ class Asset;
 /// Contains position, texture coordinates, and normal vector.
 struct Vertex
 {
-    glm::vec3 Position; ///< The position of the vertex.
-    glm::vec2 UV;       ///< The texture coordinates.
-    glm::vec3 Normal;   ///< The normal vector.
+    glm::vec3 Position;  ///< The position of the vertex.
+    glm::vec2 UV;        ///< The texture coordinates.
+    glm::vec3 Normal;    ///< The normal vector.
+    glm::vec3 Tangent;   ///< The tangent vector.
+    glm::vec3 Bitangent; ///< The bitangent vector.
 };
 
 /// @struct MeshMaterial

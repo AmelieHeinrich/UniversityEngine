@@ -105,15 +105,19 @@ void Scene::RemoveEntity(Entity e)
     // Cleanup entity data
     if (e.HasComponent<AudioSourceComponent>()) {
         e.GetComponent<AudioSourceComponent>().Free();
+        e.RemoveComponent<AudioSourceComponent>();
     }
     if (e.HasComponent<MeshComponent>()) {
         e.GetComponent<MeshComponent>().Free();
+        e.RemoveComponent<MeshComponent>();
     }
     if (e.HasComponent<CameraComponent>()) {
         e.GetComponent<CameraComponent>().Free();
+        e.RemoveComponent<CameraComponent>();
     }
     if (e.HasComponent<MaterialComponent>()) {
         e.GetComponent<MaterialComponent>().Free();
+        e.RemoveComponent<MaterialComponent>();
     }
     mRegistry.destroy(e.ID);
 }

@@ -120,7 +120,7 @@ void CSMain(uint3 ThreadID : SV_DispatchThreadID)
 
     // Convolve environment map using GGX NDF importance sampling.
     // Weight by cosine term since Epic claims it generally improves quality.
-    for(uint i = 0; i < NumSamples; ++i) {
+    for (uint i = 0; i < NumSamples; ++i) {
         float2 u = SampleHammersley(i);
         float3 Lh = TangentToWorld(SampleGGX(u.x, u.y, PrefilterSettings.Roughness), N, S, T);
 

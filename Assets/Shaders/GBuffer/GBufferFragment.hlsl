@@ -6,7 +6,10 @@
 struct MeshInput
 {
     float4 Position : SV_POSITION;
+    float4 WorldPosition : POSITION;
     float3 Normal : NORMAL;
+    float3 Tangent : TANGENT;
+    float3 Bitangent : BITANGENT;
     float2 UV : TEXCOORD;
     uint MeshletIndex : COLOR0;
 };
@@ -58,17 +61,7 @@ float3 GetNormalFromMap(MeshInput Input)
     SamplerState Sampler = SamplerDescriptorHeap[Constants.LinearSampler];
 
     float3 tangentNormal = NormalTexture.Sample(Sampler, Input.UV.xy).rgb * 2.0 - 1.0;
-    float3 normal = normalize(Input.Normal.xyz);
-
-    float3 Q1 = ddx(Input.Position.xyz);
-    float3 Q2 = ddy(Input.Position.xyz);
-    float2 ST1 = ddx(Input.UV.xy);
-    float2 ST2 = ddy(Input.UV.xy);
-
-    float3 T = Q1 * ST2.y - Q2 * ST1.y + 0.001;
-    float3 B = cross(normal, T) + 0.001;
-    float3 N = normal;
-    float3x3 TBN = float3x3(normalize(T), normalize(B), N);
+    float3x3 TBN = float3x3(Input.Tangent, Input.Bitangent, Input.Normal);
 
     return normalize(mul(tangentNormal, TBN));
 }
@@ -88,6 +81,10 @@ GBufferOutput PSMain(MeshInput input)
     textureColor.rgb = pow(textureColor.rgb, 2.2);
 
     float3 normal = normalize(input.Normal);
+    if (Constants.NormalTexture != -1) {
+        normal = GetNormalFromMap(input);
+    }
+
     float3 pbr = pbrTexture.Sample(linearSampler, input.UV).rgb;
 
     GBufferOutput output;

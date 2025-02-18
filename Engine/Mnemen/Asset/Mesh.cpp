@@ -18,7 +18,7 @@ void Mesh::Load(RHI::Ref rhi, const String& path)
     Directory = path.substr(0, path.find_last_of('/'));
 
     Assimp::Importer importer;
-    const aiScene* scene = importer.ReadFile(path, aiProcess_FlipUVs | aiProcess_PreTransformVertices);
+    const aiScene* scene = importer.ReadFile(path, aiProcess_FlipUVs | aiProcess_PreTransformVertices | aiProcess_CalcTangentSpace);
     if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
         LOG_ERROR("Failed to load model at path %s", path.c_str());
     }
@@ -93,6 +93,10 @@ void Mesh::ProcessPrimitive(aiMesh *mesh, MeshNode* node, const aiScene *scene, 
         }
         if (mesh->mTextureCoords[0]) {
             vertex.UV = glm::vec2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
+        }
+        if (mesh->HasTangentsAndBitangents()) {
+            vertex.Tangent = glm::vec3(mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z);
+            vertex.Bitangent = glm::vec3(mesh->mBitangents[i].x, mesh->mBitangents[i].y, mesh->mBitangents[i].z);
         }
         
         vertices.push_back(vertex);

@@ -52,7 +52,7 @@ void SkyboxCooker::GenerateSkybox(Ref<Skybox> skybox)
         desc.Width = 512;
         desc.Height = 512;
         desc.Depth = 6;
-        desc.Format = TextureFormat::RGBA16Unorm;
+        desc.Format = TextureFormat::RGBA16Float;
         desc.Name = skybox->Path + " Skybox";
         desc.Usage = TextureUsage::ShaderResource | TextureUsage::Storage;
         desc.Levels = 1;
@@ -66,7 +66,7 @@ void SkyboxCooker::GenerateSkybox(Ref<Skybox> skybox)
         desc.Width = 32;
         desc.Height = 32;
         desc.Depth = 6;
-        desc.Format = TextureFormat::RGBA16Unorm;
+        desc.Format = TextureFormat::RGBA16Float;
         desc.Name = skybox->Path + " Irradiance";
         desc.Usage = TextureUsage::ShaderResource | TextureUsage::Storage;
         desc.Levels = 1;
@@ -80,7 +80,7 @@ void SkyboxCooker::GenerateSkybox(Ref<Skybox> skybox)
         desc.Width = 512;
         desc.Height = 512;
         desc.Depth = 6;
-        desc.Format = TextureFormat::RGBA16Unorm;
+        desc.Format = TextureFormat::RGBA16Float;
         desc.Name = skybox->Path + " Prefilter";
         desc.Usage = TextureUsage::ShaderResource | TextureUsage::Storage;
         desc.Levels = 5;

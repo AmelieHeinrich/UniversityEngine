@@ -1,201 +1,14 @@
 {
     "entities": [
         {
-            "id": 8,
+            "id": 4,
             "name": "Point Light",
-            "parent": 1,
+            "parent": 0,
             "scripts": [],
             "transform": {
                 "position": [
                     -3.6337006092071533,
                     1.0345478057861328,
-                    0.0
-                ],
-                "rotation": [
-                    0.0,
-                    0.0,
-                    0.0,
-                    1.0
-                ],
-                "scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "id": 7,
-            "mesh": {
-                "path": "Assets/Models/DamagedHelmet/DamagedHelmet.gltf"
-            },
-            "name": "DamagedHelmet",
-            "parent": 3,
-            "scripts": [],
-            "transform": {
-                "position": [
-                    -6.171258428366855e-05,
-                    0.5337206125259399,
-                    -0.17546385526657104
-                ],
-                "rotation": [
-                    7.463426072717994e-07,
-                    -0.7069340944290161,
-                    7.467072009603726e-07,
-                    0.7072794437408447
-                ],
-                "scale": [
-                    0.6079997420310974,
-                    0.6079999804496765,
-                    0.6079997420310974
-                ]
-            }
-        },
-        {
-            "id": 6,
-            "mesh": {
-                "path": "Assets/Models/Suzanne/Suzanne.gltf"
-            },
-            "name": "Suzanne",
-            "parent": 3,
-            "scripts": [],
-            "transform": {
-                "position": [
-                    0.1818707287311554,
-                    0.5912702679634094,
-                    -1.5119359493255615
-                ],
-                "rotation": [
-                    -7.08068000676576e-07,
-                    -0.7069340944290161,
-                    -7.069930916259182e-07,
-                    0.7072794437408447
-                ],
-                "scale": [
-                    0.5999999642372131,
-                    0.6000000238418579,
-                    0.5999999642372131
-                ]
-            }
-        },
-        {
-            "id": 5,
-            "mesh": {
-                "path": "Assets/Models/Primitives/Plane.gltf"
-            },
-            "name": "Plane",
-            "parent": 3,
-            "scripts": [],
-            "transform": {
-                "position": [
-                    -1.4210854715202004e-14,
-                    -0.07029211521148682,
-                    0.0
-                ],
-                "rotation": [
-                    0.0,
-                    0.0,
-                    7.241199962782288e-14,
-                    1.0
-                ],
-                "scale": [
-                    6.279999732971191,
-                    6.279999732971191,
-                    6.279999732971191
-                ]
-            }
-        },
-        {
-            "camera": {
-                "far": 200.0,
-                "fov": 90.0,
-                "near": 0.10000000149011612,
-                "primary": true,
-                "volumePath": "Assets/Volumes/TestVolume.mfx"
-            },
-            "id": 4,
-            "name": "Camera",
-            "parent": null,
-            "scripts": [],
-            "transform": {
-                "position": [
-                    -4.224717617034912,
-                    2.936431407928467,
-                    -0.12482041120529175
-                ],
-                "rotation": [
-                    0.22497716546058655,
-                    0.669276237487793,
-                    -0.22565284371376038,
-                    0.6712192893028259
-                ],
-                "scale": [
-                    0.999998927116394,
-                    0.9999998211860657,
-                    0.9999964237213135
-                ]
-            }
-        },
-        {
-            "id": 3,
-            "name": "Meshes",
-            "parent": null,
-            "scripts": [],
-            "transform": {
-                "position": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "rotation": [
-                    0.0,
-                    0.0,
-                    1.0557245104791946e-06,
-                    1.0
-                ],
-                "scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "id": 2,
-            "mesh": {
-                "path": "Assets/Models/SciFiHelmet/SciFiHelmet.gltf"
-            },
-            "name": "SciFiHelmet",
-            "parent": 3,
-            "scripts": [],
-            "transform": {
-                "position": [
-                    -0.06822247803211212,
-                    0.6391249895095825,
-                    1.0249440670013428
-                ],
-                "rotation": [
-                    -1.3752134691458195e-05,
-                    -0.7069846987724304,
-                    -1.3746870536124334e-05,
-                    0.7072288393974304
-                ],
-                "scale": [
-                    0.4999999403953552,
-                    0.5,
-                    0.4999999403953552
-                ]
-            }
-        },
-        {
-            "id": 1,
-            "name": "Lights",
-            "parent": null,
-            "scripts": [],
-            "transform": {
-                "position": [
-                    0.0,
-                    0.0,
                     0.0
                 ],
                 "rotation": [
@@ -221,9 +34,9 @@
                 ],
                 "strength": 10.699999809265137
             },
-            "id": 0,
+            "id": 3,
             "name": "Sun",
-            "parent": 1,
+            "parent": 0,
             "scripts": [],
             "transform": {
                 "position": [
@@ -241,6 +54,93 @@
                     0.9999998807907104,
                     1.0002549886703491,
                     1.0000197887420654
+                ]
+            }
+        },
+        {
+            "id": 2,
+            "material": {
+                "albedo": "",
+                "inherit": false,
+                "normal": "Assets/Textures/test.png"
+            },
+            "mesh": {
+                "path": "Assets/Models/Primitives/Plane.gltf"
+            },
+            "name": "Plane",
+            "parent": null,
+            "scripts": [],
+            "transform": {
+                "position": [
+                    0.0,
+                    -1.1359566450119019,
+                    -4.277826981535782e-09
+                ],
+                "rotation": [
+                    1.882919375972847e-09,
+                    0.0,
+                    0.0,
+                    1.0
+                ],
+                "scale": [
+                    7.938540458679199,
+                    7.938231945037842,
+                    7.937957286834717
+                ]
+            }
+        },
+        {
+            "camera": {
+                "far": 200.0,
+                "fov": 90.0,
+                "near": 0.10000000149011612,
+                "primary": true,
+                "volumePath": "Assets/Volumes/TestVolume.mfx"
+            },
+            "id": 1,
+            "name": "Camera",
+            "parent": null,
+            "scripts": [],
+            "transform": {
+                "position": [
+                    -4.224717617034912,
+                    2.936431407928467,
+                    -0.12482041120529175
+                ],
+                "rotation": [
+                    0.22497311234474182,
+                    0.6692776083946228,
+                    -0.22564876079559326,
+                    0.6712206602096558
+                ],
+                "scale": [
+                    0.9999988675117493,
+                    0.9999997615814209,
+                    0.9999960660934448
+                ]
+            }
+        },
+        {
+            "id": 0,
+            "name": "Lights",
+            "parent": null,
+            "scripts": [],
+            "transform": {
+                "position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "rotation": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0
+                ],
+                "scale": [
+                    1.0,
+                    1.0,
+                    1.0
                 ]
             }
         }

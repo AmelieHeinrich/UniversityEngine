@@ -168,18 +168,17 @@ void CSMain(uint3 ThreadID : SV_DispatchThreadID)
     float ndcDepth = depth.Load(int3(ThreadID.xy, 0));
     float4 position = GetPositionFromDepth(uv, ndcDepth);
     float4 color = albedo.Load(ThreadID);
+
     float metallic = pbr.Load(ThreadID).r;
     float roughness = pbr.Load(ThreadID).g;
-    
+
     // Initial lighting variables
     float3 N = normalize(normal.Load(ThreadID).xyz);
     float3 V = normalize(Settings.CameraPosition - position.xyz);
-    float3 R = reflect(-V, N);
-
-    float NdotV = max(0.5, dot(N, V));
-    float3 Lr = 2.0 * NdotV * N - V;
-    float3 Lo = 0.0;
     float3 F0 = lerp(0.04, color.xyz, metallic);
+
+    float cosLo = max(0.0, dot(N, V));
+    float3 Lr = 2.0 * cosLo * N - V;
 
     // Direct lighting calculation
     float3 directLighting = 0.0;
@@ -199,20 +198,19 @@ void CSMain(uint3 ThreadID : SV_DispatchThreadID)
     float3 indirectLighting = 0.0;
     {
         float3 irradiance = Irradiance.Sample(CubeSampler, N).rgb;
-        float3 F = FresnelSchlick(NdotV, F0);
+        float3 F = FresnelSchlickRoughness(max(dot(N, V), 0.0), F0, roughness);
         float3 kd = lerp(1.0 - F, 0.0, metallic);
-        float3 diffuseIBL = kd * color.rgb;
-
-        uint maxReflectionLOD = GetMaxReflectionLOD();
-        float3 specularIrradiance = Prefilter.SampleLevel(CubeSampler, Lr, roughness * maxReflectionLOD).rgb;
+        float3 diffuseIBL = kd * color.rgb * irradiance;
         
-        float2 brdfUV = float2(NdotV, roughness);
-        float2 specularBRDF = BRDF.Sample(RegularSampler, brdfUV).rg;
+        uint maxLOD = GetMaxReflectionLOD();
+        float3 specularIrradiance = Prefilter.SampleLevel(CubeSampler, Lr, roughness * maxLOD).rgb;
+        float2 specularBRDF = BRDF.Sample(RegularSampler, float2(cosLo, 1.0 - roughness)).rg;
         float3 specularIBL = (F0 * specularBRDF.x + specularBRDF.y) * specularIrradiance;
-        indirectLighting = (diffuseIBL + specularIBL) * irradiance;
+
+        indirectLighting = diffuseIBL + specularIBL;
     }
 
     //
-    float3 final = directLighting + (indirectLighting * 1.0);
-    output[ThreadID.xy] = float4(final.rgb, 1.0);
+    float3 final = directLighting + (indirectLighting * 0.4);
+    output[ThreadID.xy] = float4(final, 1.0);
 }

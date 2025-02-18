@@ -1,7 +1,40 @@
 {
     "entities": [
         {
+            "directionalLight": {
+                "castShadows": false,
+                "color": [
+                    1.0,
+                    1.0,
+                    1.0
+                ],
+                "strength": 27.799999237060547
+            },
             "id": 1,
+            "name": "Sun",
+            "parent": null,
+            "scripts": [],
+            "transform": {
+                "position": [
+                    0.0,
+                    5.277977466583252,
+                    -1.8875521163863596e-06
+                ],
+                "rotation": [
+                    0.7071066498756409,
+                    0.0,
+                    0.0,
+                    0.70710688829422
+                ],
+                "scale": [
+                    1.0,
+                    0.9999997019767761,
+                    0.9999997019767761
+                ]
+            }
+        },
+        {
+            "id": 0,
             "mesh": {
                 "path": "Assets/Models/Balls/MetalRoughSpheres.gltf"
             },
@@ -24,39 +57,6 @@
                     1.0,
                     1.0,
                     1.0
-                ]
-            }
-        },
-        {
-            "directionalLight": {
-                "castShadows": false,
-                "color": [
-                    1.0,
-                    1.0,
-                    1.0
-                ],
-                "strength": 27.799999237060547
-            },
-            "id": 0,
-            "name": "Sun",
-            "parent": null,
-            "scripts": [],
-            "transform": {
-                "position": [
-                    0.0,
-                    5.277977466583252,
-                    -1.8875521163863596e-06
-                ],
-                "rotation": [
-                    0.7071066498756409,
-                    0.0,
-                    0.0,
-                    0.70710688829422
-                ],
-                "scale": [
-                    1.0,
-                    0.9999997615814209,
-                    0.9999997615814209
                 ]
             }
         }

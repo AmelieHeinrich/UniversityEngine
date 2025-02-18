@@ -54,6 +54,7 @@ void Editor::OnUpdate(float dt)
     cam.Primary = !mScenePlaying ? 2 : 0;
     cam.Projection = mCamera.Projection();
     cam.View = mCamera.View();
+    cam.Position = mCamera.Position();
 }
 
 void Editor::PostPresent()
