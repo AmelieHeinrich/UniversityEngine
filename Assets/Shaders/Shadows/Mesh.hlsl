@@ -8,6 +8,8 @@ struct Vertex
     float3 Position : POSITION;
     float2 TexCoords : TEXCOORD;
     float3 Normals : NORMAL;
+    float3 Tangent : TANGENT;
+    float3 Bitangent : BITANGENT;
 };
 
 struct Meshlet
@@ -57,7 +59,7 @@ VertexOut GetVertexAttributes(uint meshletIndex, uint vertexIndex)
     VertexOut Output = (VertexOut)0;
     float4 worldPosition = mul(Constants.Transform, float4(v.Position, 1.0f));
     float4 lightViewPosition = mul(Constants.LightView, worldPosition);
-    Output.Clip = mul(lightViewPosition, Constants.LightProj);
+    Output.Clip = mul(Constants.LightProj, lightViewPosition);
     return Output;
 }
 

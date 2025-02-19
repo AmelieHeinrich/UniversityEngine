@@ -210,8 +210,18 @@ void GBuffer::Render(const Frame& frame, ::Ref<Scene> scene)
                 globalTransform,
                 glm::inverse(globalTransform)
             };
+            frame.CommandBuffer->Barrier(primitive.VertexBuffer, ResourceLayout::Shader);
+            frame.CommandBuffer->Barrier(primitive.IndexBuffer, ResourceLayout::Shader);
+            frame.CommandBuffer->Barrier(primitive.MeshletBuffer, ResourceLayout::Shader);
+            frame.CommandBuffer->Barrier(primitive.MeshletVertices, ResourceLayout::Shader);
+            frame.CommandBuffer->Barrier(primitive.MeshletTriangles, ResourceLayout::Shader);
             frame.CommandBuffer->GraphicsPushConstants(&data, sizeof(data), 0);
             frame.CommandBuffer->DispatchMesh(primitive.MeshletCount, primitive.IndexCount / 3);
+            frame.CommandBuffer->Barrier(primitive.VertexBuffer, ResourceLayout::Common);
+            frame.CommandBuffer->Barrier(primitive.IndexBuffer, ResourceLayout::Common);
+            frame.CommandBuffer->Barrier(primitive.MeshletBuffer, ResourceLayout::Common);
+            frame.CommandBuffer->Barrier(primitive.MeshletVertices, ResourceLayout::Common);
+            frame.CommandBuffer->Barrier(primitive.MeshletTriangles, ResourceLayout::Common);
         }
         if (!node->Children.empty()) {
             for (MeshNode* child : node->Children) {

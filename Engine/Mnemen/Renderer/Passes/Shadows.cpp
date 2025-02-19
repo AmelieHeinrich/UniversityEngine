@@ -6,6 +6,7 @@
 #include "Shadows.hpp"
 
 #include <Utility/Math.hpp>
+#include <Core/Profiler.hpp>
 #include "Debug.hpp"
 
 Shadows::Shadows(RHI::Ref rhi)
@@ -60,6 +61,7 @@ Shadows::Shadows(RHI::Ref rhi)
 
 void Shadows::Render(const Frame& frame, ::Ref<Scene> scene)
 {
+    PROFILE_FUNCTION();
     frame.CommandBuffer->BeginMarker("Shadows");
     RenderCascades(frame, scene);
     frame.CommandBuffer->EndMarker();
@@ -67,6 +69,8 @@ void Shadows::Render(const Frame& frame, ::Ref<Scene> scene)
 
 void Shadows::RenderCascades(const Frame& frame, ::Ref<Scene> scene)
 {
+    PROFILE_FUNCTION();
+
     // Select first dir light that cast shadows
     DirectionalLightComponent caster;
 
@@ -140,8 +144,18 @@ void Shadows::RenderCascades(const Frame& frame, ::Ref<Scene> scene)
                     mCascades[i].View,
                     mCascades[i].Proj
                 };
+                frame.CommandBuffer->Barrier(primitive.VertexBuffer, ResourceLayout::Shader);
+                frame.CommandBuffer->Barrier(primitive.IndexBuffer, ResourceLayout::Shader);
+                frame.CommandBuffer->Barrier(primitive.MeshletBuffer, ResourceLayout::Shader);
+                frame.CommandBuffer->Barrier(primitive.MeshletVertices, ResourceLayout::Shader);
+                frame.CommandBuffer->Barrier(primitive.MeshletTriangles, ResourceLayout::Shader);
                 frame.CommandBuffer->GraphicsPushConstants(&data, sizeof(data), 0);
                 frame.CommandBuffer->DispatchMesh(primitive.MeshletCount, primitive.IndexCount / 3);
+                frame.CommandBuffer->Barrier(primitive.VertexBuffer, ResourceLayout::Common);
+                frame.CommandBuffer->Barrier(primitive.IndexBuffer, ResourceLayout::Common);
+                frame.CommandBuffer->Barrier(primitive.MeshletBuffer, ResourceLayout::Common);
+                frame.CommandBuffer->Barrier(primitive.MeshletVertices, ResourceLayout::Common);
+                frame.CommandBuffer->Barrier(primitive.MeshletTriangles, ResourceLayout::Common);
             }
             if (!node->Children.empty()) {
                 for (MeshNode* child : node->Children) {

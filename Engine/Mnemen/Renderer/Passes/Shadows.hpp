@@ -7,7 +7,7 @@
 
 #include <Renderer/RenderPass.hpp>
 
-constexpr int DIR_LIGHT_SHADOW_DIMENSION = 4096;
+constexpr int DIR_LIGHT_SHADOW_DIMENSION = 2048;
 constexpr int SPOT_LIGHT_SHADOW_DIMENSION = 2048;
 constexpr int SHADOW_CASCADE_COUNT = 4;
 
