@@ -1283,6 +1283,11 @@ void Editor::FXVolumeEditor()
             ImGui::Checkbox("Enable", &volume->EnableSkybox);
             ImGui::TreePop();
         }
+        if (ImGui::TreeNodeEx("Posterization", ImGuiTreeNodeFlags_Framed)) {
+            ImGui::Checkbox("Enable", &volume->EnablePosterization);
+            ImGui::DragFloat("Levels", &volume->PosterizationLevels, 0.1f, 1.0f, 100.0f, "%.1f");
+            ImGui::TreePop();
+        }
         if (ImGui::TreeNodeEx("Color Grading", ImGuiTreeNodeFlags_Framed)) {
             ImGui::Checkbox("Enable", &volume->EnableColorGrading);
             ImGui::SliderFloat("Brightness", &volume->Brightness, 0.0f, 10.0f, "%.2f");
@@ -1312,6 +1317,16 @@ void Editor::FXVolumeEditor()
         }
         if (ImGui::TreeNodeEx("Composite", ImGuiTreeNodeFlags_Framed)) {
             ImGui::SliderFloat("Gamma", &volume->GammaCorrection, 0.1f, 10.0f);
+            ImGui::TreePop();
+        }
+        if (ImGui::TreeNodeEx("Pixelization", ImGuiTreeNodeFlags_Framed)) {
+            ImGui::Checkbox("Enable", &volume->EnablePixelization);
+            ImGui::DragInt("Size", &volume->PixelSize, 1.0f, 1, 100);
+            ImGui::TreePop();
+        }
+        if (ImGui::TreeNodeEx("Film Grain", ImGuiTreeNodeFlags_Framed)) {
+            ImGui::Checkbox("Enable", &volume->EnableFilmGrain);
+            ImGui::DragFloat("Amount", &volume->FilmGrainAmount, 0.1f, 0.0f, 1.0f, "%.1f");
             ImGui::TreePop();
         }
     }

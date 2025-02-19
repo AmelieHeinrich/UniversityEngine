@@ -31,6 +31,12 @@ void PostProcessVolume::Load(const String& path)
         nlohmann::json s = root["skybox"];
         EnableSkybox = s["enable"].get<bool>();
     }
+    
+    if (root.contains("posterization")) {
+        nlohmann::json p = root["posterization"];
+        EnablePosterization = p["enable"];
+        PosterizationLevels = p["levels"];
+    }
 
     if (root.contains("colorGrading")) {
         nlohmann::json cg = root["colorGrading"];
@@ -78,6 +84,18 @@ void PostProcessVolume::Load(const String& path)
 
         GammaCorrection = gc["factor"].get<float>();
     }
+
+    if (root.contains("pixelization")) {
+        nlohmann::json p = root["pixelization"];
+        EnablePixelization = p["enable"];
+        PixelSize = p["size"];
+    }
+
+    if (root.contains("filmGrain")) {
+        nlohmann::json f = root["filmGrain"];
+        EnableFilmGrain = f["enable"];
+        FilmGrainAmount = f["amount"];
+    }
 }
 
 void PostProcessVolume::Save(const String& path)
@@ -100,6 +118,11 @@ void PostProcessVolume::Save(const String& path)
 
     root["skybox"] = {
         { "enable", EnableSkybox }
+    };
+
+    root["posterization"] = {
+        { "enable", EnablePosterization },
+        { "levels", PosterizationLevels }
     };
 
     root["colorGrading"] = {
@@ -125,6 +148,16 @@ void PostProcessVolume::Save(const String& path)
 
     root["gammaCorrect"] = {
         {"factor", GammaCorrection}
+    };
+
+    root["pixelization"] = {
+        { "enable", EnablePixelization },
+        { "size", PixelSize }
+    };
+
+    root["filmGrain"] = {
+        { "enable", EnableFilmGrain },
+        { "amount", FilmGrainAmount }
     };
 
     File::WriteJSON(root, path);

@@ -43,7 +43,15 @@ void LightManager::Update(const Frame& frame, Ref<Scene> scene)
     {
         auto view = registry->view<TransformComponent, DirectionalLightComponent>();
         for (auto [id, t, dir] : view.each()) {
-            dir.Direction = Math::QuatToForward(t.Rotation);
+            Entity entity(registry);
+            entity.ID = id;
+
+            glm::mat4 transform = entity.GetWorldTransform();
+            glm::vec3 t, r, s;
+            Math::DecomposeTransform(transform, t, r, s);
+            glm::vec3 forward = Math::EulerToForward(r);
+            
+            dir.Direction = forward;
             sData.DirLights[sData.Data.DirLightCount] = dir;
             sData.Data.DirLightCount++;
         }
@@ -52,7 +60,14 @@ void LightManager::Update(const Frame& frame, Ref<Scene> scene)
     {
         auto view = registry->view<TransformComponent, PointLightComponent>();
         for (auto [id, t, dir] : view.each()) {
-            dir.Position = t.Position;
+            Entity entity(registry);
+            entity.ID = id;
+
+            glm::mat4 transform = entity.GetWorldTransform();
+            glm::vec3 t, r, s;
+            Math::DecomposeTransform(transform, t, r, s);
+            
+            dir.Position = t;
             sData.PointLights[sData.Data.PointLightCount] = dir;
             sData.Data.PointLightCount++;
         }
@@ -61,8 +76,16 @@ void LightManager::Update(const Frame& frame, Ref<Scene> scene)
     {
         auto view = registry->view<TransformComponent, SpotLightComponent>();
         for (auto [id, t, dir] : view.each()) {
-            dir.Position = t.Position;
-            dir.Direction = Math::QuatToForward(t.Rotation);
+            Entity entity(registry);
+            entity.ID = id;
+
+            glm::mat4 transform = entity.GetWorldTransform();
+            glm::vec3 t, r, s;
+            Math::DecomposeTransform(transform, t, r, s);
+            glm::vec3 forward = Math::EulerToForward(r);
+
+            dir.Position = t;
+            dir.Direction = forward;
             sData.SpotLights[sData.Data.SpotLightCount] = dir;
             sData.Data.SpotLightCount++;
         }

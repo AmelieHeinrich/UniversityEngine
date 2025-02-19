@@ -33,6 +33,10 @@
         "focusPoint": 6.3470001220703125,
         "focusRange": 8.626999855041504
     },
+    "filmGrain": {
+        "amount": 0.10000000149011612,
+        "enable": false
+    },
     "gammaCorrect": {
         "factor": 2.24399995803833
     },
@@ -40,6 +44,14 @@
         "direct": 1.0399999618530273,
         "indirect": 0.0,
         "visualizeMeshlets": false
+    },
+    "pixelization": {
+        "enable": false,
+        "size": 5
+    },
+    "posterization": {
+        "enable": false,
+        "levels": 10.100000381469727
     },
     "shadows": {
         "freeze": false,

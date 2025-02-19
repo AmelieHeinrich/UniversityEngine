@@ -9,12 +9,15 @@
 
 #include "Passes/Shadows.hpp"
 #include "Passes/GBuffer.hpp"
+#include "Passes/SSAO.hpp"
 #include "Passes/Deferred.hpp"
 #include "Passes/SkyboxForward.hpp"
-#include "Passes/Composite.hpp"
+#include "Passes/Posterization.hpp"
 #include "Passes/DOF.hpp"
-#include "Passes/SSAO.hpp"
 #include "Passes/ColorGrading.hpp"
+#include "Passes/Composite.hpp"
+#include "Passes/Pixelization.hpp"
+#include "Passes/FilmGrain.hpp"
 #include "Passes/Debug.hpp"
 
 #include <Core/Logger.hpp>
@@ -37,9 +40,12 @@ Renderer::Renderer(RHI::Ref rhi)
         MakeRef<SSAO>(rhi),
         MakeRef<Deferred>(rhi),
         MakeRef<SkyboxForward>(rhi),
+        MakeRef<Posterization>(rhi),
         MakeRef<DOF>(rhi),
         MakeRef<ColorGrading>(rhi),
         MakeRef<Composite>(rhi),
+        MakeRef<Pixelization>(rhi),
+        MakeRef<FilmGrain>(rhi),
         MakeRef<Debug>(rhi)
     };
 

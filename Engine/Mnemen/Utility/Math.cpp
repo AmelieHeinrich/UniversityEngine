@@ -4,7 +4,11 @@
 //
 
 #include <Utility/Math.hpp>
+
 #include <glm/gtx/matrix_decompose.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/euler_angles.hpp>
+#include <glm/gtc/constants.hpp>
 
 glm::vec3 Math::GetNormalizedPerpendicular(glm::vec3 base)
 {
@@ -87,6 +91,19 @@ glm::vec3 Math::QuatToForward(glm::quat q)
         2.0f * (q.y * q.z - q.w * q.x),
         1.0f - 2.0f * (q.x * q.x + q.y * q.y)
     );
+}
+
+glm::vec3 Math::EulerToForward(glm::vec3 deg)
+{
+	glm::vec3 eulerAnglesRadians = glm::radians(deg);
+    glm::mat4 rotationMatrix = glm::yawPitchRoll(
+        eulerAnglesRadians.y, // Yaw
+        eulerAnglesRadians.x, // Pitch
+        eulerAnglesRadians.z  // Roll
+    );
+
+    glm::vec4 forward = rotationMatrix * glm::vec4(0, 0, 1, 0);
+    return glm::normalize(glm::vec3(forward));
 }
 
 Vector<glm::vec4> Math::FrustumCorners(glm::mat4 view, glm::mat4 proj)
