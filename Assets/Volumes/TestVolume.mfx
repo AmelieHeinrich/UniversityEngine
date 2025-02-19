@@ -38,5 +38,8 @@
     },
     "geometry": {
         "visualizeMeshlets": false
+    },
+    "shadows": {
+        "lambda": 0.949999988079071
     }
 }

@@ -21,7 +21,7 @@ public:
 
     // BEGIN SETTINGS
 
-    float CascadeSplitLambda = 0.80f;
+    float CascadeSplitLambda = 0.95f;
 
     bool VisualizeMeshlets = false;
 

@@ -40,6 +40,6 @@
         "visualizeMeshlets": false
     },
     "shadows": {
-        "lambda": 0.949999988079071
+        "lambda": 0.699999988079071
     }
 }
