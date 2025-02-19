@@ -159,6 +159,15 @@ float3 CalcSpotLight(float3 world, SpotLight light, float3 V, float3 N, float3 F
     float NdotL = max(dot(N, L), 0.0);
     if (NdotL <= 0.0) return 0.0; // No lighting contribution if the surface faces away
 
+    // Shadow factor
+    float shadow = 1.0;
+    if (light.CastShadows && light.ShadowMap != -1) {
+        Texture2D<float> depthMap = ResourceDescriptorHeap[light.ShadowMap];
+        SamplerComparisonState sampler = SamplerDescriptorHeap[Settings.ShadowSampler];
+
+        shadow = PCFSpot(depthMap, sampler, float4(world, 1.0), light.LightView, light.LightProj);
+    }
+
     // Distance attenuation (optional)
     float attenuation = 1.0 / (distance * distance);
     
@@ -178,7 +187,7 @@ float3 CalcSpotLight(float3 world, SpotLight light, float3 V, float3 N, float3 F
     float3 kD = 1.0 - kS;
     kD *= 1.0 - metallic;
 
-    return (kD * albedo / PI + specular) * radiance;
+    return (kD * albedo / PI + specular) * radiance * shadow;
 }
 
 uint GetMaxReflectionLOD()

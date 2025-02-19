@@ -18,7 +18,7 @@ void Mesh::Load(RHI::Ref rhi, const String& path)
     Directory = path.substr(0, path.find_last_of('/'));
 
     Assimp::Importer importer;
-    const aiScene* scene = importer.ReadFile(path, aiProcess_FlipUVs | aiProcess_PreTransformVertices | aiProcess_CalcTangentSpace);
+    const aiScene* scene = importer.ReadFile(path, aiProcess_FlipUVs | aiProcess_PreTransformVertices | aiProcess_CalcTangentSpace | aiProcess_GenSmoothNormals);
     if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
         LOG_ERROR("Failed to load model at path %s", path.c_str());
     }

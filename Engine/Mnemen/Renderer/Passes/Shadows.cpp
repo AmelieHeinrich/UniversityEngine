@@ -62,8 +62,143 @@ Shadows::Shadows(RHI::Ref rhi)
 void Shadows::Render(const Frame& frame, ::Ref<Scene> scene)
 {
     PROFILE_FUNCTION();
+  
+    auto view = scene->GetRegistry()->view<SpotLightComponent>();
+  
     frame.CommandBuffer->BeginMarker("Shadows");
-    RenderCascades(frame, scene);
+    {
+        // Directional Lights
+        frame.CommandBuffer->BeginMarker("Cascaded Shadow Maps");
+        RenderCascades(frame, scene);
+        frame.CommandBuffer->EndMarker();
+
+        // Spot Lights
+        frame.CommandBuffer->BeginMarker("Spot Shadow Maps");
+        for (auto [id, spot] : view.each()) {
+            Entity entity(scene->GetRegistry());
+            entity.ID = id;
+
+            RenderSpot(frame, scene, entity);
+        }
+        frame.CommandBuffer->EndMarker();
+
+        // TODO: Point Lights?
+    }
+    frame.CommandBuffer->EndMarker();
+}
+
+void Shadows::RenderSpot(const Frame& frame, ::Ref<Scene> scene, Entity entity)
+{
+    // Is this spot light a new shadow caster? Has the caster been disabled? Free the resources accordingly!!
+    SpotLightComponent& spot = entity.GetComponent<SpotLightComponent>();
+    if (mSpotLightShadows.contains(entity.ID)) {
+        if (!spot.CastShadows) {
+            mRHI->Wait();
+            spot.ShadowMap = -1;
+            mSpotLightShadows.erase(entity.ID);
+            return;
+        }
+    } else {
+        if (spot.CastShadows) {
+            SpotLightShadow shadow;
+            shadow.Parent = &spot;
+
+            TextureDesc desc;
+            desc.Name = entity.GetComponent<TagComponent>().Tag + " Spot Light Shadow Map";
+            desc.Usage = TextureUsage::DepthTarget;
+            desc.Width = SPOT_LIGHT_SHADOW_DIMENSION;
+            desc.Height = SPOT_LIGHT_SHADOW_DIMENSION;
+            desc.Depth = 1;
+            desc.Format = TextureFormat::Depth32;
+            desc.Levels = 1;
+            shadow.ShadowMap = mRHI->CreateTexture(desc);
+
+            shadow.SRV = mRHI->CreateView(shadow.ShadowMap, ViewType::ShaderResource, ViewDimension::Texture, TextureFormat::R32Float);
+            shadow.DSV = mRHI->CreateView(shadow.ShadowMap, ViewType::DepthTarget, ViewDimension::Texture);
+
+            mSpotLightShadows[entity.ID] = shadow;
+        } else {
+            return;
+        }
+    }
+
+    // And then actually render the shadow map...
+    auto shadow = mSpotLightShadows[entity.ID];
+    float aspect = (float)SPOT_LIGHT_SHADOW_DIMENSION / (float)SPOT_LIGHT_SHADOW_DIMENSION;
+    float nearPlane = 1.0f;
+    float farPlane = 25.0f;
+
+    spot.LightProj = glm::perspective(glm::radians(spot.OuterRadius) * 2, aspect, nearPlane, farPlane);
+    spot.LightView = glm::lookAt(spot.Position, spot.Position + spot.Direction, glm::vec3(0.0f, 1.0f, 0.0f));
+    spot.ShadowMap = shadow.SRV->GetDescriptor().Index;
+
+    frame.CommandBuffer->BeginMarker("Spot Shadows (" + entity.GetComponent<TagComponent>().Tag + ")");
+    frame.CommandBuffer->SetMeshPipeline(mCascadePipeline);
+    frame.CommandBuffer->Barrier(shadow.ShadowMap, ResourceLayout::DepthWrite);
+    frame.CommandBuffer->SetRenderTargets({}, shadow.DSV);
+    frame.CommandBuffer->ClearDepth(shadow.DSV);
+    frame.CommandBuffer->SetViewport(0, 0, SPOT_LIGHT_SHADOW_DIMENSION, SPOT_LIGHT_SHADOW_DIMENSION);
+    frame.CommandBuffer->SetTopology(Topology::TriangleList);
+    std::function<void(Frame frame, MeshNode*, Mesh* model, glm::mat4 transform)> drawNode = [&](Frame frame, MeshNode* node, Mesh* model, glm::mat4 transform) {
+        if (!node) {
+            return;
+        }
+
+        for (MeshPrimitive primitive : node->Primitives) {
+            struct PushConstants {
+                int VertexBuffer;
+                int IndexBuffer;
+                int MeshletBuffer;
+                int MeshletVertices;
+                int MeshletTriangleBuffer;
+                glm::ivec3 Pad;
+
+                glm::mat4 Transform;
+                glm::mat4 View;
+                glm::mat4 Proj;
+            } data = {
+                primitive.VertexBuffer->SRV(),
+                primitive.IndexBuffer->SRV(),
+                primitive.MeshletBuffer->SRV(),
+                primitive.MeshletVertices->SRV(),
+                primitive.MeshletTriangles->SRV(),
+                glm::ivec3(0),
+                
+                transform,
+                spot.LightView,
+                spot.LightProj
+            };
+            frame.CommandBuffer->Barrier(primitive.VertexBuffer, ResourceLayout::Shader);
+            frame.CommandBuffer->Barrier(primitive.IndexBuffer, ResourceLayout::Shader);
+            frame.CommandBuffer->Barrier(primitive.MeshletBuffer, ResourceLayout::Shader);
+            frame.CommandBuffer->Barrier(primitive.MeshletVertices, ResourceLayout::Shader);
+            frame.CommandBuffer->Barrier(primitive.MeshletTriangles, ResourceLayout::Shader);
+            frame.CommandBuffer->GraphicsPushConstants(&data, sizeof(data), 0);
+            frame.CommandBuffer->DispatchMesh(primitive.MeshletCount, primitive.IndexCount / 3);
+            frame.CommandBuffer->Barrier(primitive.VertexBuffer, ResourceLayout::Common);
+            frame.CommandBuffer->Barrier(primitive.IndexBuffer, ResourceLayout::Common);
+            frame.CommandBuffer->Barrier(primitive.MeshletBuffer, ResourceLayout::Common);
+            frame.CommandBuffer->Barrier(primitive.MeshletVertices, ResourceLayout::Common);
+            frame.CommandBuffer->Barrier(primitive.MeshletTriangles, ResourceLayout::Common);
+        }
+        if (!node->Children.empty()) {
+            for (MeshNode* child : node->Children) {
+                drawNode(frame, child, model, transform);
+            }
+        }
+    };
+    if (scene) {
+        auto registry = scene->GetRegistry();
+        auto view = registry->view<TransformComponent, MeshComponent>();
+        for (auto [id, transform, mesh] : view.each()) {
+            Entity entity(registry);
+            entity.ID = id;
+            if (mesh.Loaded) {
+                drawNode(frame, mesh.MeshAsset->Mesh.Root, &mesh.MeshAsset->Mesh, entity.GetWorldTransform());
+            }
+        }
+    }
+    frame.CommandBuffer->Barrier(shadow.ShadowMap, ResourceLayout::Shader);
     frame.CommandBuffer->EndMarker();
 }
 
@@ -119,7 +254,6 @@ void Shadows::RenderCascades(const Frame& frame, ::Ref<Scene> scene)
         ringBuffer->RBuffer[frame.FrameIndex]->CopyMapped(mCascades.data(), sizeof(Cascade) * SHADOW_CASCADE_COUNT);
     }
 
-    frame.CommandBuffer->BeginMarker("Cascaded Shadow Maps");
     frame.CommandBuffer->SetMeshPipeline(mCascadePipeline);
     for (int i = 0; i < SHADOW_CASCADE_COUNT; i++) {
         frame.CommandBuffer->BeginMarker("Cascade " + std::to_string(i));
@@ -190,7 +324,6 @@ void Shadows::RenderCascades(const Frame& frame, ::Ref<Scene> scene)
         frame.CommandBuffer->Barrier(cascades[i]->Texture, ResourceLayout::Shader);
         frame.CommandBuffer->EndMarker();
     }
-    frame.CommandBuffer->EndMarker();
 }
 
 void Shadows::UpdateCascades(const Frame& frame, ::Ref<Scene> scene, DirectionalLightComponent caster)

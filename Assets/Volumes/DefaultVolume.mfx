@@ -9,7 +9,7 @@
             0.5
         ],
         "contrast": 0.7699999809265137,
-        "enable": true,
+        "enable": false,
         "exposure": 1.0199999809265137,
         "highlights": [
             0.5,
@@ -37,7 +37,7 @@
         "factor": 2.24399995803833
     },
     "geometry": {
-        "direct": 1.0,
+        "direct": 1.0399999618530273,
         "indirect": 0.0,
         "visualizeMeshlets": false
     },
@@ -45,5 +45,8 @@
         "freeze": false,
         "lambda": 0.949999988079071,
         "visualize": false
+    },
+    "skybox": {
+        "enable": false
     }
 }

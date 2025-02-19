@@ -69,7 +69,6 @@ float3 GetNormalFromMap(MeshInput Input)
 GBufferOutput PSMain(MeshInput input)
 {
     Texture2D<float4> albedoTexture = ResourceDescriptorHeap[Constants.AlbedoTexture];
-    Texture2D<float4> pbrTexture = ResourceDescriptorHeap[Constants.PBRTexture];
     SamplerState linearSampler = SamplerDescriptorHeap[Constants.LinearSampler];
 
     uint meshletHash = hash(input.MeshletIndex);
@@ -85,7 +84,11 @@ GBufferOutput PSMain(MeshInput input)
         normal = GetNormalFromMap(input);
     }
 
-    float3 pbr = pbrTexture.Sample(linearSampler, input.UV).rgb;
+    float3 pbr = float3(0, 1.0, 0.0);
+    if (Constants.PBRTexture != -1) {
+        Texture2D<float4> pbrTexture = ResourceDescriptorHeap[Constants.PBRTexture];
+        pbr = pbrTexture.Sample(linearSampler, input.UV).rgb;
+    }
 
     GBufferOutput output;
     output.Albedo = Constants.ShowMeshlets ? float4(meshletColor, 1.0) : textureColor;

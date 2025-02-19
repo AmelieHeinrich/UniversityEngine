@@ -29,6 +29,8 @@ public:
     float DirectLight = 1.0f;
     float IndirectLight = 0.4f;
 
+    bool EnableSkybox = true;
+
     bool EnableColorGrading = false;
     float Brightness = 1.0f;
     float Exposure = 1.0f;

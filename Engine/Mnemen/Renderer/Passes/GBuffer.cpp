@@ -168,12 +168,12 @@ void GBuffer::Render(const Frame& frame, ::Ref<Scene> scene)
                 } else {
                     albedoIndex = material->Albedo ? material->Albedo->ShaderView->GetDescriptor().Index : whiteTexture->Descriptor(ViewType::ShaderResource);
                     normalIndex = material->Normal ? material->Normal->ShaderView->GetDescriptor().Index : -1;
-                    pbrIndex = material->PBR ? material->PBR->ShaderView->GetDescriptor().Index : blackTexture->Descriptor(ViewType::ShaderResource);
+                    pbrIndex = material->PBR ? material->PBR->ShaderView->GetDescriptor().Index : -1;
                 }
             } else {
                 albedoIndex = meshMaterial.Albedo ? meshMaterial.AlbedoView->GetDescriptor().Index : whiteTexture->Descriptor(ViewType::ShaderResource);
                 normalIndex = meshMaterial.Normal ? meshMaterial.NormalView->GetDescriptor().Index : -1;
-                pbrIndex = meshMaterial.PBR ? meshMaterial.PBRView->GetDescriptor().Index : blackTexture->Descriptor(ViewType::ShaderResource);
+                pbrIndex = meshMaterial.PBR ? meshMaterial.PBRView->GetDescriptor().Index : -1;
             }
 
             struct PushConstants {

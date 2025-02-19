@@ -81,6 +81,13 @@ void SkyboxForward::Render(const Frame& frame, ::Ref<Scene> scene)
     PROFILE_FUNCTION();
 
     CameraComponent* mainCamera = scene->GetMainCamera();
+    if (!mainCamera)
+        return;
+    if (!mainCamera->Volume)
+        return;
+    if (!mainCamera->Volume->Volume.EnableSkybox)
+        return;
+
     glm::mat4 mvp = mainCamera->Projection * glm::mat4(glm::mat3(mainCamera->View)) * glm::scale(glm::mat4(1.0f), glm::vec3(1000.0f));
     ::Ref<Skybox> skybox = scene->GetSkybox();
 

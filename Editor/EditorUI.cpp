@@ -1279,6 +1279,10 @@ void Editor::FXVolumeEditor()
             ImGui::DragFloat("Indirect Light Term (IBL)", &volume->IndirectLight, 0.01f, 0.0f, 100.0f);
             ImGui::TreePop();
         }
+        if (ImGui::TreeNodeEx("Skybox", ImGuiTreeNodeFlags_Framed)) {
+            ImGui::Checkbox("Enable", &volume->EnableSkybox);
+            ImGui::TreePop();
+        }
         if (ImGui::TreeNodeEx("Color Grading", ImGuiTreeNodeFlags_Framed)) {
             ImGui::Checkbox("Enable", &volume->EnableColorGrading);
             ImGui::SliderFloat("Brightness", &volume->Brightness, 0.0f, 10.0f, "%.2f");

@@ -27,6 +27,11 @@ void PostProcessVolume::Load(const String& path)
         IndirectLight = g["indirect"].get<float>();
     }
 
+    if (root.contains("skybox")) {
+        nlohmann::json s = root["skybox"];
+        EnableSkybox = s["enable"].get<bool>();
+    }
+
     if (root.contains("colorGrading")) {
         nlohmann::json cg = root["colorGrading"];
 
@@ -91,6 +96,10 @@ void PostProcessVolume::Save(const String& path)
         { "visualizeMeshlets", VisualizeMeshlets },
         { "direct", DirectLight },
         { "indirect", IndirectLight }
+    };
+
+    root["skybox"] = {
+        { "enable", EnableSkybox }
     };
 
     root["colorGrading"] = {

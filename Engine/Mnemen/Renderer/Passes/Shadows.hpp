@@ -39,12 +39,12 @@ public:
 
     void Render(const Frame& frame, ::Ref<Scene> scene) override;
     void RenderCascades(const Frame& frame, ::Ref<Scene> scene);
-    void RenderSpot(const Frame& frame, ::Ref<Scene> scene);
+    void RenderSpot(const Frame& frame, ::Ref<Scene> scene, Entity entity);
 private:
     void UpdateCascades(const Frame& frame, ::Ref<Scene> scene, DirectionalLightComponent caster);
 
     MeshPipeline::Ref mCascadePipeline = nullptr;
     Array<Cascade, SHADOW_CASCADE_COUNT> mCascades;
-    Vector<SpotLightShadow> mSpotLightShadows;
+    UnorderedMap<entt::entity, SpotLightShadow> mSpotLightShadows;
     int once = 0;
 };

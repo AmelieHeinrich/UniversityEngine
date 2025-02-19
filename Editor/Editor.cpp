@@ -99,6 +99,7 @@ void Editor::PostPresent()
         shouldWait = true;
     }
     if (!mSceneChange.empty()) {
+        mRHI->Wait();
         OpenScene(mSceneChange);
         mSceneChange = "";
         shouldWait = true;

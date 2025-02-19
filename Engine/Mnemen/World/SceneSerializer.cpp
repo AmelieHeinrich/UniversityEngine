@@ -87,7 +87,7 @@ nlohmann::json SceneSerializer::SerializeEntity(Entity entity)
     if (entity.HasComponent<MeshComponent>()) {
         auto& mesh = entity.GetComponent<MeshComponent>();
         entityJson["mesh"] = {
-            { "path", mesh.MeshAsset->Path }
+            { "path", mesh.MeshAsset ? mesh.MeshAsset->Path : "" }
         };
     }
 
@@ -156,7 +156,8 @@ nlohmann::json SceneSerializer::SerializeEntity(Entity entity)
             { "radius", dir.Radius },
             { "outerRadius", dir.OuterRadius },
             { "castShadows", dir.CastShadows },
-            { "color", { dir.Color.x, dir.Color.y, dir.Color.z } }
+            { "color", { dir.Color.x, dir.Color.y, dir.Color.z } },
+            { "strength", dir.Strength }
         };
     }
 
@@ -232,6 +233,7 @@ Entity SceneSerializer::DeserializeEntity(Ref<Scene> scene, const nlohmann::json
         dir.OuterRadius = d["outerRadius"];
         dir.CastShadows = d["castShadows"];
         dir.Color = glm::vec3(d["color"][0], d["color"][1], d["color"][2]);
+        dir.Strength = d["strength"];
     }
 
     return entity;
