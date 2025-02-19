@@ -2,16 +2,13 @@
     "entities": [
         {
             "id": 6,
-            "mesh": {
-                "path": "Assets/Models/Sponza/Sponza.gltf"
-            },
-            "name": "Sponza",
-            "parent": 0,
+            "name": "Meshes",
+            "parent": null,
             "scripts": [],
             "transform": {
                 "position": [
                     0.0,
-                    -0.6367447376251221,
+                    0.0,
                     -0.26322877407073975
                 ],
                 "rotation": [
@@ -21,142 +18,19 @@
                     1.0
                 ],
                 "scale": [
-                    2.6775002479553223,
-                    2.6775002479553223,
-                    2.6775002479553223
+                    1.0,
+                    1.0,
+                    1.0
                 ]
             }
         },
         {
-            "directionalLight": {
-                "castShadows": true,
-                "color": [
-                    1.0,
-                    1.0,
-                    1.0
-                ],
-                "strength": 3.4000000953674316
-            },
             "id": 5,
-            "name": "Sun",
-            "parent": null,
-            "scripts": [],
-            "transform": {
-                "position": [
-                    -6.340427398681641,
-                    4.681337356567383,
-                    -0.5009452104568481
-                ],
-                "rotation": [
-                    0.759799599647522,
-                    -0.03646569326519966,
-                    0.12553218007087708,
-                    0.6368803381919861
-                ],
-                "scale": [
-                    1.0,
-                    0.9999998807907104,
-                    0.9999999403953552
-                ]
-            }
-        },
-        {
-            "id": 4,
-            "mesh": {
-                "path": "Assets/Models/SciFiHelmet/SciFiHelmet.gltf"
-            },
-            "name": "SciFiHelmet",
-            "parent": 0,
-            "scripts": [],
-            "transform": {
-                "position": [
-                    0.0001106397103285417,
-                    0.800000011920929,
-                    -3.7152037620544434
-                ],
-                "rotation": [
-                    6.160483678741002e-08,
-                    -0.7069846987724304,
-                    6.158357024332872e-08,
-                    0.7072288393974304
-                ],
-                "scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "id": 3,
-            "material": {
-                "albedo": "Assets/Models/DamagedHelmet/Default_albedo.jpg",
-                "inherit": true,
-                "normal": "Assets/Models/DamagedHelmet/Default_normal.jpg"
-            },
-            "mesh": {
-                "path": "Assets/Models/DamagedHelmet/DamagedHelmet.gltf"
-            },
-            "name": "DamagedHelmet",
-            "parent": 0,
-            "scripts": [],
-            "transform": {
-                "position": [
-                    -3.9182534217834473,
-                    0.6120432615280151,
-                    -3.457785129547119
-                ],
-                "rotation": [
-                    -7.215625373646617e-06,
-                    -0.702043890953064,
-                    -5.6163116823881865e-06,
-                    0.7121337056159973
-                ],
-                "scale": [
-                    1.1699997186660767,
-                    1.1699999570846558,
-                    1.1699997186660767
-                ]
-            }
-        },
-        {
-            "camera": {
-                "far": 200.0,
-                "fov": 90.0,
-                "near": 0.10000000149011612,
-                "primary": true,
-                "volumePath": "Assets/Volumes/DefaultVolume.mfx"
-            },
-            "id": 2,
-            "name": "Camera",
-            "parent": null,
-            "scripts": [],
-            "transform": {
-                "position": [
-                    -3.506182909011841,
-                    1.9612423181533813,
-                    -0.7785120606422424
-                ],
-                "rotation": [
-                    0.17692197859287262,
-                    0.6554050445556641,
-                    -0.16190201044082642,
-                    0.7161917090415955
-                ],
-                "scale": [
-                    0.9999990463256836,
-                    0.9999997019767761,
-                    1.0000137090682983
-                ]
-            }
-        },
-        {
-            "id": 1,
             "mesh": {
                 "path": "Assets/Models/Suzanne/Suzanne.gltf"
             },
             "name": "Suzanne",
-            "parent": 0,
+            "parent": 6,
             "scripts": [],
             "transform": {
                 "position": [
@@ -178,14 +52,140 @@
             }
         },
         {
-            "id": 0,
-            "name": "Meshes",
+            "camera": {
+                "far": 200.0,
+                "fov": 90.0,
+                "near": 0.10000000149011612,
+                "primary": true,
+                "volumePath": "Assets/Volumes/DefaultVolume.mfx"
+            },
+            "id": 4,
+            "name": "Camera",
             "parent": null,
             "scripts": [],
             "transform": {
                 "position": [
+                    -3.506182909011841,
+                    1.9612423181533813,
+                    -0.7785120606422424
+                ],
+                "rotation": [
+                    0.176922008395195,
+                    0.6554050445556641,
+                    -0.1619020402431488,
+                    0.7161917090415955
+                ],
+                "scale": [
+                    0.9999990463256836,
+                    0.9999997019767761,
+                    1.0000137090682983
+                ]
+            }
+        },
+        {
+            "id": 3,
+            "material": {
+                "albedo": "Assets/Models/DamagedHelmet/Default_albedo.jpg",
+                "inherit": true,
+                "normal": "Assets/Models/DamagedHelmet/Default_normal.jpg"
+            },
+            "mesh": {
+                "path": "Assets/Models/DamagedHelmet/DamagedHelmet.gltf"
+            },
+            "name": "DamagedHelmet",
+            "parent": 6,
+            "scripts": [],
+            "transform": {
+                "position": [
+                    -3.9182534217834473,
+                    0.6120432615280151,
+                    -3.457785129547119
+                ],
+                "rotation": [
+                    -7.215625373646617e-06,
+                    -0.702043890953064,
+                    -5.6163116823881865e-06,
+                    0.7121337056159973
+                ],
+                "scale": [
+                    1.1699997186660767,
+                    1.1699999570846558,
+                    1.1699997186660767
+                ]
+            }
+        },
+        {
+            "id": 2,
+            "mesh": {
+                "path": "Assets/Models/SciFiHelmet/SciFiHelmet.gltf"
+            },
+            "name": "SciFiHelmet",
+            "parent": 6,
+            "scripts": [],
+            "transform": {
+                "position": [
+                    0.0001106397103285417,
+                    0.800000011920929,
+                    -3.7152037620544434
+                ],
+                "rotation": [
+                    6.160483678741002e-08,
+                    -0.7069846987724304,
+                    6.158357024332872e-08,
+                    0.7072288393974304
+                ],
+                "scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "directionalLight": {
+                "castShadows": true,
+                "color": [
+                    1.0,
+                    1.0,
+                    1.0
+                ],
+                "strength": 3.4000000953674316
+            },
+            "id": 1,
+            "name": "Sun",
+            "parent": null,
+            "scripts": [],
+            "transform": {
+                "position": [
+                    -6.340427398681641,
+                    4.681337356567383,
+                    -0.5009452104568481
+                ],
+                "rotation": [
+                    0.759799599647522,
+                    -0.03646569326519966,
+                    0.12553219497203827,
+                    0.6368803381919861
+                ],
+                "scale": [
+                    1.0,
+                    0.9999999403953552,
+                    0.9999999403953552
+                ]
+            }
+        },
+        {
+            "id": 0,
+            "mesh": {
+                "path": "Assets/Models/Sponza/Sponza.gltf"
+            },
+            "name": "Sponza",
+            "parent": 6,
+            "scripts": [],
+            "transform": {
+                "position": [
                     0.0,
-                    0.0,
+                    -0.6367447376251221,
                     -0.26322877407073975
                 ],
                 "rotation": [
@@ -195,9 +195,9 @@
                     1.0
                 ],
                 "scale": [
-                    1.0,
-                    1.0,
-                    1.0
+                    2.6775002479553223,
+                    2.6775002479553223,
+                    2.6775002479553223
                 ]
             }
         }

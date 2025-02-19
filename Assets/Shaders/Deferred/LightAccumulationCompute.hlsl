@@ -279,5 +279,5 @@ void CSMain(uint3 ThreadID : SV_DispatchThreadID)
 
     //
     float3 final = directLighting + (indirectLighting * 0.1);
-    output[ThreadID.xy] = float4(final, 1.0);
+    output[ThreadID.xy] = float4(GetCascadeColor(layer).rgb * final, 1.0);
 }
