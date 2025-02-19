@@ -1,16 +1,16 @@
 {
     "colorGrading": {
         "balance": 1.0,
-        "brightness": 2.319999933242798,
+        "brightness": 2.630000114440918,
         "colorFilter": [
             0.5,
             0.5,
             0.5,
             0.5
         ],
-        "contrast": 0.05999999865889549,
-        "enable": false,
-        "exposure": 1.3799999952316284,
+        "contrast": 0.7699999809265137,
+        "enable": true,
+        "exposure": 1.0199999809265137,
         "highlights": [
             0.5,
             0.5,
@@ -18,7 +18,7 @@
             0.5
         ],
         "hueShift": 1.0,
-        "saturation": 2.0299999713897705,
+        "saturation": 3.2799999713897705,
         "shadows": [
             0.5,
             0.5,
@@ -30,8 +30,8 @@
     },
     "depthOfField": {
         "enable": false,
-        "focusPoint": 0.10000000149011612,
-        "focusRange": 14.87399959564209
+        "focusPoint": 6.3470001220703125,
+        "focusRange": 8.626999855041504
     },
     "gammaCorrect": {
         "factor": 2.24399995803833
@@ -40,6 +40,8 @@
         "visualizeMeshlets": false
     },
     "shadows": {
-        "lambda": 0.949999988079071
+        "freeze": false,
+        "lambda": 0.949999988079071,
+        "visualize": false
     }
 }

@@ -283,6 +283,6 @@ void CSMain(uint3 ThreadID : SV_DispatchThreadID)
     }
 
     //
-    float3 final = directLighting + (indirectLighting * 0.1);
+    float3 final = directLighting + (indirectLighting * 0.4);
     output[ThreadID.xy] = float4(final, 1.0);
 }

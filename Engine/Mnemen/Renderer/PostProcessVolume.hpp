@@ -21,6 +21,8 @@ public:
 
     // BEGIN SETTINGS
 
+    bool FreezeCascades = false;
+    bool VisualizeCascades = false;
     float CascadeSplitLambda = 0.95f;
 
     bool VisualizeMeshlets = false;

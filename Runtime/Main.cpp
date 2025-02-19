@@ -8,8 +8,8 @@
 int main()
 {
     ApplicationSpecs specs;
-    specs.Width = 1280;
-    specs.Height = 720;
+    specs.Width = 1920;
+    specs.Height = 1080;
     specs.WindowTitle = "Game Demo";
     specs.ProjectPath = "TestGame.mpj";
     specs.CopyToBackBuffer = true;

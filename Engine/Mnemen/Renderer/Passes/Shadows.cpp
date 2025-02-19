@@ -85,8 +85,21 @@ void Shadows::RenderCascades(const Frame& frame, ::Ref<Scene> scene)
     if (!caster.CastShadows)
         return;
 
+    // Get main camera for settings
+    CameraComponent* camera = scene->GetMainCamera();
+    if (!camera)
+        return;
+    if (!camera->Volume)
+        return;
+
     // Update
-    UpdateCascades(frame, scene, caster);
+    if (!camera->Volume->Volume.FreezeCascades) {
+        UpdateCascades(frame, scene, caster);
+    } else {
+        for (int i = 0; i < SHADOW_CASCADE_COUNT; i++) {
+            Debug::DrawFrustum(mCascades[i].View, mCascades[i].Proj, glm::vec3(0.0f, 1.0f, 0.0f));
+        }
+    }
 
     // Render
     Vector<::Ref<RenderPassResource>> cascades = {
@@ -235,12 +248,12 @@ void Shadows::UpdateCascades(const Frame& frame, ::Ref<Scene> scene, Directional
 
         glm::mat4 lightView = glm::lookAt(shadowCameraPos, center, up);
         glm::mat4 lightProjection = glm::ortho(
-            minBounds.x,
-            maxBounds.x,
-            minBounds.y,
-            maxBounds.y,
-            minBounds.z,
-            maxBounds.z
+            minBounds.x * 2.0f,
+            maxBounds.x * 2.0f,
+            minBounds.y * 2.0f,
+            maxBounds.y * 2.0f,
+            minBounds.z * 2.0f,
+            maxBounds.z * 2.0f
         );
 
         // Texel snap

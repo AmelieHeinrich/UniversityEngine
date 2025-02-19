@@ -16,6 +16,8 @@ void PostProcessVolume::Load(const String& path)
     if (root.contains("shadows")) {
         nlohmann::json s = root["shadows"];
         CascadeSplitLambda = s["lambda"].get<float>();
+        VisualizeCascades = s["visualize"].get<bool>();
+        FreezeCascades = s["freeze"].get<bool>();
     }
 
     if (root.contains("geometry")) {
@@ -77,7 +79,11 @@ void PostProcessVolume::Save(const String& path)
 
     nlohmann::json root;
 
-    root["shadows"]["lambda"] = CascadeSplitLambda;
+    root["shadows"] = {
+        { "lambda", CascadeSplitLambda },
+        { "freeze", FreezeCascades },
+        { "visualize", VisualizeCascades }
+    };
     root["geometry"]["visualizeMeshlets"] = VisualizeMeshlets;
 
     root["colorGrading"] = {

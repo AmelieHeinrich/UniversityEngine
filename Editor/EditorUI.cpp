@@ -1269,6 +1269,8 @@ void Editor::FXVolumeEditor()
 
         if (ImGui::TreeNodeEx("Shadows", ImGuiTreeNodeFlags_Framed)) {
             ImGui::SliderFloat("Cascade Split Lambda", &volume->CascadeSplitLambda, 0.0f, 1.0f, "%.2f");
+            ImGui::Checkbox("Visualize Cascades", &volume->VisualizeCascades);
+            ImGui::Checkbox("Freeze Cascades", &volume->FreezeCascades);
             ImGui::TreePop();
         }
         if (ImGui::TreeNodeEx("Geometry Pass", ImGuiTreeNodeFlags_Framed)) {
