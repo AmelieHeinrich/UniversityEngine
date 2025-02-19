@@ -23,6 +23,8 @@ void PostProcessVolume::Load(const String& path)
     if (root.contains("geometry")) {
         nlohmann::json g = root["geometry"];
         VisualizeMeshlets = g["visualizeMeshlets"].get<bool>();
+        DirectLight = g["direct"].get<float>();
+        IndirectLight = g["indirect"].get<float>();
     }
 
     if (root.contains("colorGrading")) {
@@ -84,7 +86,12 @@ void PostProcessVolume::Save(const String& path)
         { "freeze", FreezeCascades },
         { "visualize", VisualizeCascades }
     };
-    root["geometry"]["visualizeMeshlets"] = VisualizeMeshlets;
+
+    root["geometry"] = {
+        { "visualizeMeshlets", VisualizeMeshlets },
+        { "direct", DirectLight },
+        { "indirect", IndirectLight }
+    };
 
     root["colorGrading"] = {
         {"enable", EnableColorGrading},

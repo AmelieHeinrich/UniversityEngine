@@ -95,6 +95,8 @@ void Deferred::Render(const Frame& frame, ::Ref<Scene> scene)
     CameraComponent* mainCamera = scene->GetMainCamera();
     if (!mainCamera)
         return;
+    if (!mainCamera->Volume)
+        return;
 
     auto sampler = RendererTools::Get("MaterialSampler");
     auto depthBuffer = RendererTools::Get("GBufferDepth");
@@ -148,7 +150,8 @@ void Deferred::Render(const Frame& frame, ::Ref<Scene> scene)
 
         int shadowSampler;
         int cameraBuffer;
-        glm::ivec2 Pad;
+        float direct;
+        float indirect;
     } data = {
         depthBuffer->Descriptor(ViewType::ShaderResource),
         albedoBuffer->Descriptor(ViewType::ShaderResource),
@@ -167,7 +170,8 @@ void Deferred::Render(const Frame& frame, ::Ref<Scene> scene)
 
         shadowSampler->Descriptor(),
         cameraBuffer->Descriptor(ViewType::None, frame.FrameIndex),
-        glm::vec2(0.0)
+        mainCamera->Volume->Volume.DirectLight,
+        mainCamera->Volume->Volume.IndirectLight
     };
 
     frame.CommandBuffer->BeginMarker("Light Accumulation");

@@ -1275,6 +1275,8 @@ void Editor::FXVolumeEditor()
         }
         if (ImGui::TreeNodeEx("Geometry Pass", ImGuiTreeNodeFlags_Framed)) {
             ImGui::Checkbox("Visualize Meshlets", &volume->VisualizeMeshlets);
+            ImGui::DragFloat("Direct Light Term", &volume->DirectLight, 0.01f, 0.0f, 100.0f);
+            ImGui::DragFloat("Indirect Light Term (IBL)", &volume->IndirectLight, 0.01f, 0.0f, 100.0f);
             ImGui::TreePop();
         }
         if (ImGui::TreeNodeEx("Color Grading", ImGuiTreeNodeFlags_Framed)) {

@@ -41,7 +41,8 @@ struct PushConstants
 
     int ShadowSampler;
     int CameraBuffer;
-    int2 Pad;
+    float DirectLightTerm;
+    float IndirectLightTerm;
 };
 
 ConstantBuffer<PushConstants> Settings : register(b0);
@@ -283,6 +284,6 @@ void CSMain(uint3 ThreadID : SV_DispatchThreadID)
     }
 
     //
-    float3 final = directLighting + (indirectLighting * 0.4);
+    float3 final = (directLighting * Settings.DirectLightTerm) + (indirectLighting * Settings.IndirectLightTerm);
     output[ThreadID.xy] = float4(final, 1.0);
 }

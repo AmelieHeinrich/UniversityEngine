@@ -37,7 +37,9 @@
         "factor": 2.24399995803833
     },
     "geometry": {
-        "visualizeMeshlets": false
+        "visualizeMeshlets": false,
+        "direct": 1.0,
+        "indirect": 0.4
     },
     "shadows": {
         "lambda": 0.949999988079071,

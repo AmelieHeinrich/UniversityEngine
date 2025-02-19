@@ -26,6 +26,8 @@ public:
     float CascadeSplitLambda = 0.95f;
 
     bool VisualizeMeshlets = false;
+    float DirectLight = 1.0f;
+    float IndirectLight = 0.4f;
 
     bool EnableColorGrading = false;
     float Brightness = 1.0f;

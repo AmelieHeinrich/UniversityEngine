@@ -37,6 +37,8 @@
         "factor": 2.24399995803833
     },
     "geometry": {
+        "direct": 1.0,
+        "indirect": 0.0,
         "visualizeMeshlets": false
     },
     "shadows": {
