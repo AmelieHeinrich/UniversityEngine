@@ -110,7 +110,7 @@ void Editor::Viewport(const Frame& frame)
                     for (int i = 0; i < sceneString.size(); i++) {
                         sceneString[i] = sceneString[i] == '\\' ? '/' : sceneString[i];
                     }
-                    OpenScene(sceneString);
+                    mSceneChange = sceneString;
                 }
             }
         }

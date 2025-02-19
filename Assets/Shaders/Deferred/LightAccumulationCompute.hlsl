@@ -265,12 +265,17 @@ void CSMain(uint3 ThreadID : SV_DispatchThreadID)
     float3 indirectLighting = 0.0;
     {
         float3 irradiance = Irradiance.Sample(CubeSampler, N).rgb;
+        irradiance = pow(irradiance, 1.0 / 2.2);
+
         float3 F = FresnelSchlickRoughness(max(dot(N, V), 0.0), F0, roughness);
         float3 kd = lerp(1.0 - F, 0.0, metallic);
         float3 diffuseIBL = kd * color.rgb * irradiance;
         
         uint maxLOD = GetMaxReflectionLOD();
+
         float3 specularIrradiance = Prefilter.SampleLevel(CubeSampler, Lr, roughness * maxLOD).rgb;
+        specularIrradiance = pow(specularIrradiance, 1.0 / 2.2);
+
         float2 specularBRDF = BRDF.Sample(RegularSampler, float2(cosLo, 1.0 - roughness)).rg;
         float3 specularIBL = (F0 * specularBRDF.x + specularBRDF.y) * specularIrradiance;
 
@@ -279,5 +284,5 @@ void CSMain(uint3 ThreadID : SV_DispatchThreadID)
 
     //
     float3 final = directLighting + (indirectLighting * 0.1);
-    output[ThreadID.xy] = float4(GetCascadeColor(layer).rgb * final, 1.0);
+    output[ThreadID.xy] = float4(final, 1.0);
 }

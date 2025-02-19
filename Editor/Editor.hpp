@@ -61,6 +61,7 @@ private:
     bool mMarkForMeshDeletion = false;
     String mModelChange = "";
     String mSkyboxChange = "";
+    String mSceneChange = "";
     UnorderedMap<entt::entity, String> mEntityNameBuffer;
 
     // Viewport shenanigans

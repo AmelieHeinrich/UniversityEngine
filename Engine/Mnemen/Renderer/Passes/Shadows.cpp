@@ -196,17 +196,10 @@ void Shadows::UpdateCascades(const Frame& frame, ::Ref<Scene> scene, Directional
     splits[SHADOW_CASCADE_COUNT] = camera->Far;
     for (int i = 1; i <= SHADOW_CASCADE_COUNT; ++i) {
         float fraction = static_cast<float>(i) / SHADOW_CASCADE_COUNT;
-
-        // Correct linear split calculation
         float linearSplit = camera->Near + (camera->Far - camera->Near) * fraction;
-
-        // Logarithmic split for better distribution at far distances
         float logSplit = camera->Near * std::pow(camera->Far / camera->Near, fraction);
-
-        // Blend the splits using the lambda parameter for flexibility
         splits[i] = camera->Volume->Volume.CascadeSplitLambda * logSplit + (1.0f - camera->Volume->Volume.CascadeSplitLambda) * linearSplit;
     }
-
 
     for (int i = 0; i < SHADOW_CASCADE_COUNT; ++i) {
         // Get frustum corners for the cascade in view space

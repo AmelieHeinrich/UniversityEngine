@@ -146,6 +146,7 @@ void CSMain(uint3 ThreadID : SV_DispatchThreadID)
 
             float3 sampledColor = EnvironmentMap.SampleLevel(CubeSampler, Li, mipLevel).rgb;
             sampledColor = pow(sampledColor, 1.0 / 2.2);
+
             color += sampledColor * cosLi;
             weight += cosLi;
         }

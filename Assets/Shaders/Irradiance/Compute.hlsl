@@ -91,6 +91,7 @@ void CSMain(uint3 ThreadID : SV_DispatchThreadID)
         // PIs here cancel out because of division by pdf.
         float3 sampledColor = EnvironmentMap.SampleLevel(CubeSampler, Li, 0).rgb;
         sampledColor = pow(sampledColor, 1.0 / 2.2);
+
         irradiance += 2.0 * sampledColor * cosTheta;
     }
     irradiance /= float(NumSamples);

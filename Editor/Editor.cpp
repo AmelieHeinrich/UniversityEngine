@@ -98,6 +98,11 @@ void Editor::PostPresent()
         mMarkForMeshDeletion = false;
         shouldWait = true;
     }
+    if (!mSceneChange.empty()) {
+        OpenScene(mSceneChange);
+        mSceneChange = "";
+        shouldWait = true;
+    }
 
     if (shouldWait) {
         mRHI->Wait();
