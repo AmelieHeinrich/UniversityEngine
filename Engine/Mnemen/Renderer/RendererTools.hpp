@@ -139,8 +139,9 @@ public:
     /// @param filter The filter mode to use for sampling the texture.
     /// @param address The address mode to use for texture coordinates outside the texture bounds.
     /// @param mips Whether to enable mipmap filtering (default is false).
+    /// @param comparison Whether or not the sampler should use comparison functions.
     /// @return A reference to the created render pass resource.
-    static Ref<RenderPassResource> CreateSharedSampler(const String& name, SamplerFilter filter, SamplerAddress address, bool mips = false);
+    static Ref<RenderPassResource> CreateSharedSampler(const String& name, SamplerFilter filter, SamplerAddress address, bool mips = false, bool comparison = false);
 
     /// @brief Retrieves an existing render pass resource by name.
     /// 

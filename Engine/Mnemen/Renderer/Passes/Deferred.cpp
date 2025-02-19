@@ -17,6 +17,8 @@ Deferred::Deferred(RHI::Ref rhi)
     Application::Get()->GetWindow()->PollSize(width, height);
     
     RendererTools::CreateSharedSampler("CubemapSampler", SamplerFilter::Linear, SamplerAddress::Clamp, true);
+    RendererTools::CreateSharedSampler("ShadowSampler", SamplerFilter::Nearest, SamplerAddress::Clamp, false, true);
+    RendererTools::CreateSharedRingBuffer("DeferredCameraBuffer", 512);
 
     // BRDF
     {
@@ -91,10 +93,10 @@ void Deferred::Render(const Frame& frame, ::Ref<Scene> scene)
     PROFILE_FUNCTION();
 
     CameraComponent* mainCamera = scene->GetMainCamera();
+    if (!mainCamera)
+        return;
 
-    auto cameraBuffer = RendererTools::Get("CameraRingBuffer");
     auto sampler = RendererTools::Get("MaterialSampler");
-
     auto depthBuffer = RendererTools::Get("GBufferDepth");
     auto normalBuffer = RendererTools::Get("GBufferNormal");
     auto albedoBuffer = RendererTools::Get("GBufferAlbedo");
@@ -102,7 +104,31 @@ void Deferred::Render(const Frame& frame, ::Ref<Scene> scene)
     auto colorBuffer = RendererTools::Get("HDRColorBuffer");
     auto brdf = RendererTools::Get("BRDF");
     auto cubeSampler = RendererTools::Get("CubemapSampler");
+    auto shadowSampler = RendererTools::Get("ShadowSampler");
     auto lightBuffer = RendererTools::Get("LightBuffer");
+    auto cameraBuffer = RendererTools::Get("DeferredCameraBuffer");
+    auto cascadeBuffer = RendererTools::Get("CascadeBuffer");
+
+    struct CameraData {
+        glm::mat4 InverseViewProj;
+        glm::mat4 Projection;
+
+        glm::vec3 Position;
+        float Pad;
+
+        float Near;
+        float Far;
+        glm::vec2 Pad1;
+    } cam = {
+        glm::inverse(mainCamera->Projection * mainCamera->View),
+        mainCamera->Projection,
+        mainCamera->Position,
+        0,
+        mainCamera->Near,
+        mainCamera->Far,
+        glm::vec2(0)
+    };
+    cameraBuffer->RBuffer[frame.FrameIndex]->CopyMapped(&cam, sizeof(cam));
 
     struct PushConstants {
         int Depth;
@@ -115,14 +141,14 @@ void Deferred::Render(const Frame& frame, ::Ref<Scene> scene)
         int Prefilter;
         int BRDF;
 
-        glm::vec3 cameraPosition;
         int sampler;
-
         int regularSampler;
         int lightBuffer;
-        glm::vec2 Pad;
+        int cascadeBuffer;
 
-        glm::mat4 InvViewProj;
+        int shadowSampler;
+        int cameraBuffer;
+        glm::ivec2 Pad;
     } data = {
         depthBuffer->Descriptor(ViewType::ShaderResource),
         albedoBuffer->Descriptor(ViewType::ShaderResource),
@@ -134,14 +160,14 @@ void Deferred::Render(const Frame& frame, ::Ref<Scene> scene)
         scene->GetSkybox()->PrefilterMapSRV->GetDescriptor().Index,
         brdf->Descriptor(ViewType::ShaderResource),
 
-        mainCamera->Position,
         cubeSampler->Descriptor(),
-
         sampler->Descriptor(),
         lightBuffer->Descriptor(ViewType::None, frame.FrameIndex),
-        glm::vec2(0.0),
+        cascadeBuffer->Descriptor(ViewType::None, frame.FrameIndex),
 
-        glm::inverse(mainCamera->Projection * mainCamera->View)
+        shadowSampler->Descriptor(),
+        cameraBuffer->Descriptor(ViewType::None, frame.FrameIndex),
+        glm::vec2(0.0)
     };
 
     frame.CommandBuffer->BeginMarker("Light Accumulation");

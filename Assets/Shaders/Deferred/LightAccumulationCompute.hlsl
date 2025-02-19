@@ -6,6 +6,21 @@
 #include "Assets/Shaders/Common/ShaderUtils.hlsl"
 #include "Assets/Shaders/Common/PBR.hlsl"
 #include "Assets/Shaders/Common/Light.hlsl"
+#include "Assets/Shaders/Common/Shadow.hlsl"
+#include "Assets/Shaders/Common/Cascade.hlsl"
+
+struct CameraData
+{
+    column_major float4x4 InverseViewProj;
+    column_major float4x4 Proj;
+    
+    float3 Position;
+    float Pad;
+
+    float Near;
+    float Far;
+    float2 Pad1;
+};
 
 struct PushConstants
 {
@@ -19,30 +34,65 @@ struct PushConstants
     int Prefilter;
     int BRDF;
 
-    float3 CameraPosition;
     int CubeSampler;
-
     int RegularSampler;
     int LightBuffer;
-    int2 Pad;
+    int CascadeBuffer;
 
-    column_major float4x4 InverseViewProj;
+    int ShadowSampler;
+    int CameraBuffer;
+    int2 Pad;
 };
 
 ConstantBuffer<PushConstants> Settings : register(b0);
 
 float4 GetPositionFromDepth(float2 uv, float depth)
 {
+    ConstantBuffer<CameraData> camera = ResourceDescriptorHeap[Settings.CameraBuffer];
+
     // Don't need to normalize -- directx depth is [0; 1]
     float z = depth;
 
     float4 clipSpacePosition = float4(uv * 2.0 - 1.0, z, 1.0);
     clipSpacePosition.y *= -1.0f;
 
-    float4 viewSpacePosition = mul(Settings.InverseViewProj, clipSpacePosition);
+    float4 viewSpacePosition = mul(camera.InverseViewProj, clipSpacePosition);
     viewSpacePosition /= viewSpacePosition.w;
 
     return viewSpacePosition;
+}
+
+float LinearizeDepth(float depthNDC, float nearZ, float farZ)
+{
+    float zNDC = depthNDC * 2.0f - 1.0f;
+    return (2.0f * nearZ * farZ) / (farZ + nearZ - zNDC * (farZ - nearZ));
+}
+
+float CalculateShadowCascade(float4 world, float3 N, DirectionalLight Light, int layer)
+{
+    ConstantBuffer<CameraData> camera = ResourceDescriptorHeap[Settings.CameraBuffer];
+    ConstantBuffer<CascadeBuffer> cascades = ResourceDescriptorHeap[Settings.CascadeBuffer];
+    
+    Cascade cascade = cascades.Cascades[layer];
+    SamplerComparisonState sampler = SamplerDescriptorHeap[Settings.ShadowSampler];
+    Texture2D<float> shadowMap = ResourceDescriptorHeap[NonUniformResourceIndex(cascades.Cascades[layer].SRVIndex)];
+
+    float bias = max(0.05 * (1.0 - dot(N, Light.Direction)), 0.005);
+    if (layer == SHADOW_CASCADE_COUNT) {
+        bias *= 1 / (camera.Far * 0.5);
+    } else {
+        bias *= 1 / (cascade.Split * 0.5);
+    }
+
+    int kernelSize = SHADOW_PCF_KERNELS[layer];
+    return PCFCascade(shadowMap,
+                      sampler,
+                      world,
+                      Light.Direction,
+                      cascade.View,
+                      cascade.Proj,
+                      bias,
+                      kernelSize);
 }
 
 float3 CalcPointLight(float3 world, PointLight light, float3 V, float3 N, float3 F0, float roughness, float metallic, float3 albedo)
@@ -71,10 +121,14 @@ float3 CalcPointLight(float3 world, PointLight light, float3 V, float3 N, float3
     return (kD * albedo / PI + specular) * radiance * NdotL * (light.Radius * light.Radius);
 }
 
-float3 CalcDirectionalLight(DirectionalLight light, float3 V, float3 N, float3 F0, float roughness, float metallic, float3 albedo)
+float3 CalcDirectionalLight(float4 world, DirectionalLight light, float3 V, float3 N, float3 F0, float roughness, float metallic, float3 albedo, int layer)
 {
     float3 L = normalize(-light.Direction);
     float attenuation = clamp(dot(N, -L), 0.0, 1.0);
+    float shadow = 1.0;
+    if (light.CastShadows) {
+        shadow = CalculateShadowCascade(world, N, light, layer);
+    }
 
     float3 lightColor = light.Color;   
     float3 H = normalize(V + L);
@@ -89,7 +143,7 @@ float3 CalcDirectionalLight(DirectionalLight light, float3 V, float3 N, float3 F
     float3 kS = F;
     float3 kD = 1.0 - F;
     kD *= 1.0 - metallic;
-    return (kD * albedo.xyz / PI + specular) * radiance * light.Strength;
+    return (kD * albedo.xyz / PI + specular) * radiance * light.Strength * shadow;
 }
 
 float3 CalcSpotLight(float3 world, SpotLight light, float3 V, float3 N, float3 F0, float roughness, float metallic, float3 albedo)
@@ -159,6 +213,8 @@ void CSMain(uint3 ThreadID : SV_DispatchThreadID)
 
     // Load buffers
     ConstantBuffer<LightData> lightData = ResourceDescriptorHeap[Settings.LightBuffer];
+    ConstantBuffer<CameraData> camera = ResourceDescriptorHeap[Settings.CameraBuffer];
+    ConstantBuffer<CascadeBuffer> cascadeInfo = ResourceDescriptorHeap[Settings.CascadeBuffer];
     StructuredBuffer<DirectionalLight> directionalLights = ResourceDescriptorHeap[lightData.DirLightSRV];
     StructuredBuffer<PointLight> pointLights = ResourceDescriptorHeap[lightData.PointLightSRV];
     StructuredBuffer<SpotLight> spotLights = ResourceDescriptorHeap[lightData.SpotLightSRV];
@@ -174,11 +230,22 @@ void CSMain(uint3 ThreadID : SV_DispatchThreadID)
 
     // Initial lighting variables
     float3 N = normalize(normal.Load(ThreadID).xyz);
-    float3 V = normalize(Settings.CameraPosition - position.xyz);
+    float3 V = normalize(camera.Position - position.xyz);
     float3 F0 = lerp(0.04, color.xyz, metallic);
 
     float cosLo = max(0.0, dot(N, V));
     float3 Lr = 2.0 * cosLo * N - V;
+
+    int layer = -1;
+    for (int i = 0; i < SHADOW_CASCADE_COUNT; i++) {
+        if (abs(LinearizeDepth(ndcDepth, camera.Near, camera.Far)) < cascadeInfo.Cascades[i].Split) {
+            layer = i;
+            break;
+        }
+    }
+    if (layer == -1) {
+        layer = SHADOW_CASCADE_COUNT - 1;
+    }
 
     // Direct lighting calculation
     float3 directLighting = 0.0;
@@ -187,7 +254,7 @@ void CSMain(uint3 ThreadID : SV_DispatchThreadID)
             directLighting += CalcPointLight(position.xyz, pointLights[i], V, N, F0, roughness, metallic, color.rgb);
         }
         for (int i = 0; i < lightData.DirLightCount; i++) {
-            directLighting += CalcDirectionalLight(directionalLights[i], V, N, F0, roughness, metallic, color.rgb);
+            directLighting += CalcDirectionalLight(position, directionalLights[i], V, N, F0, roughness, metallic, color.rgb, layer);
         }
         for (int i = 0; i < lightData.SpotLightCount; i++) {
             directLighting += CalcSpotLight(position.xyz, spotLights[i], V, N, F0, roughness, metallic, color.rgb);
@@ -211,6 +278,6 @@ void CSMain(uint3 ThreadID : SV_DispatchThreadID)
     }
 
     //
-    float3 final = directLighting + (indirectLighting * 0.4);
+    float3 final = directLighting + (indirectLighting * 0.1);
     output[ThreadID.xy] = float4(final, 1.0);
 }

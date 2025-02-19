@@ -183,6 +183,10 @@ void Shadows::RenderCascades(const Frame& frame, ::Ref<Scene> scene)
 void Shadows::UpdateCascades(const Frame& frame, ::Ref<Scene> scene, DirectionalLightComponent caster)
 {
     CameraComponent* camera = scene->GetMainCamera();
+    if (!camera)
+        return;
+    if (!camera->Volume)
+        return;
 
     UInt32 cascadeSize = DIR_LIGHT_SHADOW_DIMENSION;
     Vector<float> splits(SHADOW_CASCADE_COUNT + 1);
@@ -195,7 +199,7 @@ void Shadows::UpdateCascades(const Frame& frame, ::Ref<Scene> scene, Directional
         float logSplit = camera->Near * std::pow(camera->Far / camera->Near, static_cast<float>(i) / SHADOW_CASCADE_COUNT);
 
         // Blend the splits using the lambda parameter
-        splits[i] = mShadowSplitLambda * logSplit + (1.0f - mShadowSplitLambda) * linearSplit;
+        splits[i] = camera->Volume->Volume.CascadeSplitLambda * logSplit + (1.0f - camera->Volume->Volume.CascadeSplitLambda) * linearSplit;
     }
 
     for (int i = 0; i < SHADOW_CASCADE_COUNT; ++i) {

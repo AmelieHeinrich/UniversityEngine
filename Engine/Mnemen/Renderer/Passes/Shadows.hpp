@@ -43,8 +43,6 @@ public:
 private:
     void UpdateCascades(const Frame& frame, ::Ref<Scene> scene, DirectionalLightComponent caster);
 
-    float mShadowSplitLambda = 0.95f;
-
     MeshPipeline::Ref mCascadePipeline = nullptr;
     Array<Cascade, SHADOW_CASCADE_COUNT> mCascades;
     Vector<SpotLightShadow> mSpotLightShadows;

@@ -137,12 +137,12 @@ Ref<RenderPassResource> RendererTools::CreateSharedRWBuffer(const String& name, 
     return sData.Resources[name];
 }
 
-Ref<RenderPassResource> RendererTools::CreateSharedSampler(const String& name, SamplerFilter filter, SamplerAddress address, bool mips)
+Ref<RenderPassResource> RendererTools::CreateSharedSampler(const String& name, SamplerFilter filter, SamplerAddress address, bool mips, bool comparison)
 {
     Ref<RenderPassResource> resource = MakeRef<RenderPassResource>();
     resource->Type = RenderPassResourceType::SharedSampler;
     resource->ParentRHI = sData.RHI;
-    resource->Sampler = sData.RHI->CreateSampler(address, filter, mips);
+    resource->Sampler = sData.RHI->CreateSampler(address, filter, mips, 16, comparison);
     sData.Resources[name] = resource;
     return sData.Resources[name];
 }

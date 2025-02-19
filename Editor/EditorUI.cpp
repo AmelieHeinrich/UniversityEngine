@@ -1267,6 +1267,10 @@ void Editor::FXVolumeEditor()
     if (mSelectedVolume) {
         auto* volume = &mSelectedVolume->Volume;
 
+        if (ImGui::TreeNodeEx("Shadows", ImGuiTreeNodeFlags_Framed)) {
+            ImGui::SliderFloat("Cascade Split Lambda", &volume->CascadeSplitLambda, 0.0f, 1.0f, "%.2f");
+            ImGui::TreePop();
+        }
         if (ImGui::TreeNodeEx("Geometry Pass", ImGuiTreeNodeFlags_Framed)) {
             ImGui::Checkbox("Visualize Meshlets", &volume->VisualizeMeshlets);
             ImGui::TreePop();

@@ -21,6 +21,8 @@ public:
 
     // BEGIN SETTINGS
 
+    float CascadeSplitLambda = 0.80f;
+
     bool VisualizeMeshlets = false;
 
     bool EnableColorGrading = false;
