@@ -12,10 +12,12 @@
 Shadows::Shadows(RHI::Ref rhi)
     : RenderPass(rhi)
 {
+    Asset::Handle ampShader = AssetManager::Get("Assets/Shaders/Shadows/Amplification.hlsl", AssetType::Shader);
     Asset::Handle meshShader = AssetManager::Get("Assets/Shaders/Shadows/Mesh.hlsl", AssetType::Shader);
     Asset::Handle fragmentShader = AssetManager::Get("Assets/Shaders/Shadows/Fragment.hlsl", AssetType::Shader);
 
     GraphicsPipelineSpecs specs;
+    specs.Bytecodes[ShaderType::Amplification] = ampShader->Shader;
     specs.Bytecodes[ShaderType::Mesh] = meshShader->Shader;
     specs.Bytecodes[ShaderType::Fragment] = fragmentShader->Shader;
     specs.Cull = CullMode::Back;
@@ -24,6 +26,7 @@ Shadows::Shadows(RHI::Ref rhi)
     specs.Depth = DepthOperation::Less;
     specs.DepthFormat = TextureFormat::Depth32;
     specs.Signature = rhi->CreateRootSignature({ RootType::PushConstant }, sizeof(int) * 8 + sizeof(glm::mat4) * 3);
+    specs.UseAmplification = true;
 
     mCascadePipeline = rhi->CreateMeshPipeline(specs);
 

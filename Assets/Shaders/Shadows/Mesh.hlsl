@@ -31,7 +31,6 @@ struct VertexOut
     float4 Clip : SV_Position;
 };
 
-
 struct PushConstants
 {
     int VertexBuffer;
@@ -44,6 +43,11 @@ struct PushConstants
     column_major float4x4 Transform;
     column_major float4x4 LightView;
     column_major float4x4 LightProj;
+};
+
+struct Payload
+{
+    uint MeshletIndices[32];
 };
 
 ConstantBuffer<PushConstants> Constants : register(b0);
@@ -68,6 +72,7 @@ VertexOut GetVertexAttributes(uint meshletIndex, uint vertexIndex)
 void MSMain(
     uint GroupThreadID: SV_GroupThreadID,
     uint GroupID : SV_GroupID,
+    in payload Payload payload,
     out indices uint3 Triangles[124],
     out vertices VertexOut Verts[64]
 )
@@ -78,7 +83,8 @@ void MSMain(
     StructuredBuffer<uint> MeshletPrimitives = ResourceDescriptorHeap[Constants.MeshletTriangleBuffer];
 
     // -------- //
-    Meshlet m = Meshlets[GroupID];
+    uint meshletIndex = payload.MeshletIndices[GroupID];
+    Meshlet m = Meshlets[meshletIndex];
     SetMeshOutputCounts(m.VertCount, m.PrimCount);
 
     for (uint i = GroupThreadID; i < m.PrimCount; i += 32) {

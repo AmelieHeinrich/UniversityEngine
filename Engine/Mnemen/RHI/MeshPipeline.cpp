@@ -14,8 +14,9 @@ MeshPipeline::MeshPipeline(Device::Ref devicePtr, GraphicsPipelineSpecs& specs)
 
     D3DX12_MESH_SHADER_PIPELINE_STATE_DESC Desc = {};
     if (specs.UseAmplification) {
-        // Desc.AS.pShaderBytecode = ampBytecode.bytecode.data();
-        // Desc.AS.BytecodeLength = ampBytecode.bytecode.size() * sizeof(UInt32);
+        Shader& ampBytecode = specs.Bytecodes[ShaderType::Amplification];
+        Desc.AS.pShaderBytecode = ampBytecode.Bytecode.data();
+        Desc.AS.BytecodeLength = ampBytecode.Bytecode.size();
     }
     Desc.MS.pShaderBytecode = meshBytecode.Bytecode.data();
     Desc.MS.BytecodeLength = meshBytecode.Bytecode.size();

@@ -16,6 +16,7 @@ GBuffer::GBuffer(RHI::Ref rhi)
     int width, height;
     Application::Get()->GetWindow()->PollSize(width, height);
 
+    Asset::Handle gbufferShaderTask = AssetManager::Get("Assets/Shaders/GBuffer/GBufferAmplification.hlsl", AssetType::Shader);
     Asset::Handle gbufferShaderIn = AssetManager::Get("Assets/Shaders/GBuffer/GBufferMesh.hlsl", AssetType::Shader);
     Asset::Handle gbufferShaderOut = AssetManager::Get("Assets/Shaders/GBuffer/GBufferFragment.hlsl", AssetType::Shader);
 
@@ -89,6 +90,7 @@ GBuffer::GBuffer(RHI::Ref rhi)
     // GBuffer Pipeline
     {
         GraphicsPipelineSpecs specs = {};
+        specs.Bytecodes[ShaderType::Amplification] = gbufferShaderTask->Shader;
         specs.Bytecodes[ShaderType::Mesh] = gbufferShaderIn->Shader;
         specs.Bytecodes[ShaderType::Fragment] = gbufferShaderOut->Shader;
         specs.Formats.push_back(TextureFormat::RGBA16Float);
@@ -101,6 +103,7 @@ GBuffer::GBuffer(RHI::Ref rhi)
         specs.DepthFormat = TextureFormat::Depth32;
         specs.CCW = false;
         specs.Signature = mRHI->CreateRootSignature({ RootType::PushConstant }, sizeof(int) * 12 + (sizeof(glm::mat4) * 2));
+        specs.UseAmplification = true;
 
         mPipeline = mRHI->CreateMeshPipeline(specs);
     }
@@ -212,13 +215,15 @@ void GBuffer::Render(const Frame& frame, ::Ref<Scene> scene)
                 transform,
                 glm::inverse(transform)
             };
+            UInt32 threadGroupCountX = static_cast<UInt32>((primitive.MeshletCount / 32) + 1);
+
             frame.CommandBuffer->Barrier(primitive.VertexBuffer, ResourceLayout::Shader);
             frame.CommandBuffer->Barrier(primitive.IndexBuffer, ResourceLayout::Shader);
             frame.CommandBuffer->Barrier(primitive.MeshletBuffer, ResourceLayout::Shader);
             frame.CommandBuffer->Barrier(primitive.MeshletVertices, ResourceLayout::Shader);
             frame.CommandBuffer->Barrier(primitive.MeshletTriangles, ResourceLayout::Shader);
             frame.CommandBuffer->GraphicsPushConstants(&data, sizeof(data), 0);
-            frame.CommandBuffer->DispatchMesh(primitive.MeshletCount, primitive.IndexCount / 3);
+            frame.CommandBuffer->DispatchMesh(threadGroupCountX, primitive.IndexCount / 3);
             frame.CommandBuffer->Barrier(primitive.VertexBuffer, ResourceLayout::Common);
             frame.CommandBuffer->Barrier(primitive.IndexBuffer, ResourceLayout::Common);
             frame.CommandBuffer->Barrier(primitive.MeshletBuffer, ResourceLayout::Common);

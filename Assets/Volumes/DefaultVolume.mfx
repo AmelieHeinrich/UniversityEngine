@@ -42,7 +42,7 @@
     },
     "geometry": {
         "direct": 1.0399999618530273,
-        "indirect": 0.0,
+        "indirect": 0.05999999865889549,
         "visualizeMeshlets": false
     },
     "pixelization": {
