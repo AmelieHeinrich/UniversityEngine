@@ -136,3 +136,54 @@ Vector<glm::vec4> Math::CascadeCorners(glm::mat4 view, float fov, float aspectRa
 {
 	return FrustumCorners(view, glm::perspective(fov, aspectRatio, nearPlane, farPlane));
 }
+
+Array<Plane, 6> Math::GetFrustumPlanes(glm::mat4 view, glm::mat4 proj)
+{
+	glm::mat4 projViewMatrix = proj * view;
+
+    Array<Plane, 6> planes;
+
+    // Left Plane
+    planes[0].Normal.x = projViewMatrix[0][3] + projViewMatrix[0][0];
+    planes[0].Normal.y = projViewMatrix[1][3] + projViewMatrix[1][0];
+    planes[0].Normal.z = projViewMatrix[2][3] + projViewMatrix[2][0];
+    planes[0].Distance = projViewMatrix[3][3] + projViewMatrix[3][0];
+
+    // Right Plane
+    planes[1].Normal.x = projViewMatrix[0][3] - projViewMatrix[0][0];
+    planes[1].Normal.y = projViewMatrix[1][3] - projViewMatrix[1][0];
+    planes[1].Normal.z = projViewMatrix[2][3] - projViewMatrix[2][0];
+    planes[1].Distance = projViewMatrix[3][3] - projViewMatrix[3][0];
+
+    // Bottom Plane
+    planes[2].Normal.x = projViewMatrix[0][3] + projViewMatrix[0][1];
+    planes[2].Normal.y = projViewMatrix[1][3] + projViewMatrix[1][1];
+    planes[2].Normal.z = projViewMatrix[2][3] + projViewMatrix[2][1];
+    planes[2].Distance = projViewMatrix[3][3] + projViewMatrix[3][1];
+
+    // Top Plane
+    planes[3].Normal.x = projViewMatrix[0][3] - projViewMatrix[0][1];
+    planes[3].Normal.y = projViewMatrix[1][3] - projViewMatrix[1][1];
+    planes[3].Normal.z = projViewMatrix[2][3] - projViewMatrix[2][1];
+    planes[3].Distance = projViewMatrix[3][3] - projViewMatrix[3][1];
+
+    // Near Plane
+    planes[4].Normal.x = projViewMatrix[0][3] + projViewMatrix[0][2];
+    planes[4].Normal.y = projViewMatrix[1][3] + projViewMatrix[1][2];
+    planes[4].Normal.z = projViewMatrix[2][3] + projViewMatrix[2][2];
+    planes[4].Distance = projViewMatrix[3][3] + projViewMatrix[3][2];
+
+    // Far Plane
+    planes[5].Normal.x = projViewMatrix[0][3] - projViewMatrix[0][2];
+    planes[5].Normal.y = projViewMatrix[1][3] - projViewMatrix[1][2];
+    planes[5].Normal.z = projViewMatrix[2][3] - projViewMatrix[2][2];
+    planes[5].Distance = projViewMatrix[3][3] - projViewMatrix[3][2];
+
+    // Normalize all planes
+    for (auto& plane : planes) {
+        float length = glm::length(plane.Normal);
+        plane.Normal /= length;
+        plane.Distance /= length;
+    }
+    return planes;
+}

@@ -13,12 +13,6 @@
 constexpr float CAMERA_NEAR = 0.1f;
 constexpr float CAMERA_FAR = 150.0f;
 
-struct Plane
-{
-    glm::vec3 Normal;
-    float Distance;
-};
-
 class Camera
 {
 public:

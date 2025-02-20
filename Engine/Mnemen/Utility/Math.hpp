@@ -10,6 +10,12 @@
 #include <glm/glm.hpp>
 #include <glm/gtx/quaternion.hpp>
 
+struct Plane
+{
+    glm::vec3 Normal;
+    float Distance;
+};
+
 /// @class Math
 /// @brief A utility class providing mathematical operations and transformations.
 ///
@@ -62,4 +68,6 @@ public:
 
     static Vector<glm::vec4> FrustumCorners(glm::mat4 view, glm::mat4 proj);
     static Vector<glm::vec4> CascadeCorners(glm::mat4 view, float fov, float aspectRatio, float nearPlane, float farPlane);
+
+    static Array<Plane, 6> GetFrustumPlanes(glm::mat4 view, glm::mat4 proj);
 };

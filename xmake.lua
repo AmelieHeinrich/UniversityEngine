@@ -49,7 +49,7 @@ target("Mnemen")
                     "ThirdParty/JSON/single_include",
                     "ThirdParty/Lua/src")
     add_linkdirs("ThirdParty/SDL3/lib")
-    add_defines("GLM_ENABLE_EXPERIMENTAL", "USE_PIX", "GLM_FORCE_DEPTH_ZERO_TO_ONE", "WIN32_LEAN_AND_MEAN")
+    add_defines("GLM_ENABLE_EXPERIMENTAL", "USE_PIX", "GLM_FORCE_DEPTH_ZERO_TO_ONE", "WIN32_LEAN_AND_MEAN", "NOMINMAX")
 
     if is_plat("windows") then
         add_syslinks("user32",

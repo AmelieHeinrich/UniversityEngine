@@ -151,8 +151,10 @@ void GBuffer::Render(const Frame& frame, ::Ref<Scene> scene)
         if (!node) {
             return;
         }
-        glm::mat4 globalTransform = node->Transform * transform;
+
         for (MeshPrimitive primitive : node->Primitives) {
+            if (!primitive.IsBoxInFrustum(transform, camera->View, camera->Projection))
+                continue;
             Statistics::Get().InstanceCount++;
             MeshMaterial meshMaterial = model->Materials[primitive.MaterialIndex];
 
@@ -207,8 +209,8 @@ void GBuffer::Render(const Frame& frame, ::Ref<Scene> scene)
                 camera->Volume->Volume.VisualizeMeshlets,
                 0,
                 
-                globalTransform,
-                glm::inverse(globalTransform)
+                transform,
+                glm::inverse(transform)
             };
             frame.CommandBuffer->Barrier(primitive.VertexBuffer, ResourceLayout::Shader);
             frame.CommandBuffer->Barrier(primitive.IndexBuffer, ResourceLayout::Shader);
@@ -225,7 +227,7 @@ void GBuffer::Render(const Frame& frame, ::Ref<Scene> scene)
         }
         if (!node->Children.empty()) {
             for (MeshNode* child : node->Children) {
-                drawNode(frame, child, model, globalTransform, material);
+                drawNode(frame, child, model, transform, material);
             }
         }
     };

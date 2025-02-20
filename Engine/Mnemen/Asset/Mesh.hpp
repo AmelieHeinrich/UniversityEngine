@@ -5,8 +5,6 @@
 
 #pragma once
 
-#include <Core/Common.hpp>
-#include <RHI/RHI.hpp>
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
@@ -14,6 +12,11 @@
 #include <Assimp/scene.h>
 #include <Assimp/postprocess.h>
 #include <Assimp/pbrmaterial.h>
+
+#include <Core/Common.hpp>
+#include <RHI/RHI.hpp>
+#include <Physics/BoundingVolume.hpp>
+#include <Utility/Math.hpp>
 
 #define MAX_MESHLET_TRIANGLES 124
 #define MAX_MESHLET_VERTICES 64
@@ -88,6 +91,11 @@ struct MeshPrimitive
     UInt32 IndexCount; ///< Number of indices in the primitive.
     UInt32 MeshletCount; ///< Number of meshlets in the primitive.
     int MaterialIndex; ///< Index of the material used by this primitive.
+
+    AABB BoundingBox;
+
+    bool IsBoxOutsidePlane(const Plane& plane, const AABB& box, const glm::mat4& transform);
+    bool IsBoxInFrustum(glm::mat4 transform, glm::mat4 view, glm::mat4 proj);
 };
 
 /// @struct MeshNode

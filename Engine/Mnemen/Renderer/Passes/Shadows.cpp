@@ -73,14 +73,17 @@ void Shadows::Render(const Frame& frame, ::Ref<Scene> scene)
         frame.CommandBuffer->EndMarker();
 
         // Spot Lights
-        frame.CommandBuffer->BeginMarker("Spot Shadow Maps");
-        for (auto [id, spot] : view.each()) {
-            Entity entity(scene->GetRegistry());
-            entity.ID = id;
+        {
+            PROFILE_SCOPE("Shadows::RenderSpotLights");
+            frame.CommandBuffer->BeginMarker("Spot Shadow Maps");
+            for (auto [id, spot] : view.each()) {
+                Entity entity(scene->GetRegistry());
+                entity.ID = id;
 
-            RenderSpot(frame, scene, entity);
+                RenderSpot(frame, scene, entity);
+            }
+            frame.CommandBuffer->EndMarker();
         }
-        frame.CommandBuffer->EndMarker();
 
         // TODO: Point Lights?
     }
@@ -145,6 +148,9 @@ void Shadows::RenderSpot(const Frame& frame, ::Ref<Scene> scene, Entity entity)
         }
 
         for (MeshPrimitive primitive : node->Primitives) {
+            if (!primitive.IsBoxInFrustum(transform, spot.LightView, spot.LightProj))
+                continue;
+
             struct PushConstants {
                 int VertexBuffer;
                 int IndexBuffer;
@@ -268,6 +274,9 @@ void Shadows::RenderCascades(const Frame& frame, ::Ref<Scene> scene)
             }
 
             for (MeshPrimitive primitive : node->Primitives) {
+                if (!primitive.IsBoxInFrustum(transform, mCascades[i].View, mCascades[i].Proj))
+                    continue;
+
                 struct PushConstants {
                     int VertexBuffer;
                     int IndexBuffer;

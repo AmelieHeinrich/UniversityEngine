@@ -11,6 +11,46 @@
 #include <Asset/AssetManager.hpp>
 #include <RHI/Uploader.hpp>
 
+bool MeshPrimitive::IsBoxOutsidePlane(const Plane& plane, const AABB& box, const glm::mat4& transform)
+{
+    glm::vec3 corners[8] = {
+        glm::vec3(box.Min.x, box.Min.y, box.Min.z),
+        glm::vec3(box.Min.x, box.Min.y, box.Max.z),
+        glm::vec3(box.Min.x, box.Max.y, box.Min.z),
+        glm::vec3(box.Min.x, box.Max.y, box.Max.z),
+        glm::vec3(box.Max.x, box.Min.y, box.Min.z),
+        glm::vec3(box.Max.x, box.Min.y, box.Max.z),
+        glm::vec3(box.Max.x, box.Max.y, box.Min.z),
+        glm::vec3(box.Max.x, box.Max.y, box.Max.z),
+    };
+
+    // Transform each corner by the matrix
+    for (auto& corner : corners) {
+        corner = glm::vec3(transform * glm::vec4(corner, 1.0f));
+    }
+
+    // Check if all corners are outside the plane
+    bool allOutside = true;
+    for (const auto& corner : corners) {
+        if (glm::dot(plane.Normal, corner) + plane.Distance > 0) {
+            allOutside = false;
+            break; // At least one point is inside or intersecting the plane
+        }
+    }
+
+    return allOutside;
+}
+
+bool MeshPrimitive::IsBoxInFrustum(glm::mat4 transform, glm::mat4 view, glm::mat4 proj)
+{
+    for (const auto& plane : Math::GetFrustumPlanes(view, proj)) {
+        if (IsBoxOutsidePlane(plane, BoundingBox, transform)) {
+            return false;
+        }
+    }
+    return true;
+}
+
 void Mesh::Load(RHI::Ref rhi, const String& path)
 {
     mRHI = rhi;
@@ -84,6 +124,8 @@ void Mesh::ProcessPrimitive(aiMesh *mesh, MeshNode* node, const aiScene *scene, 
     Vector<Vertex> vertices = {};
     Vector<UInt32> indices = {};
 
+    out.BoundingBox.Min = glm::vec3(FLT_MAX);
+    out.BoundingBox.Max = glm::vec3(-FLT_MAX);
     for (int i = 0; i < mesh->mNumVertices; i++) {
         Vertex vertex;
 
@@ -98,6 +140,14 @@ void Mesh::ProcessPrimitive(aiMesh *mesh, MeshNode* node, const aiScene *scene, 
             vertex.Tangent = glm::vec3(mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z);
             vertex.Bitangent = glm::vec3(mesh->mBitangents[i].x, mesh->mBitangents[i].y, mesh->mBitangents[i].z);
         }
+
+        out.BoundingBox.Min.x = std::min(vertex.Position.x, out.BoundingBox.Min.x);
+        out.BoundingBox.Min.y = std::min(vertex.Position.y, out.BoundingBox.Min.y);
+        out.BoundingBox.Min.z = std::min(vertex.Position.z, out.BoundingBox.Min.z);
+
+        out.BoundingBox.Max.x = std::max(vertex.Position.x, out.BoundingBox.Max.x);
+        out.BoundingBox.Max.y = std::max(vertex.Position.y, out.BoundingBox.Max.y);
+        out.BoundingBox.Max.z = std::max(vertex.Position.z, out.BoundingBox.Max.z);
         
         vertices.push_back(vertex);
     }
