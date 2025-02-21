@@ -41,8 +41,8 @@
         "factor": 2.24399995803833
     },
     "geometry": {
-        "direct": 1.0399999618530273,
-        "indirect": 0.0,
+        "direct": 1.0700000524520874,
+        "indirect": 0.11999999731779099,
         "visualizeMeshlets": false
     },
     "pixelization": {
@@ -50,8 +50,8 @@
         "size": 5
     },
     "posterization": {
-        "enable": false,
-        "levels": 10.100000381469727
+        "enable": true,
+        "levels": 10.0
     },
     "shadows": {
         "freeze": false,
@@ -59,6 +59,6 @@
         "visualize": false
     },
     "skybox": {
-        "enable": false
+        "enable": true
     }
 }
