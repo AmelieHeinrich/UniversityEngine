@@ -133,9 +133,9 @@ JPH::ShapeRefC CreateShape::CylinderShape(float HalfHeight, float Radius, float 
     return CylinderShape; 
 }
 
-JPH::ShapeRefC CreateShape::ConvexHullShape(JPH::Array<JPH::Vec3> vertices)
+JPH::ShapeRefC CreateShape::ConvexHullShape(JPH::Array<JPH::Vec3> vertices, float ConvexRadius, const JPH::PhysicsMaterial* PhysicsMaterial)
 {
-    JPH::ConvexHullShapeSettings ConvexHullShapeSetting(vertices, JPH::cDefaultConvexRadius);
+    JPH::ConvexHullShapeSettings ConvexHullShapeSetting(vertices, ConvexRadius, PhysicsMaterial);
     ConvexHullShapeSetting.SetEmbedded();
     JPH::ShapeSettings::ShapeResult ConvexHullShapeResult = ConvexHullShapeSetting.Create();
     JPH::ShapeRefC ConvexHullShape = ConvexHullShapeResult.Get();

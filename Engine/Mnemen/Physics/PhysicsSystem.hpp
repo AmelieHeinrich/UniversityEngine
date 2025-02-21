@@ -109,7 +109,7 @@ class CreateShape
      JPH::ShapeRefC SphereShape(float Radius, const JPH::PhysicsMaterial * PhysicsMaterial);
      JPH::ShapeRefC CapsuleShape(float HalfHeightOfCylinder, float Radius, const JPH::PhysicsMaterial* inMaterial);
      JPH::ShapeRefC CylinderShape(float HalfHeight, float Radius, float ConvexRadius, const JPH::PhysicsMaterial* PhysicsMaterial);
-     JPH::ShapeRefC ConvexHullShape(JPH::Array<JPH::Vec3> vertices);
+     JPH::ShapeRefC ConvexHullShape(JPH::Array<JPH::Vec3> vertices, float ConvexRadius, const JPH::PhysicsMaterial* PhysicsMaterial);
 
 };
 /// @brief A system for handling physics simulation in the application.
