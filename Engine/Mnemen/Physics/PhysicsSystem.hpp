@@ -26,6 +26,7 @@
 #include <Jolt/Physics/Collision/Shape/CapsuleShape.h>
 #include <Jolt/Physics/Collision/Shape/ConvexHullShape.h>
 #include <Jolt/Physics/Collision/Shape/PlaneShape.h>
+#include <Jolt/Physics/Collision/PhysicsMaterial.h>
 #include <Jolt/Physics/Body/BodyCreationSettings.h>
 #include <Jolt/Physics/Body/BodyActivationListener.h>
 #include <Jolt/Math/Vec3.h>
@@ -103,11 +104,11 @@ public:
 class CreateShape
 {
  public:
-     JPH::ShapeRefC PlaneShape();
-     JPH::ShapeRefC BoxShape();
-     JPH::ShapeRefC SphereShape();
-     JPH::ShapeRefC CapsuleShape();
-     JPH::ShapeRefC CylinderShape();
+     JPH::ShapeRefC PlaneShape(JPH::Vec4 PLaneVec4, const JPH::PhysicsMaterial* PhysicsMaterial, float HalfExtent);
+     JPH::ShapeRefC BoxShape(JPH::Vec3 HalfExtent, float ConvexRadius, const JPH::PhysicsMaterial* PhysicsMaterial);
+     JPH::ShapeRefC SphereShape(float Radius, const JPH::PhysicsMaterial * PhysicsMaterial);
+     JPH::ShapeRefC CapsuleShape(float HalfHeightOfCylinder, float Radius, const JPH::PhysicsMaterial* inMaterial);
+     JPH::ShapeRefC CylinderShape(float HalfHeight, float Radius, float ConvexRadius, const JPH::PhysicsMaterial* PhysicsMaterial);
      JPH::ShapeRefC ConvexHullShape(JPH::Array<JPH::Vec3> vertices);
 
 };

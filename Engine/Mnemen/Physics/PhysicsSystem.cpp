@@ -88,54 +88,45 @@ bool MyObjectVsBroadPhaseLayerFilter::ShouldCollide(JPH::ObjectLayer Layer1, JPH
     }
 }
 
-JPH::ShapeRefC CreateShape::PlaneShape()
+JPH::ShapeRefC CreateShape::PlaneShape(JPH::Vec4 PLaneVec4, const JPH::PhysicsMaterial* PhysicsMaterial, float HalfExtent)
 {
-    JPH::PlaneShapeSettings PlaneShapeSetting;
+    JPH::PlaneShapeSettings PlaneShapeSetting(JPH::Plane(PLaneVec4), PhysicsMaterial, HalfExtent);
     PlaneShapeSetting.SetEmbedded();
     JPH::ShapeSettings::ShapeResult PlaneShapeResult = PlaneShapeSetting.Create();
     JPH::ShapeRefC PlaneShape = PlaneShapeResult.Get();
     return PlaneShape;
 }
 
-JPH::ShapeRefC CreateShape::BoxShape()
+JPH::ShapeRefC CreateShape::BoxShape(JPH::Vec3 HalfExtent, float ConvexRadius, const JPH::PhysicsMaterial* PhysicsMaterial)
 {
-    JPH::BoxShapeSettings BoxShapeSetting;
+    JPH::BoxShapeSettings BoxShapeSetting(HalfExtent, ConvexRadius, PhysicsMaterial);
     BoxShapeSetting.SetEmbedded();
     JPH::ShapeSettings::ShapeResult BoxShapeResult = BoxShapeSetting.Create();
     JPH::ShapeRefC BoxShape = BoxShapeResult.Get();
     return BoxShape;
 }
 
-JPH::ShapeRefC CreateShape::BoxShape()
+JPH::ShapeRefC CreateShape::SphereShape(float Radius, const JPH::PhysicsMaterial *PhysicsMaterial)
 {
-    JPH::BoxShapeSettings BoxShapeSetting;
-    BoxShapeSetting.SetEmbedded();
-    JPH::ShapeSettings::ShapeResult BoxShapeResult = BoxShapeSetting.Create();
-    JPH::ShapeRefC BoxShape = BoxShapeResult.Get();
-    return BoxShape;
-}
-
-JPH::ShapeRefC CreateShape::SphereShape()
-{
-    JPH::BoxShapeSettings SphereShapeSetting;
+    JPH::SphereShapeSettings SphereShapeSetting(Radius, PhysicsMaterial);
     SphereShapeSetting.SetEmbedded();
     JPH::ShapeSettings::ShapeResult SphereShapeResult = SphereShapeSetting.Create();
     JPH::ShapeRefC SphereShape = SphereShapeResult.Get();
     return SphereShape;
 }
 
-JPH::ShapeRefC CreateShape::CapsuleShape()
+JPH::ShapeRefC CreateShape::CapsuleShape(float HalfHeightOfCylinder, float Radius, const JPH::PhysicsMaterial* PhysicsMaterial)
 {
-    JPH::BoxShapeSettings CapsuleShapeSetting;
+    JPH::CapsuleShapeSettings CapsuleShapeSetting(HalfHeightOfCylinder, Radius, PhysicsMaterial);
     CapsuleShapeSetting.SetEmbedded();
     JPH::ShapeSettings::ShapeResult CapsuleShapeResult = CapsuleShapeSetting.Create();
     JPH::ShapeRefC CapsuleShape = CapsuleShapeResult.Get();
     return CapsuleShape;
 }
 
-JPH::ShapeRefC CreateShape::CylinderShape()
+JPH::ShapeRefC CreateShape::CylinderShape(float HalfHeight, float Radius, float ConvexRadius, const JPH::PhysicsMaterial* PhysicsMaterial)
 {
-    JPH::CylinderShapeSettings CylinderShapeSetting;
+    JPH::CylinderShapeSettings CylinderShapeSetting(HalfHeight,Radius ,ConvexRadius, PhysicsMaterial);
     CylinderShapeSetting.SetEmbedded();
     JPH::ShapeSettings::ShapeResult CylinderShapeResult = CylinderShapeSetting.Create();
     JPH::ShapeRefC CylinderShape = CylinderShapeResult.Get();
