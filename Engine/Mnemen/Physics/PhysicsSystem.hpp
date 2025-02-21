@@ -98,12 +98,12 @@ public:
     }
 };
 
-/*class CreateShape
+class CreateShape
 {
  public:
-     JPH::PlaneShape PlaneShape();
+     JPH::PlaneShape PlaneShape(JPH::BodyInterface scene);
 
-};*/
+};
 /// @brief A system for handling physics simulation in the application.
 /// 
 /// The `PhysicsSystem` class provides static methods for initializing, updating, and exiting 
