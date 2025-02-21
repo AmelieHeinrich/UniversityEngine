@@ -53,7 +53,6 @@ public:
 
 };
 
-};
 
 class MyContactListener : public JPH::ContactListener
 {
