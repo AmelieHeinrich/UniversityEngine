@@ -88,8 +88,16 @@ bool MyObjectVsBroadPhaseLayerFilter::ShouldCollide(JPH::ObjectLayer Layer1, JPH
     }
 }
 
-
-
+/*JPH::PlaneShape CreateShape::PlaneShape()
+{
+    JPH::PlaneShapeSettings PlaneShapeSetting;
+    PlaneShapeSetting.SetEmbedded();
+    JPH::ShapeSettings::ShapeResult PlaneShapeResult = PlaneShapeSetting.Create();
+    JPH::ShapeRefC PlaneShape = PlaneShapeResult.Get();
+    JPH::BodyCreationSettings PlaneSetting(PlaneShape, JPH::RVec3(0.0f,-1.0f,0.0f),JPH::Quat::sIdentity(), JPH::EMotionType::Static,sNonMovingLayer);
+    //JPH::Body *Plane = 
+}*/
+//(JPH::Plane(JPH::Vec3(100.0f,1.0f,100.0f),1.0f), JPH::PhysicsMaterial, JPH::cDefaultHalfExtent)
 
 void PhysicsSystem::Init()
 {
@@ -120,10 +128,6 @@ void PhysicsSystem::Init()
     sPhysicsSystem->Init(MaxBodies, NumBodyMutexes, MaxBodyPairs, MaxContactConstraints, broad_phase_layer_interface, object_vs_broadphase_layer_filter, object_vs_object_layer_filter );
     MyBodyActivationListener body_activation_listener;
     sPhysicsSystem->SetBodyActivationListener(&body_activation_listener);
-
-    // A contact listener gets notified when bodies (are about to) collide, and when they separate again.
-    // Note that this is called from a job so whatever you do here needs to be thread safe.
-    // Registering one is entirely optional.
     MyContactListener contact_listener;
     sPhysicsSystem->SetContactListener(&contact_listener);
     JPH::Vec3 sGravity = JPH::Vec3(0.0f, -9.81f, 0.0f);

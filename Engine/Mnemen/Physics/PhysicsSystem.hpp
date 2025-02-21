@@ -22,6 +22,8 @@
 #include <Jolt/Physics/Body/BodyInterface.h>
 #include <Jolt/Physics/Collision/Shape/BoxShape.h>
 #include <Jolt/Physics/Collision/Shape/SphereShape.h>
+//#include <Jolt/Physics/Collision/Shape/SphereShape.h>
+#include <Jolt/Physics/Collision/Shape/PlaneShape.h>
 #include <Jolt/Physics/Body/BodyCreationSettings.h>
 #include <Jolt/Physics/Body/BodyActivationListener.h>
 #include <Jolt/Math/Vec3.h>
@@ -96,12 +98,12 @@ public:
     }
 };
 
-class CreateShape
+/*class CreateShape
 {
  public:
-     JPH::Shape PlaneShape();
+     JPH::PlaneShape PlaneShape();
 
-};
+};*/
 /// @brief A system for handling physics simulation in the application.
 /// 
 /// The `PhysicsSystem` class provides static methods for initializing, updating, and exiting 
