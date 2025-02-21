@@ -46,7 +46,7 @@ static bool AssertFailedImpl(const char* inExpression, const char* inMessage, co
 
 #endif // JPH_ENABLE_ASSERTS
 
-bool ObjectLayerPairFilter::ShouldCollide(JPH::ObjectLayer ObjectLayer1, JPH::ObjectLayer ObjectLayer2)
+bool MyObjectLayerPairFilter::ShouldCollide(JPH::ObjectLayer ObjectLayer1, JPH::ObjectLayer ObjectLayer2)
 {
     switch (ObjectLayer1)
     {
@@ -75,7 +75,7 @@ JPH::BroadPhaseLayer MyBroadPhaseLayerInterface::GetBroadPhaseLayer(JPH::ObjectL
     return mObjectToBroadPhase[sLayers];
 }
 
-bool ObjectVsBroadPhaseLayerFilter::ShouldCollide(JPH::ObjectLayer Layer1, JPH::BroadPhaseLayer Layer2) {
+bool MyObjectVsBroadPhaseLayerFilter::ShouldCollide(JPH::ObjectLayer Layer1, JPH::BroadPhaseLayer Layer2) {
     switch (Layer1)
     {
     case sNonMovingLayer:
@@ -108,8 +108,8 @@ void PhysicsSystem::Init()
     int MaxContactConstraints = 10240;
   
     MyBroadPhaseLayerInterface broad_phase_layer_interface ;
-    JPH::ObjectVsBroadPhaseLayerFilter object_vs_broadphase_layer_filter;
-    JPH::ObjectLayerPairFilter object_vs_object_layer_filter;
+    MyObjectVsBroadPhaseLayerFilter object_vs_broadphase_layer_filter;
+    MyObjectLayerPairFilter object_vs_object_layer_filter;
 
     //Create the allocator
     //sAllocator = new JPH::TempAllocatorImpl(1 * 1024 * 1024);
@@ -129,22 +129,6 @@ void PhysicsSystem::Init()
     JPH::Vec3 sGravity = JPH::Vec3(0.0f, -9.81f, 0.0f);
     sPhysicsSystem->SetGravity(sGravity);
 
-
-    sPhysicsWorld = &sPhysicsSystem->GetBodyInterface();
-    JPH::BoxShapeSettings floor_shape_settings(JPH::Vec3(100.0f, 1.0f, 100.0f));
-    floor_shape_settings.SetEmbedded();
-    JPH::ShapeSettings::ShapeResult floor_shape_result = floor_shape_settings.Create();
-    JPH::ShapeRefC floor_shape = floor_shape_result.Get(); // We don't expect an error here, but you can check floor_shape_result for HasError() / GetError()
-    JPH::BodyCreationSettings floor_settings(floor_shape, JPH::RVec3(0.0f, -1.0f, 0.0f), JPH::Quat::sIdentity(), JPH::EMotionType::Static, sNonMovingLayer);
-    JPH::Body* floor = sPhysicsWorld->CreateBody(floor_settings);
-    sPhysicsWorld->AddBody(floor->GetID(), JPH::EActivation::DontActivate);
-
-    JPH::BodyCreationSettings sphere_settings(new JPH::SphereShape(0.5f), JPH::RVec3(0.0f, 2.0f, 0.0f), JPH::Quat::sIdentity(), JPH::EMotionType::Dynamic, sMovingLayer);
-    JPH::BodyID sphere_id = sPhysicsWorld->CreateAndAddBody(sphere_settings, JPH::EActivation::Activate);
-
-    // Now you can interact with the dynamic body, in this case we're going to give it a velocity.
-    // (note that if we had used CreateBody then we could have set the velocity straight on the body before adding it to the physics system)
-    sPhysicsWorld->SetLinearVelocity(sphere_id, JPH::Vec3(0.0f, -5.0f, 0.0f));
     sPhysicsSystem->OptimizeBroadPhase();
 
 

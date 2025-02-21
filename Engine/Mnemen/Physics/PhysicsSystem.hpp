@@ -28,7 +28,7 @@
 #include <Jolt/Physics/Collision/BroadPhase/BroadPhaseLayerInterfaceTable.h>
 
 
-class ObjectLayerPairFilter
+class MyObjectLayerPairFilter : public JPH::ObjectLayerPairFilter
 {
 public:
     bool ShouldCollide(JPH::ObjectLayer ObjectLayer1, JPH::ObjectLayer ObjectLayer2);
@@ -46,10 +46,12 @@ private:
     JPH::BroadPhaseLayer mObjectToBroadPhase[2];
 };
 
-class ObjectVsBroadPhaseLayerFilter
+class MyObjectVsBroadPhaseLayerFilter : public JPH::ObjectVsBroadPhaseLayerFilter
 {
 public:
     bool ShouldCollide(JPH::ObjectLayer Layer1, JPH::BroadPhaseLayer Layer2);
+
+};
 
 };
 
@@ -95,7 +97,12 @@ public:
     }
 };
 
+class CreateShape
+{
+ public:
+     JPH::Shape PlaneShape();
 
+};
 /// @brief A system for handling physics simulation in the application.
 /// 
 /// The `PhysicsSystem` class provides static methods for initializing, updating, and exiting 
