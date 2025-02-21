@@ -101,7 +101,7 @@ public:
 class CreateShape
 {
  public:
-     JPH::PlaneShape PlaneShape(JPH::BodyInterface scene);
+     void PlaneShape(JPH::BodyInterface scene);
 
 };
 /// @brief A system for handling physics simulation in the application.

@@ -88,7 +88,7 @@ bool MyObjectVsBroadPhaseLayerFilter::ShouldCollide(JPH::ObjectLayer Layer1, JPH
     }
 }
 
-JPH::PlaneShape CreateShape::PlaneShape(JPH::BodyInterface scene)
+void CreateShape::PlaneShape(JPH::BodyInterface scene)
 {
     JPH::PlaneShapeSettings PlaneShapeSetting;
     PlaneShapeSetting.SetEmbedded();
