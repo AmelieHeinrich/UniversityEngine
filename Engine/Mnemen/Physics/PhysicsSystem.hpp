@@ -22,7 +22,9 @@
 #include <Jolt/Physics/Body/BodyInterface.h>
 #include <Jolt/Physics/Collision/Shape/BoxShape.h>
 #include <Jolt/Physics/Collision/Shape/SphereShape.h>
-//#include <Jolt/Physics/Collision/Shape/SphereShape.h>
+#include <Jolt/Physics/Collision/Shape/CylinderShape.h>
+#include <Jolt/Physics/Collision/Shape/CapsuleShape.h>
+#include <Jolt/Physics/Collision/Shape/ConvexHullShape.h>
 #include <Jolt/Physics/Collision/Shape/PlaneShape.h>
 #include <Jolt/Physics/Body/BodyCreationSettings.h>
 #include <Jolt/Physics/Body/BodyActivationListener.h>
@@ -102,8 +104,12 @@ class CreateShape
 {
  public:
      JPH::ShapeRefC PlaneShape();
-     //void 
-         
+     JPH::ShapeRefC BoxShape();
+     JPH::ShapeRefC SphereShape();
+     JPH::ShapeRefC CapsuleShape();
+     JPH::ShapeRefC CylinderShape();
+     JPH::ShapeRefC ConvexHullShape(JPH::Array<JPH::Vec3> vertices);
+
 };
 /// @brief A system for handling physics simulation in the application.
 /// 

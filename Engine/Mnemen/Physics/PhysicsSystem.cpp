@@ -94,7 +94,61 @@ JPH::ShapeRefC CreateShape::PlaneShape()
     PlaneShapeSetting.SetEmbedded();
     JPH::ShapeSettings::ShapeResult PlaneShapeResult = PlaneShapeSetting.Create();
     JPH::ShapeRefC PlaneShape = PlaneShapeResult.Get();
-    return PlaneShape
+    return PlaneShape;
+}
+
+JPH::ShapeRefC CreateShape::BoxShape()
+{
+    JPH::BoxShapeSettings BoxShapeSetting;
+    BoxShapeSetting.SetEmbedded();
+    JPH::ShapeSettings::ShapeResult BoxShapeResult = BoxShapeSetting.Create();
+    JPH::ShapeRefC BoxShape = BoxShapeResult.Get();
+    return BoxShape;
+}
+
+JPH::ShapeRefC CreateShape::BoxShape()
+{
+    JPH::BoxShapeSettings BoxShapeSetting;
+    BoxShapeSetting.SetEmbedded();
+    JPH::ShapeSettings::ShapeResult BoxShapeResult = BoxShapeSetting.Create();
+    JPH::ShapeRefC BoxShape = BoxShapeResult.Get();
+    return BoxShape;
+}
+
+JPH::ShapeRefC CreateShape::SphereShape()
+{
+    JPH::BoxShapeSettings SphereShapeSetting;
+    SphereShapeSetting.SetEmbedded();
+    JPH::ShapeSettings::ShapeResult SphereShapeResult = SphereShapeSetting.Create();
+    JPH::ShapeRefC SphereShape = SphereShapeResult.Get();
+    return SphereShape;
+}
+
+JPH::ShapeRefC CreateShape::CapsuleShape()
+{
+    JPH::BoxShapeSettings CapsuleShapeSetting;
+    CapsuleShapeSetting.SetEmbedded();
+    JPH::ShapeSettings::ShapeResult CapsuleShapeResult = CapsuleShapeSetting.Create();
+    JPH::ShapeRefC CapsuleShape = CapsuleShapeResult.Get();
+    return CapsuleShape;
+}
+
+JPH::ShapeRefC CreateShape::CylinderShape()
+{
+    JPH::CylinderShapeSettings CylinderShapeSetting;
+    CylinderShapeSetting.SetEmbedded();
+    JPH::ShapeSettings::ShapeResult CylinderShapeResult = CylinderShapeSetting.Create();
+    JPH::ShapeRefC CylinderShape = CylinderShapeResult.Get();
+    return CylinderShape; 
+}
+
+JPH::ShapeRefC CreateShape::ConvexHullShape(JPH::Array<JPH::Vec3> vertices)
+{
+    JPH::ConvexHullShapeSettings ConvexHullShapeSetting(vertices, JPH::cDefaultConvexRadius);
+    ConvexHullShapeSetting.SetEmbedded();
+    JPH::ShapeSettings::ShapeResult ConvexHullShapeResult = ConvexHullShapeSetting.Create();
+    JPH::ShapeRefC ConvexHullShape = ConvexHullShapeResult.Get();
+    return ConvexHullShape;
 }
 
 void PhysicsSystem::Init()
