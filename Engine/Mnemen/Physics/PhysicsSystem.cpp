@@ -88,17 +88,14 @@ bool MyObjectVsBroadPhaseLayerFilter::ShouldCollide(JPH::ObjectLayer Layer1, JPH
     }
 }
 
-void CreateShape::PlaneShape(JPH::BodyInterface scene)
+JPH::ShapeRefC CreateShape::PlaneShape()
 {
     JPH::PlaneShapeSettings PlaneShapeSetting;
     PlaneShapeSetting.SetEmbedded();
     JPH::ShapeSettings::ShapeResult PlaneShapeResult = PlaneShapeSetting.Create();
     JPH::ShapeRefC PlaneShape = PlaneShapeResult.Get();
-    JPH::BodyCreationSettings PlaneSetting(PlaneShape, JPH::RVec3(0.0f,-1.0f,0.0f),JPH::Quat::sIdentity(), JPH::EMotionType::Static,sNonMovingLayer);
-    JPH::Body* Plane = scene.CreateBody(PlaneSetting);
-    scene.AddBody(Plane->GetID(), JPH::EActivation::DontActivate);
+    return PlaneShape
 }
-//(JPH::Plane(JPH::Vec3(100.0f,1.0f,100.0f),1.0f), JPH::PhysicsMaterial, JPH::cDefaultHalfExtent)
 
 void PhysicsSystem::Init()
 {
