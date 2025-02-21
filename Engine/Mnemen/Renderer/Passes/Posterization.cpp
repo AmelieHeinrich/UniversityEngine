@@ -9,6 +9,7 @@ Posterization::Posterization(RHI::Ref rhi)
     : RenderPass(rhi)
 {
     // Code goes here
+    // Haii!! It's me coralie!!
 }
 
 void Posterization::Render(const Frame& frame, ::Ref<Scene> scene)
