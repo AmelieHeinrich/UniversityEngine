@@ -1041,6 +1041,38 @@ void Editor::EntityEditor()
                     mSelectedEntity.AddComponent<SpotLightComponent>();
                 }
             }
+            if (!mSelectedEntity.HasComponent<BoxCollider>()) {
+                if (ImGui::MenuItem(ICON_FA_SQUARE_O " Box Collider")) {
+                    glm::vec3 t, r, s;
+                    Math::DecomposeTransform(mSelectedEntity.GetWorldTransform(), t, r, s);
+
+                    mSelectedEntity.AddComponent<BoxCollider>(s);
+                }
+            }
+            if (!mSelectedEntity.HasComponent<SphereCollider>()) {
+                if (ImGui::MenuItem(ICON_FA_CIRCLE_O " Sphere Collider")) {
+                    glm::vec3 t, r, s;
+                    Math::DecomposeTransform(mSelectedEntity.GetWorldTransform(), t, r, s);
+                    float maxScale = std::max(s.x, std::max(s.y, s.z));
+
+                    mSelectedEntity.AddComponent<SphereCollider>(maxScale);
+                }
+            }
+            if (!mSelectedEntity.HasComponent<CapsuleCollider>()) {
+                if (ImGui::MenuItem(ICON_FA_CIRCLE_THIN " Capsule Collider")) {
+                    glm::vec3 t, r, s;
+                    Math::DecomposeTransform(mSelectedEntity.GetWorldTransform(), t, r, s);
+                    float height = s.y;
+                    float radius = s.x;
+
+                    mSelectedEntity.AddComponent<CapsuleCollider>(height, radius);
+                }
+            }
+            if (!mSelectedEntity.HasComponent<ConvexHullCollider>()) {
+                if (ImGui::MenuItem(ICON_FA_OBJECT_GROUP " Convex Hull Collider")) {
+                    
+                }
+            }
             if (ImGui::MenuItem(ICON_FA_CODE " Script")) {
                 mSelectedEntity.GetComponent<ScriptComponent>().AddEmptyScript();
             }
