@@ -178,5 +178,27 @@ void PhysicsSystem::Exit()
 
 void PhysicsSystem::Update(Ref<Scene> scene, float minStepDuration)
 {
-    
+    int collisionSteps = 1;
+    try {
+        auto allocator = MakeRef<JPH::TempAllocatorMalloc>();
+
+        auto error = sData.System->Update(minStepDuration, collisionSteps, allocator.get(), sData.JobSystem);
+        if (error != JPH::EPhysicsUpdateError::None) {
+            const char* errMessage = "";
+            switch (error) {
+                case JPH::EPhysicsUpdateError::ManifoldCacheFull:
+                    errMessage = "Manifold cache full";
+                    break;
+                case JPH::EPhysicsUpdateError::BodyPairCacheFull:
+                    errMessage = "Body pair cache full";
+                    break;
+                case JPH::EPhysicsUpdateError::ContactConstraintsFull:
+                    errMessage = "contact constraints full";
+                    break;
+            }
+            LOG_ERROR("Jolt Error: {0}", errMessage);
+        }
+    } catch (...) {
+        LOG_CRITICAL("Jolt failed to update physics!");
+    }
 }
