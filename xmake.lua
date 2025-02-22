@@ -49,7 +49,7 @@ target("Mnemen")
                     "ThirdParty/JSON/single_include",
                     "ThirdParty/Lua/src")
     add_linkdirs("ThirdParty/SDL3/lib")
-    add_defines("GLM_ENABLE_EXPERIMENTAL", "USE_PIX", "GLM_FORCE_DEPTH_ZERO_TO_ONE", "WIN32_LEAN_AND_MEAN", "NOMINMAX")
+    add_defines("GLM_ENABLE_EXPERIMENTAL", "USE_PIX", "GLM_FORCE_DEPTH_ZERO_TO_ONE", "WIN32_LEAN_AND_MEAN", "NOMINMAX", "JPH_DEBUG_RENDERER")
 
     if is_plat("windows") then
         add_syslinks("user32",
@@ -126,7 +126,7 @@ target("Editor")
                     "ThirdParty/JSON/single_include",
                     "ThirdParty/Lua/src")
     add_deps("Mnemen")
-    add_defines("GLM_ENABLE_EXPERIMENTAL", "WIN32_LEAN_AND_MEAN")
+    add_defines("GLM_ENABLE_EXPERIMENTAL", "WIN32_LEAN_AND_MEAN", "JPH_DEBUG_RENDERER")
 
     if is_mode("debug") then
         set_symbols("debug")
@@ -173,7 +173,7 @@ target("Runtime")
                     "ThirdParty/JSON/single_include",
                     "ThirdParty/Lua/src")
     add_deps("Mnemen")
-    add_defines("GLM_ENABLE_EXPERIMENTAL", "WIN32_LEAN_AND_MEAN")
+    add_defines("GLM_ENABLE_EXPERIMENTAL", "WIN32_LEAN_AND_MEAN", "JPH_DEBUG_RENDERER")
 
     if is_mode("debug") then
         set_symbols("debug")
@@ -219,7 +219,7 @@ target("Launcher")
                     "ThirdParty/JSON/single_include",
                     "ThirdParty/Lua/src")
     add_deps("Mnemen")
-    add_defines("GLM_ENABLE_EXPERIMENTAL", "WIN32_LEAN_AND_MEAN")
+    add_defines("GLM_ENABLE_EXPERIMENTAL", "WIN32_LEAN_AND_MEAN", "JPH_DEBUG_RENDERER")
 
     before_link(function (target)
         os.cp("imgui.ini", "$(buildir)/$(plat)/$(arch)/$(mode)/imgui.ini")

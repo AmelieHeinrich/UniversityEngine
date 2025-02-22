@@ -53,6 +53,7 @@ target("Jolt")
     add_files("Jolt/Jolt/**.cpp")
     add_headerfiles("Jolt/Jolt/**.h")
     add_includedirs("Jolt")
+    add_defines("JPH_DEBUG_RENDERER")
 
 target("miniaudio")
     set_kind("static")

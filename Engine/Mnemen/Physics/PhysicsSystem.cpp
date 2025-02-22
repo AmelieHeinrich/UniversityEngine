@@ -160,12 +160,18 @@ void PhysicsSystem::Init()
 
     sData.BodyInterface = &sData.System->GetBodyInterface();
     sData.JobSystem = new JPH::JobSystemThreadPool(JPH::cMaxPhysicsJobs, JPH::cMaxPhysicsBarriers);
+    sData.DebugDraw = new PhysicsDebugDraw;
+
+    JPH::DebugRenderer::sInstance = sData.DebugDraw;
 
     LOG_INFO("Initialized Physics System");
 }
 
 void PhysicsSystem::Exit()
 {
+    JPH::DebugRenderer::sInstance = nullptr;
+
+    delete sData.DebugDraw;
     delete sData.JobSystem;
     delete sData.ContactListener;
     delete sData.System;

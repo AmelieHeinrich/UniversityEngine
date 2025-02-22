@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include "World/Scene.hpp"
+#include <World/Scene.hpp>
 
 #include <iostream>
 #include <cstdarg>
@@ -37,6 +37,8 @@
 #include <Jolt/Physics/Collision/CollisionCollectorImpl.h>
 #include <Jolt/Physics/Collision/ShapeCast.h>
 
+#include "PhysicsDebugDraw.hpp"
+
 class BPLayerInterfaceImpl;
 class MyContactListener;
 
@@ -52,6 +54,7 @@ private:
         JPH::PhysicsSystem* System;
         JPH::JobSystemThreadPool* JobSystem;
         JPH::BodyInterface* BodyInterface;
+        PhysicsDebugDraw* DebugDraw;
 
         MyContactListener* ContactListener;
         BPLayerInterfaceImpl* BroadphaseInterface;
