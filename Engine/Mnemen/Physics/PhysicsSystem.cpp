@@ -5,209 +5,178 @@
 
 #include "PhysicsSystem.hpp"
 
-JPH::PhysicsSystem* sPhysicsSystem;
-JPH::BodyInterface* sPhysicsWorld;
-//JPH::Vec3 sGravity;
-JPH::TempAllocatorMalloc* sAllocator;
-constexpr JPH::BroadPhaseLayer sNonMoving(0) ;
-constexpr JPH::BroadPhaseLayer sMoving(1);
-constexpr int mLayers(2);
-constexpr JPH::ObjectLayer sNonMovingLayer = 0;
-constexpr JPH::ObjectLayer sMovingLayer = 1;
-constexpr JPH::ObjectLayer sLayers = 2;
-
-
 #include <Core/Logger.hpp>
 
-static void TraceImpl(const char* inFMT, ...)
+PhysicsSystem::Data PhysicsSystem::sData;
+
+namespace Layers
 {
-    // Format the message
-    va_list list;
-    va_start(list, inFMT);
-    char buffer[1024];
-    vsnprintf(buffer, sizeof(buffer), inFMT, list);
-    va_end(list);
-
-    // Print to the TTY
-    std::cout << buffer << std::endl;
-}
-
-#ifdef JPH_ENABLE_ASSERTS
-
-// Callback for asserts, connect this to your own assert handler if you have one
-static bool AssertFailedImpl(const char* inExpression, const char* inMessage, const char* inFile, JPH::uint inLine)
-{
-    // Print to the TTY
-    std::cout << inFile << ":" << inLine << ": (" << inExpression << ") " << (inMessage != nullptr ? inMessage : "") << std::endl;
-
-    // Breakpoint
-    return true;
+    static constexpr UInt8 NON_MOVING = 0;
+    static constexpr UInt8 MOVING = 1;
+    static constexpr UInt8 CHARACTER = 2;
+    static constexpr UInt8 CHARACTER_GHOST = 3;
+    static constexpr UInt8 TRIGGER = 4;
+    static constexpr UInt8 NUM_LAYERS = 5;
 };
 
-#endif // JPH_ENABLE_ASSERTS
-
-bool MyObjectLayerPairFilter::ShouldCollide(JPH::ObjectLayer ObjectLayer1, JPH::ObjectLayer ObjectLayer2)
+namespace BroadPhaseLayers
 {
-    switch (ObjectLayer1)
+    static constexpr JPH::BroadPhaseLayer NON_MOVING(0);
+    static constexpr JPH::BroadPhaseLayer MOVING(1);
+    static constexpr Uint32 NUM_LAYERS(2);
+};
+
+String LayerToString(UInt8 layer)
+{
+    switch (layer)
     {
-    case sNonMovingLayer:
-        return ObjectLayer2 == sMovingLayer;
-    case sMovingLayer:
-        return true;
-    default:
-        LOG_INFO("Initialized Collision pair System");
-        return false;
+        case Layers::NON_MOVING:
+            return "NON_MOVING";
+        case Layers::MOVING:
+            return "MOVING";
+        case Layers::CHARACTER:
+            return "CHARACTER";
+        case Layers::CHARACTER_GHOST:
+            return "CHARACTER_GHOST";
+        case Layers::TRIGGER:
+            return "TRIGGER";
     }
+    return "SKIBIDI";
 }
 
-MyBroadPhaseLayerInterface::MyBroadPhaseLayerInterface()
+class BPLayerInterfaceImpl final : public JPH::BroadPhaseLayerInterface
 {
-    mObjectToBroadPhase[sNonMovingLayer] = sNonMoving;
-    mObjectToBroadPhase[sMovingLayer] = sMoving;
-}
-
-unsigned int MyBroadPhaseLayerInterface::GetNumBroadPhaseLayers() const
-{
-    return mLayers;
-}
-
-JPH::BroadPhaseLayer MyBroadPhaseLayerInterface::GetBroadPhaseLayer(JPH::ObjectLayer Layer) const{
-    return mObjectToBroadPhase[sLayers];
-}
-
-bool MyObjectVsBroadPhaseLayerFilter::ShouldCollide(JPH::ObjectLayer Layer1, JPH::BroadPhaseLayer Layer2) {
-    switch (Layer1)
+public:
+    BPLayerInterfaceImpl()
     {
-    case sNonMovingLayer:
-        return Layer2 == sMoving;
-    case sMovingLayer:
-        return true;
-    default:
-        LOG_INFO("Initialized Collision Broad Phase System");
-        return false;
+        // Create a mapping table from object to broad phase layer
+        mObjectToBroadPhase[Layers::NON_MOVING] = BroadPhaseLayers::NON_MOVING;
+        mObjectToBroadPhase[Layers::MOVING] = BroadPhaseLayers::MOVING;
+        mObjectToBroadPhase[Layers::CHARACTER] = BroadPhaseLayers::MOVING;
+        mObjectToBroadPhase[Layers::CHARACTER_GHOST] = BroadPhaseLayers::MOVING;
+        mObjectToBroadPhase[Layers::TRIGGER] = BroadPhaseLayers::MOVING;
     }
-}
 
-JPH::ShapeRefC CreateShape::PlaneShape(JPH::Vec4 PLaneVec4, const JPH::PhysicsMaterial* PhysicsMaterial, float HalfExtent)
-{
-    JPH::PlaneShapeSettings PlaneShapeSetting(JPH::Plane(PLaneVec4), PhysicsMaterial, HalfExtent);
-    PlaneShapeSetting.SetEmbedded();
-    JPH::ShapeSettings::ShapeResult PlaneShapeResult = PlaneShapeSetting.Create();
-    JPH::ShapeRefC PlaneShape = PlaneShapeResult.Get();
-    return PlaneShape;
-}
+    virtual JPH::uint GetNumBroadPhaseLayers() const override
+    {
+        return BroadPhaseLayers::NUM_LAYERS;
+    }
 
-JPH::ShapeRefC CreateShape::BoxShape(JPH::Vec3 HalfExtent, float ConvexRadius, const JPH::PhysicsMaterial* PhysicsMaterial)
-{
-    JPH::BoxShapeSettings BoxShapeSetting(HalfExtent, ConvexRadius, PhysicsMaterial);
-    BoxShapeSetting.SetEmbedded();
-    JPH::ShapeSettings::ShapeResult BoxShapeResult = BoxShapeSetting.Create();
-    JPH::ShapeRefC BoxShape = BoxShapeResult.Get();
-    return BoxShape;
-}
+    virtual JPH::BroadPhaseLayer GetBroadPhaseLayer(JPH::ObjectLayer inLayer) const override
+    {
+        using namespace JPH;
+        JPH_ASSERT(inLayer < Layers::NUM_LAYERS);
+        return mObjectToBroadPhase[inLayer];
+    }
+private:
+    JPH::BroadPhaseLayer					mObjectToBroadPhase[Layers::NUM_LAYERS];
+};
 
-JPH::ShapeRefC CreateShape::SphereShape(float Radius, const JPH::PhysicsMaterial *PhysicsMaterial)
+class ObjectVsBroadPhaseLayerFilterImpl : public JPH::ObjectVsBroadPhaseLayerFilter
 {
-    JPH::SphereShapeSettings SphereShapeSetting(Radius, PhysicsMaterial);
-    SphereShapeSetting.SetEmbedded();
-    JPH::ShapeSettings::ShapeResult SphereShapeResult = SphereShapeSetting.Create();
-    JPH::ShapeRefC SphereShape = SphereShapeResult.Get();
-    return SphereShape;
-}
+public:
+    virtual bool ShouldCollide(JPH::ObjectLayer inLayer1, JPH::BroadPhaseLayer inLayer2) const override
+    {
+        switch (inLayer1)
+        {
+        case Layers::NON_MOVING:
+            return inLayer2 == BroadPhaseLayers::MOVING;
+        case Layers::MOVING:
+            return true;
+        case Layers::TRIGGER:
+            return inLayer2 == BroadPhaseLayers::MOVING;
+        default:
+            return false;
+        }
+    }
+};
 
-JPH::ShapeRefC CreateShape::CapsuleShape(float HalfHeightOfCylinder, float Radius, const JPH::PhysicsMaterial* PhysicsMaterial)
+class ObjectLayerPairFilterImpl : public JPH::ObjectLayerPairFilter
 {
-    JPH::CapsuleShapeSettings CapsuleShapeSetting(HalfHeightOfCylinder, Radius, PhysicsMaterial);
-    CapsuleShapeSetting.SetEmbedded();
-    JPH::ShapeSettings::ShapeResult CapsuleShapeResult = CapsuleShapeSetting.Create();
-    JPH::ShapeRefC CapsuleShape = CapsuleShapeResult.Get();
-    return CapsuleShape;
-}
+public:
+    virtual bool ShouldCollide(JPH::ObjectLayer inObject1, JPH::ObjectLayer inObject2) const override
+    {
+        switch (inObject1)
+        {
+        case Layers::TRIGGER:
+            return inObject2 == Layers::CHARACTER_GHOST || inObject2 == Layers::CHARACTER;
+        case Layers::NON_MOVING:
+            return inObject2 == Layers::MOVING || inObject2 == Layers::CHARACTER_GHOST || inObject2 == Layers::CHARACTER; // Non moving only collides with moving
+        case Layers::MOVING:
+            return true; // Moving collides with everything
+        case Layers::CHARACTER_GHOST:
+            return inObject2 != Layers::CHARACTER;
+        case Layers::CHARACTER:
+            return inObject2 != Layers::CHARACTER_GHOST;
+        default:
+            return false;
+        }
+    }
+};
 
-JPH::ShapeRefC CreateShape::CylinderShape(float HalfHeight, float Radius, float ConvexRadius, const JPH::PhysicsMaterial* PhysicsMaterial)
+class MyContactListener : public JPH::ContactListener
 {
-    JPH::CylinderShapeSettings CylinderShapeSetting(HalfHeight,Radius ,ConvexRadius, PhysicsMaterial);
-    CylinderShapeSetting.SetEmbedded();
-    JPH::ShapeSettings::ShapeResult CylinderShapeResult = CylinderShapeSetting.Create();
-    JPH::ShapeRefC CylinderShape = CylinderShapeResult.Get();
-    return CylinderShape; 
-}
+public:
+    virtual JPH::ValidateResult	OnContactValidate(const JPH::Body& inBody1, const JPH::Body& inBody2, JPH::RVec3Arg inBaseOffset, const JPH::CollideShapeResult& inCollisionResult) override
+    {
+        return JPH::ValidateResult::AcceptAllContactsForThisBodyPair;
+    }
 
-JPH::ShapeRefC CreateShape::ConvexHullShape(JPH::Array<JPH::Vec3> vertices, float ConvexRadius, const JPH::PhysicsMaterial* PhysicsMaterial)
-{
-    JPH::ConvexHullShapeSettings ConvexHullShapeSetting(vertices, ConvexRadius, PhysicsMaterial);
-    ConvexHullShapeSetting.SetEmbedded();
-    JPH::ShapeSettings::ShapeResult ConvexHullShapeResult = ConvexHullShapeSetting.Create();
-    JPH::ShapeRefC ConvexHullShape = ConvexHullShapeResult.Get();
-    return ConvexHullShape;
-}
+    virtual void OnContactAdded(const JPH::Body& inBody1, const JPH::Body& inBody2, const JPH::ContactManifold& inManifold, JPH::ContactSettings& ioSettings) override
+    {
+    }
+
+    virtual void OnContactPersisted(const JPH::Body& inBody1, const JPH::Body& inBody2, const JPH::ContactManifold& inManifold, JPH::ContactSettings& ioSettings) override
+    {
+    }
+
+    virtual void OnContactRemoved(const JPH::SubShapeIDPair &inSubShapePair) override
+    {
+    }
+};
+
+BPLayerInterfaceImpl JoltBroadphaseLayerInterface = BPLayerInterfaceImpl();
+ObjectVsBroadPhaseLayerFilterImpl JoltObjectVSBroadphaseLayerFilter = ObjectVsBroadPhaseLayerFilterImpl();
+ObjectLayerPairFilterImpl JoltObjectVSObjectLayerFilter;
 
 void PhysicsSystem::Init()
 {
     JPH::RegisterDefaultAllocator();
-
-    JPH::Trace = TraceImpl;
-    JPH::JPH_IF_ENABLE_ASSERTS(AssertFailed = AssertFailedImpl;)
-
     JPH::Factory::sInstance = new JPH::Factory();
 
     JPH::RegisterTypes();
 
-    int MaxBodies = 65536;
-    int NumBodyMutexes = 0;
-    int MaxBodyPairs = 65536;
-    int MaxContactConstraints = 10240;
-  
-    MyBroadPhaseLayerInterface broad_phase_layer_interface ;
-    MyObjectVsBroadPhaseLayerFilter object_vs_broadphase_layer_filter;
-    MyObjectLayerPairFilter object_vs_object_layer_filter;
+    const UInt32 maxBodies = 4096;
+    const UInt32 numBodyMutexes = 0;
+    const UInt32 maxBodyPairs = 2048;
+    const UInt32 maxContactConstraints = 2048;
 
-    //Create the allocator
-    //sAllocator = new JPH::TempAllocatorImpl(1 * 1024 * 1024);
-    sAllocator = new JPH::TempAllocatorMalloc;
+    sData.System = new JPH::PhysicsSystem;
+    sData.System->Init(maxBodies, numBodyMutexes, maxBodyPairs, maxContactConstraints, JoltBroadphaseLayerInterface, JoltObjectVSBroadphaseLayerFilter, JoltObjectVSObjectLayerFilter);
 
-    //Initialize the Jolt Physics system
-    sPhysicsSystem = new JPH::PhysicsSystem();
-    sPhysicsSystem->Init(MaxBodies, NumBodyMutexes, MaxBodyPairs, MaxContactConstraints, broad_phase_layer_interface, object_vs_broadphase_layer_filter, object_vs_object_layer_filter );
-    MyBodyActivationListener body_activation_listener;
-    sPhysicsSystem->SetBodyActivationListener(&body_activation_listener);
-    MyContactListener contact_listener;
-    sPhysicsSystem->SetContactListener(&contact_listener);
-    JPH::Vec3 sGravity = JPH::Vec3(0.0f, -9.81f, 0.0f);
-    sPhysicsSystem->SetGravity(sGravity);
+    sData.ContactListener = new MyContactListener;
+    sData.System->SetContactListener(sData.ContactListener);
+    sData.System->SetGravity(JPH::Vec3(0.0f, -3.0f, 0.0f));
 
-    sPhysicsSystem->OptimizeBroadPhase();
-
+    sData.BodyInterface = &sData.System->GetBodyInterface();
+    sData.JobSystem = new JPH::JobSystemThreadPool(JPH::cMaxPhysicsJobs, JPH::cMaxPhysicsBarriers);
 
     LOG_INFO("Initialized Physics System");
 }
 
 void PhysicsSystem::Exit()
 {
-    // Remove the sphere from the physics system. Note that the sphere itself keeps all of its state and can be re-added at any time.
-    /*sPhysicsWorld->RemoveBody(sphere_id);
+    delete sData.JobSystem;
+    delete sData.ContactListener;
+    delete sData.System;
 
-    // Destroy the sphere. After this the sphere ID is no longer valid.
-    sPhysicsWorld->DestroyBody(sphere_id);
-
-    // Remove and destroy the floor
-    sPhysicsWorld->RemoveBody(floor->GetID());
-    sPhysicsWorld->DestroyBody(floor->GetID());*/
     JPH::UnregisterTypes();
+
     delete JPH::Factory::sInstance;
     JPH::Factory::sInstance = nullptr;
-    delete sPhysicsSystem;
-    delete sAllocator;
 }
 
 void PhysicsSystem::Update(Ref<Scene> scene, float minStepDuration)
 {
-    JPH::JobSystemThreadPool job_system(JPH::cMaxPhysicsJobs, JPH::cMaxPhysicsBarriers, std::thread::hardware_concurrency() - 1);
-    int cCollisionSteps = 1;
-    // Ensure minStepDuration is within the acceptable range for the time step.
-    if (minStepDuration > 0)
-    {
-        // Update the physics system with the given time step (minStepDuration).
-        sPhysicsSystem->Update(minStepDuration, cCollisionSteps, sAllocator, &job_system);
-    }
+    
 }
