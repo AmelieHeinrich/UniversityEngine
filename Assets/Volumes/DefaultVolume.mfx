@@ -38,7 +38,7 @@
         "enable": false
     },
     "fxaa": {
-        "enable": false
+        "enable": true
     },
     "gammaCorrect": {
         "factor": 2.24399995803833
@@ -54,7 +54,7 @@
     },
     "posterization": {
         "enable": false,
-        "levels": 10.100000381469727
+        "levels": 10.0
     },
     "shadows": {
         "freeze": false,
