@@ -34,7 +34,7 @@
         "focusRange": 8.626999855041504
     },
     "filmGrain": {
-        "amount": 0.0,
+        "amount": 0.10000000149011612,
         "enable": false
     },
     "fxaa": {
@@ -44,8 +44,8 @@
         "factor": 2.24399995803833
     },
     "geometry": {
-        "direct": 1.0399999618530273,
-        "indirect": 0.10000000149011612,
+        "direct": 1.0700000524520874,
+        "indirect": 0.11999999731779099,
         "visualizeMeshlets": false
     },
     "pixelization": {

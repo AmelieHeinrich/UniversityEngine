@@ -1291,7 +1291,7 @@ void Editor::FXVolumeEditor()
         }
         if (ImGui::TreeNodeEx("Posterization", ImGuiTreeNodeFlags_Framed)) {
             ImGui::Checkbox("Enable", &volume->EnablePosterization);
-            ImGui::DragFloat("Levels", &volume->PosterizationLevels, 0.1f, 1.0f, 100.0f, "%.1f");
+            ImGui::DragFloat("Levels", &volume->PosterizationLevels, 1.0f, 1.0f, 100.0f);
             ImGui::TreePop();
         }
         if (ImGui::TreeNodeEx("FXAA", ImGuiTreeNodeFlags_Framed)) {
