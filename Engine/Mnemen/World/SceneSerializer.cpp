@@ -162,6 +162,50 @@ nlohmann::json SceneSerializer::SerializeEntity(Entity entity)
         };
     }
 
+    // Box collider component
+    if (entity.HasComponent<BoxCollider>()) {
+        PhysicsShape& shape = entity.GetComponent<BoxCollider>();
+        glm::vec3 scale = shape.GetScale();
+
+        entityJson["box"] = {};
+        entityJson["box"]["scale"][0] = scale.x;
+        entityJson["box"]["scale"][1] = scale.y;
+        entityJson["box"]["scale"][2] = scale.z;
+    }
+
+    // Sphere collider component
+    if (entity.HasComponent<SphereCollider>()) {
+        PhysicsShape& shape = entity.GetComponent<SphereCollider>();
+        glm::vec3 scale = shape.GetScale();
+
+        entityJson["sphere"] = {};
+        entityJson["sphere"]["scale"][0] = scale.x;
+        entityJson["sphere"]["scale"][1] = scale.y;
+        entityJson["sphere"]["scale"][2] = scale.z;
+    }
+
+    // Capsule collider component
+    if (entity.HasComponent<CapsuleCollider>()) {
+        PhysicsShape& shape = entity.GetComponent<CapsuleCollider>();
+        glm::vec3 scale = shape.GetScale();
+
+        entityJson["capsule"] = {};
+        entityJson["capsule"]["scale"][0] = scale.x;
+        entityJson["capsule"]["scale"][1] = scale.y;
+        entityJson["capsule"]["scale"][2] = scale.z;
+    }
+
+    // Convex hull collider component
+    if (entity.HasComponent<ConvexHullCollider>()) {
+        PhysicsShape& shape = entity.GetComponent<ConvexHullCollider>();
+        glm::vec3 scale = shape.GetScale();
+
+        entityJson["convex"] = {};
+        entityJson["convex"]["scale"][0] = scale.x;
+        entityJson["convex"]["scale"][1] = scale.y;
+        entityJson["convex"]["scale"][2] = scale.z;
+    }
+
     return entityJson;
 }
 
@@ -236,6 +280,24 @@ Entity SceneSerializer::DeserializeEntity(Ref<Scene> scene, const nlohmann::json
         dir.CastShadows = d["castShadows"];
         dir.Color = glm::vec3(d["color"][0], d["color"][1], d["color"][2]);
         dir.Strength = d["strength"];
+    }
+    if (entityJson.contains("box")) {
+        auto& box = entity.AddComponent<BoxCollider>(glm::vec3(1.0f));
+        auto b = entityJson["box"];
+        box.SetScale(glm::vec3(b["scale"][0], b["scale"][1], b["scale"][2]));
+    }
+    if (entityJson.contains("sphere")) {
+        auto& sphere = entity.AddComponent<SphereCollider>(1.0f);
+        auto b = entityJson["sphere"];
+        sphere.SetScale(glm::vec3(b["scale"][0], b["scale"][1], b["scale"][2]));
+    }
+    if (entityJson.contains("capsule")) {
+        auto& capsule = entity.AddComponent<CapsuleCollider>(1.0f, 0.5f);
+        auto b = entityJson["capsule"];
+        capsule.SetScale(glm::vec3(b["scale"][0], b["scale"][1], b["scale"][2]));
+    }
+    if (entityJson.contains("convex")) {
+        // TODO
     }
 
     return entity;

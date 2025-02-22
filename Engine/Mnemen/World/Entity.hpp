@@ -18,6 +18,7 @@
 #include <glm/gtx/quaternion.hpp>
 
 #include <Utility/UUID.hpp>
+#include <Physics/Colliders.hpp>
 
 class Scene;
 

@@ -146,10 +146,10 @@ void PhysicsSystem::Init()
 
     JPH::RegisterTypes();
 
-    const UInt32 maxBodies = 4096;
+    const UInt32 maxBodies = 65536;
     const UInt32 numBodyMutexes = 0;
-    const UInt32 maxBodyPairs = 2048;
-    const UInt32 maxContactConstraints = 2048;
+    const UInt32 maxBodyPairs = 65536 / 2;
+    const UInt32 maxContactConstraints = 10240;
 
     sData.System = new JPH::PhysicsSystem;
     sData.System->Init(maxBodies, numBodyMutexes, maxBodyPairs, maxContactConstraints, JoltBroadphaseLayerInterface, JoltObjectVSBroadphaseLayerFilter, JoltObjectVSObjectLayerFilter);
