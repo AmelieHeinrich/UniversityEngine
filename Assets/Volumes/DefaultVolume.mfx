@@ -34,11 +34,11 @@
         "focusRange": 8.626999855041504
     },
     "filmGrain": {
-        "amount": 0.30000001192092896,
-        "enable": true
+        "amount": 0.0,
+        "enable": false
     },
     "fxaa": {
-        "enable": true
+        "enable": false
     },
     "gammaCorrect": {
         "factor": 2.24399995803833
