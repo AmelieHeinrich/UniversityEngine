@@ -8,6 +8,11 @@
 #include <Core/Application.hpp>
 #include <fstream>
 
+void PhysicsShape::Create(JPH::Ref<JPH::Shape> shape)
+{
+    mShape = JPH::Ref<JPH::ScaledShape>(new JPH::ScaledShape(shape, JPH::Vec3::sReplicate(1.0f)));
+}
+
 void PhysicsShape::Load(const String& path)
 {
     std::ifstream stream(path, std::ios::binary);
@@ -37,4 +42,16 @@ void PhysicsShape::Save(const String& path)
     JPH::StreamOutWrapper streamOut(stream);
     mShape->SaveBinaryState(streamOut);
     stream.close();
+}
+
+void PhysicsShape::SetScale(glm::vec3 scale)
+{
+    JPH::Vec3 joltScale = JPH::Vec3(scale.x, scale.y, scale.z);
+    mShape->ScaleShape(joltScale);
+}
+
+glm::vec3 PhysicsShape::GetScale()
+{
+    auto scale = mShape->GetScale();
+    return glm::vec3(scale.GetX(), scale.GetY(), scale.GetZ());
 }

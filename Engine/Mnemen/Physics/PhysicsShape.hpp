@@ -33,14 +33,21 @@
 #include <Jolt/Physics/Collision/CollisionCollectorImpl.h>
 #include <Jolt/Physics/Collision/ShapeCast.h>
 
+#include <glm/glm.hpp>
+
 class PhysicsShape
 {
 public:
     PhysicsShape() = default;
     ~PhysicsShape() = default;
 
+    void SetScale(glm::vec3 scale);
+    glm::vec3 GetScale();
+
     void Load(const String& path);
     void Save(const String& path);
-private:
+protected:
+    void Create(JPH::Ref<JPH::Shape> shape);
+
     JPH::Ref<JPH::ScaledShape> mShape;
 };
