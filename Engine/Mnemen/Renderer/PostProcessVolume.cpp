@@ -38,6 +38,11 @@ void PostProcessVolume::Load(const String& path)
         PosterizationLevels = p["levels"];
     }
 
+    if (root.contains("fxaa")) {
+        nlohmann::json f = root["fxaa"];
+        EnableFXAA = f["enable"];
+    }
+
     if (root.contains("colorGrading")) {
         nlohmann::json cg = root["colorGrading"];
 
@@ -123,6 +128,10 @@ void PostProcessVolume::Save(const String& path)
     root["posterization"] = {
         { "enable", EnablePosterization },
         { "levels", PosterizationLevels }
+    };
+
+    root["fxaa"] = {
+        { "enable", EnableFXAA }
     };
 
     root["colorGrading"] = {

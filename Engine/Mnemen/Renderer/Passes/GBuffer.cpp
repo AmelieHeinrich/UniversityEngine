@@ -130,11 +130,19 @@ void GBuffer::Render(const Frame& frame, ::Ref<Scene> scene)
     if (scene) {
         camera = scene->GetMainCamera();
     }
-    glm::mat4 matrices[] = {
-        camera->View,
-        camera->Projection
-    };
-    cameraBuffer->RBuffer[frame.FrameIndex]->CopyMapped(matrices, sizeof(matrices));
+    struct CameraData {
+        glm::mat4 View;
+        glm::mat4 Proj;
+        glm::vec4 Planes[6];
+    } cameraData;
+    
+    cameraData.View = camera->View;
+    cameraData.Proj = camera->Projection;
+    auto planes = Math::GetFrustumPlanes(cameraData.View, cameraData.Proj);
+    for (int i = 0; i < 6; i++) {
+        cameraData.Planes[i] = glm::vec4(planes[i].Normal, planes[i].Distance);
+    }
+    cameraBuffer->RBuffer[frame.FrameIndex]->CopyMapped(&cameraData, sizeof(cameraData));
 
     frame.CommandBuffer->BeginMarker("GBuffer");
     frame.CommandBuffer->Barrier(albedoBuffer->Texture, ResourceLayout::ColorWrite);
@@ -195,7 +203,7 @@ void GBuffer::Render(const Frame& frame, ::Ref<Scene> scene)
                 int Sampler;
                 int ShowMeshlets;
                 
-                int Padding;
+                int MeshletBounds;
                 glm::mat4 Transform;
                 glm::mat4 InvTransform;
             } data = {
@@ -210,7 +218,7 @@ void GBuffer::Render(const Frame& frame, ::Ref<Scene> scene)
                 pbrIndex,
                 sampler->Descriptor(),
                 camera->Volume->Volume.VisualizeMeshlets,
-                0,
+                primitive.MeshletBounds->SRV(),
                 
                 transform,
                 glm::inverse(transform)

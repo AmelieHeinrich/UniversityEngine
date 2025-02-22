@@ -16,6 +16,7 @@
 #include "Passes/DOF.hpp"
 #include "Passes/ColorGrading.hpp"
 #include "Passes/Composite.hpp"
+#include "Passes/FXAA.hpp"
 #include "Passes/Pixelization.hpp"
 #include "Passes/FilmGrain.hpp"
 #include "Passes/Debug.hpp"
@@ -41,6 +42,7 @@ Renderer::Renderer(RHI::Ref rhi)
         MakeRef<Deferred>(rhi),
         MakeRef<SkyboxForward>(rhi),
         MakeRef<Posterization>(rhi),
+        MakeRef<FXAA>(rhi),
         MakeRef<DOF>(rhi),
         MakeRef<ColorGrading>(rhi),
         MakeRef<Composite>(rhi),

@@ -26,6 +26,7 @@ struct CameraMatrices
 {
     column_major float4x4 View;
     column_major float4x4 Projection;
+    float4 Planes[6];
 };
 
 struct VertexOut

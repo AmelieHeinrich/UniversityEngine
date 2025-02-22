@@ -8,6 +8,18 @@ struct Payload
     uint MeshletIndices[32];
 };
 
+struct MeshletBounds
+{
+    /* bounding sphere, useful for frustum and occlusion culling */
+    float3 center;
+    float radius;
+
+    /* normal cone, useful for backface culling */
+    float3 cone_apex;
+    float3 cone_axis;
+    float cone_cutoff; /* = cos(angle/2) */
+};
+
 struct CameraMatrices
 {
     column_major float4x4 View;
@@ -30,7 +42,7 @@ struct PushConstants
     int PBRTexture;
     int LinearSampler;
     int ShowMeshlets;
-    int Padding;
+    int MeshletBounds;
 
     column_major float4x4 Transform;
     column_major float4x4 InvTransform;

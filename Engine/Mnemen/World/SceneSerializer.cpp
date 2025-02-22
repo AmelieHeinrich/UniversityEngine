@@ -96,7 +96,8 @@ nlohmann::json SceneSerializer::SerializeEntity(Entity entity)
         entityJson["material"] = {
             { "inherit", material.InheritFromModel },
             { "albedo", material.Albedo ? material.Albedo->Path : "" },
-            { "normal", material.Normal ? material.Normal->Path : "" }
+            { "normal", material.Normal ? material.Normal->Path : "" },
+            { "pbr", material.PBR ? material.PBR->Path : "" }
         };
     }
     
@@ -208,6 +209,7 @@ Entity SceneSerializer::DeserializeEntity(Ref<Scene> scene, const nlohmann::json
         material.InheritFromModel = m["inherit"];
         material.LoadAlbedo(m["albedo"]);
         material.LoadNormal(m["normal"]);
+        material.LoadPBR(m["pbr"]);
     }
     for (auto& script : entityJson["scripts"]) {
         auto& sc = entity.GetComponent<ScriptComponent>();

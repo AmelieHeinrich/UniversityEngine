@@ -674,6 +674,7 @@ void Editor::EntityEditor()
                     }
                     ImGui::SameLine();
                 } else {
+                    ImGui::PushID("Albedo");
                     if (ImGui::Button(ICON_FA_FILE " Open...", ImVec2(70, 0))) {
                         String path = Dialog::Open({ ".png", ".jpg", ".jpeg" });
                         if (!path.empty()) {
@@ -681,6 +682,7 @@ void Editor::EntityEditor()
                         }
                     }
                     ImGui::SameLine();
+                    ImGui::PopID();
                 }
                 if (ImGui::BeginDragDropTarget()) {
                     if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
@@ -710,6 +712,7 @@ void Editor::EntityEditor()
                     }
                     ImGui::SameLine();
                 } else {
+                    ImGui::PushID("Normal");
                     if (ImGui::Button(ICON_FA_FILE " Open...", ImVec2(70, 0))) {
                         String path = Dialog::Open({ ".png", ".jpg", ".jpeg" });
                         if (!path.empty()) {
@@ -718,6 +721,7 @@ void Editor::EntityEditor()
                         }
                     }
                     ImGui::SameLine();
+                    ImGui::PopID();
                 }
                 if (ImGui::BeginDragDropTarget()) {
                     if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
@@ -747,6 +751,7 @@ void Editor::EntityEditor()
                     }
                     ImGui::SameLine();
                 } else {
+                    ImGui::PushID("PBR");
                     if (ImGui::Button(ICON_FA_FILE " Open...", ImVec2(70, 0))) {
                         String path = Dialog::Open({ ".png", ".jpg", ".jpeg" });
                         if (!path.empty()) {
@@ -755,6 +760,7 @@ void Editor::EntityEditor()
                         }
                     }
                     ImGui::SameLine();
+                    ImGui::PopID();
                 }
                 if (ImGui::BeginDragDropTarget()) {
                     if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
@@ -1286,6 +1292,10 @@ void Editor::FXVolumeEditor()
         if (ImGui::TreeNodeEx("Posterization", ImGuiTreeNodeFlags_Framed)) {
             ImGui::Checkbox("Enable", &volume->EnablePosterization);
             ImGui::DragFloat("Levels", &volume->PosterizationLevels, 0.1f, 1.0f, 100.0f, "%.1f");
+            ImGui::TreePop();
+        }
+        if (ImGui::TreeNodeEx("FXAA", ImGuiTreeNodeFlags_Framed)) {
+            ImGui::Checkbox("Enable", &volume->EnableFXAA);
             ImGui::TreePop();
         }
         if (ImGui::TreeNodeEx("Color Grading", ImGuiTreeNodeFlags_Framed)) {

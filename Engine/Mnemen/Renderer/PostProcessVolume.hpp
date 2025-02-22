@@ -38,6 +38,9 @@ public:
     bool EnablePosterization = false;
     float PosterizationLevels = 10.0f;
 
+    // FXAA
+    bool EnableFXAA = true;
+
     // Color Grading
     bool EnableColorGrading = false;
     float Brightness = 1.0f;
