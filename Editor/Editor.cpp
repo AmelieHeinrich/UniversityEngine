@@ -67,6 +67,7 @@ void Editor::PostPresent()
 
     // Change the model if needed
     if (!mModelChange.empty()) {
+        mRHI->Wait();
         if (mSelectedEntity) {
             MeshComponent& mesh = mSelectedEntity.GetComponent<MeshComponent>();
             mesh.Init(mModelChange);
@@ -77,6 +78,7 @@ void Editor::PostPresent()
 
     // Delete the entity if needed
     if (mMarkForDeletion) {
+        mRHI->Wait();
         mScene->RemoveEntity(mSelectedEntity);
         mSelectedEntity = nullptr;
         mMarkForDeletion = false;
@@ -84,6 +86,7 @@ void Editor::PostPresent()
     }
     // Reload the scene if needed
     if (mMarkForStop) {
+        mRHI->Wait();
         mSelectedEntity = {};
         String pathCopy = mCurrentScenePath;
         ReloadScene(pathCopy);
@@ -92,6 +95,7 @@ void Editor::PostPresent()
     }
     // Delete the mesh component if needed
     if (mMarkForMeshDeletion) {
+        mRHI->Wait();
         auto& mesh = mSelectedEntity.GetComponent<MeshComponent>();
         mesh.Free();
         mSelectedEntity.RemoveComponent<MeshComponent>();
@@ -102,21 +106,19 @@ void Editor::PostPresent()
         mRHI->Wait();
         OpenScene(mSceneChange);
         mSceneChange = "";
-        shouldWait = true;
     }
 
-    if (shouldWait) {
-        mRHI->Wait();
-    }
     AssetManager::Purge();
 
     // New scene if needed
     if (mMarkForClose) {
+        mRHI->Wait();
         NewScene();
         mMarkForClose = false;
     }
     // Change skybox if needed
     if (!mSkyboxChange.empty()) {
+        mRHI->Wait();
         mScene->CookSkybox(mSkyboxChange);
         mSkyboxChange = "";
     }

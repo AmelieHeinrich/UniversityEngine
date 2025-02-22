@@ -2,7 +2,7 @@
     "name": "TestGame",
     "projectPath": "C:/dev/Mnemen/",
     "sceneFiles": {
-        "TestScene": "Assets/Scenes/SpotTest.msf"
+        "TestScene": "Assets/Scenes/PhysicsTest.msf"
     },
     "settings": {
         "compressionFormat": "bc7",

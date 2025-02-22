@@ -1,0 +1,92 @@
+{
+    "entities": [
+        {
+            "id": 2,
+            "mesh": {
+                "path": "Assets/Models/Primitives/Plane.gltf"
+            },
+            "name": "Plane",
+            "parent": null,
+            "scripts": [],
+            "transform": {
+                "position": [
+                    0.0,
+                    0.9310048818588257,
+                    0.0
+                ],
+                "rotation": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0
+                ],
+                "scale": [
+                    7.289798736572266,
+                    7.289798736572266,
+                    7.289798736572266
+                ]
+            }
+        },
+        {
+            "directionalLight": {
+                "castShadows": true,
+                "color": [
+                    1.0,
+                    1.0,
+                    1.0
+                ],
+                "strength": 3.200000047683716
+            },
+            "id": 1,
+            "name": "Sun",
+            "parent": null,
+            "scripts": [],
+            "transform": {
+                "position": [
+                    -0.0018159281462430954,
+                    4.619421482086182,
+                    -2.9233012199401855
+                ],
+                "rotation": [
+                    0.6228864192962646,
+                    -0.009825864806771278,
+                    0.014311941340565681,
+                    0.782119631767273
+                ],
+                "scale": [
+                    0.9999858736991882,
+                    1.000001072883606,
+                    1.0000003576278687
+                ]
+            }
+        },
+        {
+            "id": 0,
+            "mesh": {
+                "path": "Assets/Models/Primitives/Cube.gltf"
+            },
+            "name": "Cube",
+            "parent": null,
+            "scripts": [],
+            "transform": {
+                "position": [
+                    0.0,
+                    2.1342849731445313,
+                    1.2237423658370972
+                ],
+                "rotation": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0
+                ],
+                "scale": [
+                    0.4824000298976898,
+                    0.4824000298976898,
+                    0.4824000298976898
+                ]
+            }
+        }
+    ],
+    "skybox": "Assets/Skyboxes/Default.hdr"
+}

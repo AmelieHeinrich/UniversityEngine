@@ -998,6 +998,80 @@ void Editor::EntityEditor()
             }
         }
 
+        // Box collider
+        if (mSelectedEntity.HasComponent<BoxCollider>()) {
+            // TODO: Draw the debug body!
+            if (ImGui::TreeNodeEx(ICON_FA_SQUARE_O " Box Collider", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) {
+                bool shouldDelete = false;
+                ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(7.0f, 0.6f, 0.6f));
+                ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::HSV(7.0f, 0.7f, 0.7f));
+                ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::HSV(7.0f, 0.8f, 0.8f));
+                ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0.5f, 0.5f));
+                if (ImGui::Button(ICON_FA_TRASH " Delete", ImVec2(ImGui::GetContentRegionAvail().x, 0))) {
+                    shouldDelete = true;
+                }
+                ImGui::PopStyleVar();
+                ImGui::PopStyleColor(3);
+
+                BoxCollider& box = mSelectedEntity.GetComponent<BoxCollider>();
+                glm::vec3 scale = box.GetScale();
+                DrawVec3Control("Scale", scale, 1.0f);
+                box.SetScale(scale);
+                ImGui::TreePop();
+
+                if (shouldDelete)
+                    mSelectedEntity.RemoveComponent<BoxCollider>();
+            }
+        }
+        if (mSelectedEntity.HasComponent<SphereCollider>()) {
+            // TODO: Draw the debug body!
+            if (ImGui::TreeNodeEx(ICON_FA_CIRCLE_O " Sphere Collider", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) {
+                bool shouldDelete = false;
+                ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(7.0f, 0.6f, 0.6f));
+                ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::HSV(7.0f, 0.7f, 0.7f));
+                ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::HSV(7.0f, 0.8f, 0.8f));
+                ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0.5f, 0.5f));
+                if (ImGui::Button(ICON_FA_TRASH " Delete", ImVec2(ImGui::GetContentRegionAvail().x, 0))) {
+                    shouldDelete = true;
+                }
+                ImGui::PopStyleVar();
+                ImGui::PopStyleColor(3);
+                ImGui::TreePop();
+
+                SphereCollider& box = mSelectedEntity.GetComponent<SphereCollider>();
+                glm::vec3 scale = box.GetScale();
+                DrawVec3Control("Scale", scale, 1.0f);
+                box.SetScale(scale);
+
+                if (shouldDelete)
+                    mSelectedEntity.RemoveComponent<SphereCollider>();
+            }
+        }
+        if (mSelectedEntity.HasComponent<CapsuleCollider>()) {
+            // TODO: Draw the debug body!
+            if (ImGui::TreeNodeEx(ICON_FA_CIRCLE_THIN " Capsule Collider", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) {
+                bool shouldDelete = false;
+                ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(7.0f, 0.6f, 0.6f));
+                ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::HSV(7.0f, 0.7f, 0.7f));
+                ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::HSV(7.0f, 0.8f, 0.8f));
+                ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0.5f, 0.5f));
+                if (ImGui::Button(ICON_FA_TRASH " Delete", ImVec2(ImGui::GetContentRegionAvail().x, 0))) {
+                    shouldDelete = true;
+                }
+                ImGui::PopStyleVar();
+                ImGui::PopStyleColor(3);
+                ImGui::TreePop();
+
+                CapsuleCollider& box = mSelectedEntity.GetComponent<CapsuleCollider>();
+                glm::vec3 scale = box.GetScale();
+                DrawVec3Control("Scale", scale, 1.0f);
+                box.SetScale(scale);
+
+                if (shouldDelete)
+                    mSelectedEntity.RemoveComponent<CapsuleCollider>();
+            }
+        }
+
         ImGui::Separator();
 
         // Add component
