@@ -6,6 +6,7 @@
 #pragma once
 
 #include <Renderer/RenderPass.hpp>
+#include <Core/Timer.hpp>
 
 class FilmGrain : public RenderPass
 {
@@ -16,4 +17,5 @@ public:
     void Render(const Frame& frame, ::Ref<Scene> scene) override;
 private:
     ComputePipeline::Ref mPipeline;
+    Timer mTimer; 
 };

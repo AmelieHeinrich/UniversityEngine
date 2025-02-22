@@ -4,8 +4,13 @@
 //
 
 struct Parameters
-{
-    int Placeholder; // Delete this if you add any settings...
+{   
+    uint InputIndex;
+    uint DepthIndex;
+
+    float amount;
+    float osg_FrameTime;
+    
 };
 
 ConstantBuffer<Parameters> Settings : register(b0);
@@ -13,5 +18,18 @@ ConstantBuffer<Parameters> Settings : register(b0);
 [numthreads(8, 8, 1)]
 void CSMain(uint3 ThreadID : SV_DispatchThreadID)
 {
-    // Code goes here
+    RWTexture2D<float4> Output = ResourceDescriptorHeap[Settings.InputIndex];
+
+    float toRadians = 3.14 / 180;
+    float4 color = Output.Load(ThreadID.xy);
+
+    int width, height;
+
+    float randomIntensity =
+        frac(10000 * sin
+            (ThreadID.x + ThreadID.y * Settings.osg_FrameTime) 
+            * toRadians);
+    
+    color.rgb += Settings.amount * randomIntensity;
+    Output[ThreadID.xy] = color;
 }
