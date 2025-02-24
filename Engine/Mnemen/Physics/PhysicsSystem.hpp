@@ -59,6 +59,9 @@ public:
     static void Exit();
     static void Update(Ref<Scene> scene, float minStepDuration);
 
+    static void OnAwake(Ref<Scene> scene);
+    static void OnStop(Ref<Scene> scene);
+
     static JPH::BodyInterface* GetInterface() { return sData.BodyInterface; }
 private:
     static struct Data {

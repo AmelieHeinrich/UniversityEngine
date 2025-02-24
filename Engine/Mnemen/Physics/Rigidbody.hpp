@@ -15,6 +15,8 @@ public:
     ~Rigidbody();
 
     void Create(PhysicsShape& shape, float mass = 1.0f, bool isStatic = false);
+
+    JPH::Body* GetBody() { return mBody; }
 private:
     JPH::Body* mBody;
 };

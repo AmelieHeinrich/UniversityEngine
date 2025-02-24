@@ -197,4 +197,47 @@ void PhysicsSystem::Update(Ref<Scene> scene, float minStepDuration)
     } catch (...) {
         LOG_CRITICAL("Jolt failed to update physics!");
     }
+
+    // Update transforms
+    auto registry = scene->GetRegistry();
+    auto view = registry->view<TransformComponent, Rigidbody>();
+
+    for (auto [id, transform, rb] : view.each()) {
+        auto body = rb.GetBody();
+        if (!body)
+            continue;
+
+        JPH::Vec3 pos = body->GetCenterOfMassPosition();
+        JPH::Quat rot = body->GetRotation();
+
+        transform.Position = glm::vec3(pos.GetX(), pos.GetY(), pos.GetZ());
+        transform.Rotation = glm::quat(rot.GetW(), rot.GetX(), rot.GetY(), rot.GetZ());
+    }
+}
+
+void PhysicsSystem::OnAwake(Ref<Scene> scene)
+{
+    auto registry = scene->GetRegistry();
+    auto view = registry->view<Rigidbody>();
+
+    for (auto [id, rb] : view.each()) {
+        if (!rb.GetBody())
+            continue;
+        
+        sData.BodyInterface->AddBody(rb.GetBody()->GetID(), JPH::EActivation::Activate);
+    }
+    sData.System->OptimizeBroadPhase();
+}
+
+void PhysicsSystem::OnStop(Ref<Scene> scene)
+{
+    auto registry = scene->GetRegistry();
+    auto view = registry->view<Rigidbody>();
+
+    for (auto [id, rb] : view.each()) {
+        if (!rb.GetBody())
+            continue;
+
+        sData.BodyInterface->RemoveBody(rb.GetBody()->GetID());
+    }
 }
