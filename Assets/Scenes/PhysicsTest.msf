@@ -8,7 +8,7 @@
                     1.0
                 ]
             },
-            "id": 2,
+            "id": 3,
             "mesh": {
                 "path": "Assets/Models/Primitives/Cube.gltf"
             },
@@ -45,7 +45,7 @@
                 ],
                 "strength": 4.400000095367432
             },
-            "id": 1,
+            "id": 2,
             "name": "Sun",
             "parent": null,
             "scripts": [],
@@ -63,13 +63,13 @@
                 ],
                 "scale": [
                     0.999960720539093,
-                    0.9999873042106628,
-                    0.9999987483024597
+                    0.9999863505363464,
+                    0.9999977946281433
                 ]
             }
         },
         {
-            "id": 0,
+            "id": 1,
             "mesh": {
                 "path": "Assets/Models/Primitives/Plane.gltf"
             },
@@ -92,6 +92,37 @@
                     7.289798736572266,
                     7.289798736572266,
                     7.289798736572266
+                ]
+            }
+        },
+        {
+            "camera": {
+                "far": 200.0,
+                "fov": 90.0,
+                "near": 0.10000000149011612,
+                "primary": true,
+                "volumePath": "Assets/Volumes/DefaultVolume.mfx"
+            },
+            "id": 0,
+            "name": "Camera",
+            "parent": null,
+            "scripts": [],
+            "transform": {
+                "position": [
+                    0.0,
+                    0.0,
+                    -3.594083070755005
+                ],
+                "rotation": [
+                    0.17142459750175476,
+                    -3.4637000823067865e-08,
+                    6.0268479096237115e-09,
+                    0.9851972460746765
+                ],
+                "scale": [
+                    1.0,
+                    1.0,
+                    1.0
                 ]
             }
         }

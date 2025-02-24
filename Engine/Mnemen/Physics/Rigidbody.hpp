@@ -18,5 +18,5 @@ public:
 
     JPH::Body* GetBody() { return mBody; }
 private:
-    JPH::Body* mBody;
+    JPH::Body* mBody = nullptr;
 };

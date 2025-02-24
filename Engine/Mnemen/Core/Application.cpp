@@ -81,10 +81,12 @@ void Application::OnAwake()
 
     ScriptSystem::Awake(mScene);
     AudioSystem::Awake(mScene);
+    PhysicsSystem::OnAwake(mScene);
 }
 
 void Application::OnStop()
 {
+    PhysicsSystem::OnStop(mScene);
     AudioSystem::Quit(mScene);
     ScriptSystem::Quit(mScene);
 

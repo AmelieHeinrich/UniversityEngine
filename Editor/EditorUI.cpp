@@ -1073,6 +1073,8 @@ void Editor::EntityEditor()
         }
         if (mSelectedEntity.HasComponent<Rigidbody>()) {
             if (ImGui::TreeNodeEx(ICON_FA_MAGNET " Rigidbody", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) {
+                Rigidbody& rb = mSelectedEntity.GetComponent<Rigidbody>();
+               
                 bool shouldDelete = false;
                 ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(7.0f, 0.6f, 0.6f));
                 ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::HSV(7.0f, 0.7f, 0.7f));
@@ -1081,11 +1083,16 @@ void Editor::EntityEditor()
                 if (ImGui::Button(ICON_FA_TRASH " Delete", ImVec2(ImGui::GetContentRegionAvail().x, 0))) {
                     shouldDelete = true;
                 }
-                ImGui::PopStyleVar();
                 ImGui::PopStyleColor(3);
+                if (ImGui::Button(ICON_FA_BELL " Refresh")) {
+                    if (mSelectedEntity.HasComponent<BoxCollider>()) rb.Create(mSelectedEntity.GetComponent<BoxCollider>());
+                    if (mSelectedEntity.HasComponent<SphereCollider>()) rb.Create(mSelectedEntity.GetComponent<SphereCollider>());
+                    if (mSelectedEntity.HasComponent<CapsuleCollider>()) rb.Create(mSelectedEntity.GetComponent<CapsuleCollider>());
+                }
+                ImGui::PopStyleVar();
                 ImGui::TreePop();
 
-                Rigidbody& rb = mSelectedEntity.GetComponent<Rigidbody>();
+                
                 // TODO
 
                 if (shouldDelete)
@@ -1170,7 +1177,10 @@ void Editor::EntityEditor()
             }
             if (!mSelectedEntity.HasComponent<Rigidbody>()) {
                 if (ImGui::MenuItem(ICON_FA_MAGNET " Rigidbody")) {
-                    mSelectedEntity.AddComponent<Rigidbody>();
+                    auto& rb = mSelectedEntity.AddComponent<Rigidbody>();
+                    if (mSelectedEntity.HasComponent<BoxCollider>()) rb.Create(mSelectedEntity.GetComponent<BoxCollider>());
+                    if (mSelectedEntity.HasComponent<SphereCollider>()) rb.Create(mSelectedEntity.GetComponent<SphereCollider>());
+                    if (mSelectedEntity.HasComponent<CapsuleCollider>()) rb.Create(mSelectedEntity.GetComponent<CapsuleCollider>());
                 }
             }
             if (ImGui::MenuItem(ICON_FA_CODE " Script")) {

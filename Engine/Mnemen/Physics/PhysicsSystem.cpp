@@ -238,6 +238,6 @@ void PhysicsSystem::OnStop(Ref<Scene> scene)
         if (!rb.GetBody())
             continue;
 
-        sData.BodyInterface->RemoveBody(rb.GetBody()->GetID());
+        // sData.BodyInterface->RemoveBody(rb.GetBody()->GetID());
     }
 }

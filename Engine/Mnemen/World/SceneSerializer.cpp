@@ -306,6 +306,10 @@ Entity SceneSerializer::DeserializeEntity(Ref<Scene> scene, const nlohmann::json
     }
     if (entityJson.contains("rigidbody")) {
         auto& rb = entity.AddComponent<Rigidbody>();
+
+        if (entity.HasComponent<BoxCollider>()) rb.Create(entity.GetComponent<BoxCollider>());
+        if (entity.HasComponent<SphereCollider>()) rb.Create(entity.GetComponent<SphereCollider>());
+        if (entity.HasComponent<CapsuleCollider>()) rb.Create(entity.GetComponent<CapsuleCollider>());
     }
 
     return entity;
