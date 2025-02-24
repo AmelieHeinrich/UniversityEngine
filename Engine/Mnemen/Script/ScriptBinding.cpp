@@ -20,7 +20,7 @@ void ScriptBinding::InitBindings(sol::state& state)
     InitInput(state);
     InitEntity(state);
 
-    // TODO: Assert, File, Logger, Random, Timer, Math, ImGui
+    // TODO: Assert, File, Logger, Random, Timer, Math, ImGui, and all the other components
 }
 
 void ScriptBinding::InitEntity(sol::state& state)

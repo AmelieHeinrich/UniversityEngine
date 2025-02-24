@@ -42,6 +42,16 @@
 class BPLayerInterfaceImpl;
 class MyContactListener;
 
+namespace PhysicsLayers
+{
+    static constexpr UInt8 NON_MOVING = 0;
+    static constexpr UInt8 MOVING = 1;
+    static constexpr UInt8 CHARACTER = 2;
+    static constexpr UInt8 CHARACTER_GHOST = 3;
+    static constexpr UInt8 TRIGGER = 4;
+    static constexpr UInt8 NUM_LAYERS = 5;
+};
+
 class PhysicsSystem
 {
 public:
@@ -49,6 +59,7 @@ public:
     static void Exit();
     static void Update(Ref<Scene> scene, float minStepDuration);
 
+    static JPH::BodyInterface* GetInterface() { return sData.BodyInterface; }
 private:
     static struct Data {
         JPH::PhysicsSystem* System;

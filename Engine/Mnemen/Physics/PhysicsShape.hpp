@@ -42,6 +42,8 @@ public:
     PhysicsShape() = default;
     ~PhysicsShape() = default;
 
+    JPH::Ref<JPH::ScaledShape> GetShape() { return mShape; }
+
     void SetScale(glm::vec3 scale);
     glm::vec3 GetScale();
 

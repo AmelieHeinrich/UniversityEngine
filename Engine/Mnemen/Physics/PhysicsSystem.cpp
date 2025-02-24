@@ -9,16 +9,6 @@
 
 PhysicsSystem::Data PhysicsSystem::sData;
 
-namespace Layers
-{
-    static constexpr UInt8 NON_MOVING = 0;
-    static constexpr UInt8 MOVING = 1;
-    static constexpr UInt8 CHARACTER = 2;
-    static constexpr UInt8 CHARACTER_GHOST = 3;
-    static constexpr UInt8 TRIGGER = 4;
-    static constexpr UInt8 NUM_LAYERS = 5;
-};
-
 namespace BroadPhaseLayers
 {
     static constexpr JPH::BroadPhaseLayer NON_MOVING(0);
@@ -30,15 +20,15 @@ String LayerToString(UInt8 layer)
 {
     switch (layer)
     {
-        case Layers::NON_MOVING:
+        case PhysicsLayers::NON_MOVING:
             return "NON_MOVING";
-        case Layers::MOVING:
+        case PhysicsLayers::MOVING:
             return "MOVING";
-        case Layers::CHARACTER:
+        case PhysicsLayers::CHARACTER:
             return "CHARACTER";
-        case Layers::CHARACTER_GHOST:
+        case PhysicsLayers::CHARACTER_GHOST:
             return "CHARACTER_GHOST";
-        case Layers::TRIGGER:
+        case PhysicsLayers::TRIGGER:
             return "TRIGGER";
     }
     return "SKIBIDI";
@@ -50,11 +40,11 @@ public:
     BPLayerInterfaceImpl()
     {
         // Create a mapping table from object to broad phase layer
-        mObjectToBroadPhase[Layers::NON_MOVING] = BroadPhaseLayers::NON_MOVING;
-        mObjectToBroadPhase[Layers::MOVING] = BroadPhaseLayers::MOVING;
-        mObjectToBroadPhase[Layers::CHARACTER] = BroadPhaseLayers::MOVING;
-        mObjectToBroadPhase[Layers::CHARACTER_GHOST] = BroadPhaseLayers::MOVING;
-        mObjectToBroadPhase[Layers::TRIGGER] = BroadPhaseLayers::MOVING;
+        mObjectToBroadPhase[PhysicsLayers::NON_MOVING] = BroadPhaseLayers::NON_MOVING;
+        mObjectToBroadPhase[PhysicsLayers::MOVING] = BroadPhaseLayers::MOVING;
+        mObjectToBroadPhase[PhysicsLayers::CHARACTER] = BroadPhaseLayers::MOVING;
+        mObjectToBroadPhase[PhysicsLayers::CHARACTER_GHOST] = BroadPhaseLayers::MOVING;
+        mObjectToBroadPhase[PhysicsLayers::TRIGGER] = BroadPhaseLayers::MOVING;
     }
 
     virtual JPH::uint GetNumBroadPhaseLayers() const override
@@ -65,11 +55,11 @@ public:
     virtual JPH::BroadPhaseLayer GetBroadPhaseLayer(JPH::ObjectLayer inLayer) const override
     {
         using namespace JPH;
-        JPH_ASSERT(inLayer < Layers::NUM_LAYERS);
+        JPH_ASSERT(inLayer < PhysicsLayers::NUM_LAYERS);
         return mObjectToBroadPhase[inLayer];
     }
 private:
-    JPH::BroadPhaseLayer					mObjectToBroadPhase[Layers::NUM_LAYERS];
+    JPH::BroadPhaseLayer					mObjectToBroadPhase[PhysicsLayers::NUM_LAYERS];
 };
 
 class ObjectVsBroadPhaseLayerFilterImpl : public JPH::ObjectVsBroadPhaseLayerFilter
@@ -79,11 +69,11 @@ public:
     {
         switch (inLayer1)
         {
-        case Layers::NON_MOVING:
+        case PhysicsLayers::NON_MOVING:
             return inLayer2 == BroadPhaseLayers::MOVING;
-        case Layers::MOVING:
+        case PhysicsLayers::MOVING:
             return true;
-        case Layers::TRIGGER:
+        case PhysicsLayers::TRIGGER:
             return inLayer2 == BroadPhaseLayers::MOVING;
         default:
             return false;
@@ -98,16 +88,16 @@ public:
     {
         switch (inObject1)
         {
-        case Layers::TRIGGER:
-            return inObject2 == Layers::CHARACTER_GHOST || inObject2 == Layers::CHARACTER;
-        case Layers::NON_MOVING:
-            return inObject2 == Layers::MOVING || inObject2 == Layers::CHARACTER_GHOST || inObject2 == Layers::CHARACTER; // Non moving only collides with moving
-        case Layers::MOVING:
+        case PhysicsLayers::TRIGGER:
+            return inObject2 == PhysicsLayers::CHARACTER_GHOST || inObject2 == PhysicsLayers::CHARACTER;
+        case PhysicsLayers::NON_MOVING:
+            return inObject2 == PhysicsLayers::MOVING || inObject2 == PhysicsLayers::CHARACTER_GHOST || inObject2 == PhysicsLayers::CHARACTER; // Non moving only collides with moving
+        case PhysicsLayers::MOVING:
             return true; // Moving collides with everything
-        case Layers::CHARACTER_GHOST:
-            return inObject2 != Layers::CHARACTER;
-        case Layers::CHARACTER:
-            return inObject2 != Layers::CHARACTER_GHOST;
+        case PhysicsLayers::CHARACTER_GHOST:
+            return inObject2 != PhysicsLayers::CHARACTER;
+        case PhysicsLayers::CHARACTER:
+            return inObject2 != PhysicsLayers::CHARACTER_GHOST;
         default:
             return false;
         }
