@@ -130,6 +130,9 @@ void GBuffer::Render(const Frame& frame, ::Ref<Scene> scene)
     if (scene) {
         camera = scene->GetMainCamera();
     }
+    if (!camera)
+        return;
+
     struct CameraData {
         glm::mat4 View;
         glm::mat4 Proj;

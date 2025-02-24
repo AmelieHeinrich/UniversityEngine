@@ -19,6 +19,7 @@
 
 #include <Utility/UUID.hpp>
 #include <Physics/Colliders.hpp>
+#include <Physics/Rigidbody.hpp>
 
 class Scene;
 

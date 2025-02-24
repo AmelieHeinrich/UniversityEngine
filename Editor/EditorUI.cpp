@@ -1071,6 +1071,27 @@ void Editor::EntityEditor()
                     mSelectedEntity.RemoveComponent<CapsuleCollider>();
             }
         }
+        if (mSelectedEntity.HasComponent<Rigidbody>()) {
+            if (ImGui::TreeNodeEx(ICON_FA_MAGNET " Rigidbody", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) {
+                bool shouldDelete = false;
+                ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(7.0f, 0.6f, 0.6f));
+                ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::HSV(7.0f, 0.7f, 0.7f));
+                ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::HSV(7.0f, 0.8f, 0.8f));
+                ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0.5f, 0.5f));
+                if (ImGui::Button(ICON_FA_TRASH " Delete", ImVec2(ImGui::GetContentRegionAvail().x, 0))) {
+                    shouldDelete = true;
+                }
+                ImGui::PopStyleVar();
+                ImGui::PopStyleColor(3);
+                ImGui::TreePop();
+
+                Rigidbody& rb = mSelectedEntity.GetComponent<Rigidbody>();
+                // TODO
+
+                if (shouldDelete)
+                    mSelectedEntity.RemoveComponent<Rigidbody>();
+            }
+        }
 
         ImGui::Separator();
 
@@ -1145,6 +1166,11 @@ void Editor::EntityEditor()
             if (!mSelectedEntity.HasComponent<ConvexHullCollider>()) {
                 if (ImGui::MenuItem(ICON_FA_OBJECT_GROUP " Convex Hull Collider")) {
                     
+                }
+            }
+            if (!mSelectedEntity.HasComponent<Rigidbody>()) {
+                if (ImGui::MenuItem(ICON_FA_MAGNET " Rigidbody")) {
+                    mSelectedEntity.AddComponent<Rigidbody>();
                 }
             }
             if (ImGui::MenuItem(ICON_FA_CODE " Script")) {

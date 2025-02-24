@@ -41,34 +41,40 @@ void Composite::Render(const Frame& frame, ::Ref<Scene> scene)
     PROFILE_FUNCTION();
 
     auto camera = scene->GetMainCamera();
+
     auto hdr = RendererTools::Get("HDRColorBuffer");
     auto ldr = RendererTools::Get("LDRColorBuffer");
 
     frame.CommandBuffer->BeginMarker("Composite");
-    
-    struct {
-        int Input;
-        int Output;
-        float Gamma;
-        int Pad;
-    } PushConstants = {
-        hdr->Descriptor(ViewType::ShaderResource),
-        ldr->Descriptor(ViewType::Storage),
-        camera->Volume->Volume.GammaCorrection,
-        0
-    };
 
+    frame.CommandBuffer->Barrier(ldr->Texture, ResourceLayout::ColorWrite);
+    frame.CommandBuffer->ClearRenderTarget(ldr->GetView(ViewType::RenderTarget), 0.0f, 0.0f, 0.0f);
+    
     // Tonemap color buffer
-    frame.CommandBuffer->BeginMarker("Tonemap");
-    frame.CommandBuffer->Barrier(hdr->Texture, ResourceLayout::Storage);
-    frame.CommandBuffer->Barrier(ldr->Texture, ResourceLayout::Storage);
-    frame.CommandBuffer->SetComputePipeline(mPipeline);
-    frame.CommandBuffer->ComputePushConstants(&PushConstants, sizeof(PushConstants), 0);
-    frame.CommandBuffer->Dispatch(frame.Width / 8, frame.Height / 8, 1);
-    frame.CommandBuffer->Barrier(hdr->Texture, ResourceLayout::Common);
-    frame.CommandBuffer->UAVBarrier(ldr->Texture);
-    frame.CommandBuffer->EndMarker();
-    //
+    if (camera)
+    {
+        struct {
+            int Input;
+            int Output;
+            float Gamma;
+            int Pad;
+        } PushConstants = {
+            hdr->Descriptor(ViewType::ShaderResource),
+            ldr->Descriptor(ViewType::Storage),
+            camera->Volume->Volume.GammaCorrection,
+            0
+        };
+
+        frame.CommandBuffer->BeginMarker("Tonemap");
+        frame.CommandBuffer->Barrier(hdr->Texture, ResourceLayout::Storage);
+        frame.CommandBuffer->Barrier(ldr->Texture, ResourceLayout::Storage);
+        frame.CommandBuffer->SetComputePipeline(mPipeline);
+        frame.CommandBuffer->ComputePushConstants(&PushConstants, sizeof(PushConstants), 0);
+        frame.CommandBuffer->Dispatch(frame.Width / 8, frame.Height / 8, 1);
+        frame.CommandBuffer->Barrier(hdr->Texture, ResourceLayout::Common);
+        frame.CommandBuffer->UAVBarrier(ldr->Texture);
+        frame.CommandBuffer->EndMarker();
+    }
     
     // Copy LDR to backbuffer
     if (Application::Get()->GetSpecs().CopyToBackBuffer) {

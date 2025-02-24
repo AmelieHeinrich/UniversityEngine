@@ -19,7 +19,8 @@ Rigidbody::Rigidbody(PhysicsShape& shape, float mass, bool isStatic)
 
 Rigidbody::~Rigidbody()
 {
-    PhysicsSystem::GetInterface()->DestroyBody(mBody->GetID());
+    if (mBody)
+        PhysicsSystem::GetInterface()->DestroyBody(mBody->GetID());
 }
 
 void Rigidbody::Create(PhysicsShape& shape, float mass, bool isStatic)

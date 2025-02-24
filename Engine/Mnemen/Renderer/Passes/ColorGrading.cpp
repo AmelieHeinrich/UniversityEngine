@@ -24,6 +24,8 @@ ColorGrading::ColorGrading(RHI::Ref rhi)
 void ColorGrading::Render(const Frame& frame, ::Ref<Scene> scene)
 {
     CameraComponent* mainCamera = scene->GetMainCamera();
+    if (!mainCamera)
+        return;
 
     // Retrieve the HDR color texture that we will write to 
     auto color = RendererTools::Get("HDRColorBuffer");

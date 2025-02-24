@@ -22,6 +22,8 @@ void DOF::Render(const Frame& frame, ::Ref<Scene> scene)
     PROFILE_FUNCTION();
 
     CameraComponent* mainCamera = scene->GetMainCamera();
+    if (!mainCamera)
+        return;
 
     auto color = RendererTools::Get("HDRColorBuffer");
     auto depth = RendererTools::Get("GBufferDepth");

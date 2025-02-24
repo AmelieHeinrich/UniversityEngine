@@ -206,6 +206,11 @@ nlohmann::json SceneSerializer::SerializeEntity(Entity entity)
         entityJson["convex"]["scale"][2] = scale.z;
     }
 
+    // Rigidbody component
+    if (entity.HasComponent<Rigidbody>()) {
+        entityJson["rigidbody"] = {};
+    }
+
     return entityJson;
 }
 
@@ -298,6 +303,9 @@ Entity SceneSerializer::DeserializeEntity(Ref<Scene> scene, const nlohmann::json
     }
     if (entityJson.contains("convex")) {
         // TODO
+    }
+    if (entityJson.contains("rigidbody")) {
+        auto& rb = entity.AddComponent<Rigidbody>();
     }
 
     return entity;
