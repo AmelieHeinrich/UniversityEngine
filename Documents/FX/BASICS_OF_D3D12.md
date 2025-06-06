@@ -72,28 +72,18 @@ Below are the essential D3D12 types that you’ll frequently interact with when 
    - The **root signature** specifies the layout of root parameters (such as constants or resource bindings), allowing shaders to efficiently access data.
    - Root signatures are associated with pipeline state objects, enabling efficient resource binding during rendering.
 
-### 11. **Shader** (`ID3D12Shader`)
-   - A **shader** is a program that runs on the GPU to process data (e.g., vertices, pixels).
-   - Shaders are typically written in **HLSL** (High-Level Shader Language) and compiled to GPU-specific code.
-   - Common types of shaders include **vertex shaders**, **pixel shaders**, **compute shaders**, etc., each responsible for different stages of the rendering pipeline.
-
-### 12. **Swap Chain** (`IDXGISwapChain`)
+### 11. **Swap Chain** (`IDXGISwapChain`)
    - A **swap chain** manages the presentation of rendered images to the screen.
    - It represents a **frame buffer** and supports **double or triple buffering** to reduce screen tearing.
    - The swap chain allows for **flipping** between back buffers, ensuring smooth transitions between frames.
 
-### 13. **Heap** (`ID3D12Heap`)
+### 12. **Heap** (`ID3D12Heap`)
    - A **heap** is a memory block on the GPU where resources can be allocated.
    - This low-level feature is useful for advanced memory management, such as dynamic resources or large allocations, and provides more flexibility in managing GPU memory.
 
-### 14. **Query** (`ID3D12QueryHeap`)
+### 13. **Query** (`ID3D12QueryHeap`)
    - A **query heap** is used to query GPU information, such as **occlusion queries** (whether an object is visible) or **timestamp queries** (measuring time taken by operations).
    - Queries are useful for performance analysis and for controlling complex rendering effects.
-
-### 15. **Root Constants** (`D3D12_ROOT_PARAMETER_TYPE`)
-   - **Root constants** are small constant values passed directly to the shader via the root signature.
-   - These constants allow shaders to access essential data, like transformation matrices or other frequently used values, without the overhead of using buffers.
-   - Root constants are ideal for small, immutable data.
 
 ---
 
