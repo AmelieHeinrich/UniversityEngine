@@ -1,5 +1,7 @@
 # Mnemen Engine : a fully fledged 3D game engine made by G.Tech students
 
+![](.github/2.jpeg)
+
 ## Cloning this repository
 
 ```powershell
@@ -28,6 +30,24 @@ To run the runtime, you can use this command:
 ```powershell
 xmake run Runtime
 ```
+
+## Features
+- D3D12 backend with mesh shaders, bindless
+- Microfacet BRDF
+- Baked IBL
+- Cascaded Shadow Maps
+- Local Shadow Maps (Spot lights)
+- Film Grain
+- Depth of Field
+- CPU Frustum Culling
+- FXAA
+- HDR rendering
+- Skybox
+- ECS with parent/child hierarchy
+- Lua scripting
+- Complete ImGui editor and launcher
+- Asset manager
+- Audio
 
 ## How to generate a Visual Studio solution
 
